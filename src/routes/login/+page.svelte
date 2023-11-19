@@ -48,7 +48,10 @@
 			</div>
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[10px] w-[25rem]"
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[10px] w-[25rem]
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+                    focus:shadow-custom
+					"
 					type="submit"
 				>
 					<div class="button-text text-white font-bold text-sm">Log in</div>
@@ -57,7 +60,7 @@
 				<div class="forgot-password">
 					<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
 						<div class="text-[#9C9C9C]">Forgotten password?</div>
-						<a href="/">Click here to reset</a>
+						<a href="/" class="hover:underline">Click here to reset</a>
 					</div>
 				</div>
 			</div>
