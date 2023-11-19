@@ -10,7 +10,7 @@
 		>
 			<div class="greeting">
 				<div class="flex gap-[1.88rem] items-center w-full">
-					<div class="avatar w-1/5">
+					<div class="avatar w-auto">
 						<img src="/icons/user.svg" alt="avatar" />
 					</div>
 					<div class="admin flex flex-col gap-2 w-auto">
