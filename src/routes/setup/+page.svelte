@@ -24,7 +24,7 @@
 	let confirmPassword = '';
 </script>
 
-<div class="h-screen w-screen flex justify-center items-center bg-[#F5F5F5]">
+<div class="min-h-screen min-w-screen flex justify-center items-center bg-[#F5F5F5] py-8">
 	<form>
 		<Card
 			class="bg-white shadow-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex gap-10 w-[28.25rem]"
