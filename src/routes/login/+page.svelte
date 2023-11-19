@@ -20,17 +20,17 @@
 			size="lg"
 		>
 			<div class="greeting">
-				<div class="flex gap-[1.88rem] items-center w-full">
-					<div class="avatar w-auto">
+				<div class="flex gap-[1.88rem] items-center w-full align-center">
+					<div class="avatar w-auto h-16 flex items-center justify-center">
 						<img src="/icons/user.svg" alt="avatar" />
 					</div>
-					<div class="admin flex flex-col gap-2 w-auto">
+					<div class="admin gap-2 w-auto h-16 justify-center">
 						<h1 class="text-2xl font-medium tracking-[ -0.03rem] whitespace-nowrap">
 							Welcome back admin
 						</h1>
-						<sub class="text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]"
-							>Enter your credentials to log in</sub
-						>
+						<sub class="text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]">
+							Enter your credentials to log in
+						</sub>
 					</div>
 				</div>
 			</div>

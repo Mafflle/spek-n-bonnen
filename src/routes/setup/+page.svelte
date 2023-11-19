@@ -32,10 +32,10 @@
 		>
 			<div class="greeting">
 				<div class="flex gap-[1.88rem] items-center w-full">
-					<div class="avatar w-auto">
+					<div class="avatar w-auto h-16 flex items-center justify-center">
 						<img src="/icons/user.svg" alt="avatar" />
 					</div>
-					<div class="admin flex flex-col gap-2 w-auto">
+					<div class="admin gap-2 w-auto h-16 justify-center">
 						<h1 class="text-2xl font-medium tracking-[ -0.03rem] whitespace-nowrap">
 							Setup admin account
 						</h1>
@@ -92,20 +92,7 @@
 						type="password"
 						bind:value={password}
 					/>
-				</div>
-
-				<div class="password">
-					<Label for="password" class="block mb-2 text-[ 0.875rem]">Confirm password</Label>
-					<Input
-						id="password"
-						size="lg"
-						placeholder="Confirm your password"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
-						type="password"
-						bind:value={confirmPassword}
-					/>
-
-					{#if confirmPassword.length < 8}
+					{#if password.length < 8}
 						<div
 							transition:slide={{ delay: 250, duration: 300 }}
 							class="text-[#A9A9A9] text-xs tracking-[-0.0075rem] mt-[0.38rem]"
@@ -114,6 +101,18 @@
 						</div>
 					{/if}
 				</div>
+			</div>
+
+			<div class="password">
+				<Label for="password" class="block mb-2 text-[ 0.875rem]">Confirm password</Label>
+				<Input
+					id="password"
+					size="lg"
+					placeholder="Confirm your password"
+					class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
+					type="password"
+					bind:value={confirmPassword}
+				/>
 			</div>
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
