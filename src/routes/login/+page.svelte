@@ -30,7 +30,7 @@
 						id="email"
 						size="lg"
 						placeholder="Enter your Email"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem]"
+						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="email"
 					/>
 				</div>
@@ -41,7 +41,7 @@
 						id="password"
 						size="lg"
 						placeholder="Enter your password"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem]"
+						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="password"
 					/>
 				</div>
