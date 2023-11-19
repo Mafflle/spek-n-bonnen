@@ -1,5 +1,16 @@
 <script>
 	import { Card, Label, Input } from 'flowbite-svelte';
+	/**
+	 * @type {string}
+	 */
+	let email = '';
+	/**
+	 * @type {string}
+	 */
+	let password = '';
+	/**
+	 * @type {string}
+	 */
 </script>
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F5F5F5]">
@@ -32,6 +43,7 @@
 						placeholder="Enter your Email"
 						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="email"
+						bind:value={email}
 					/>
 				</div>
 
@@ -43,6 +55,7 @@
 						placeholder="Enter your password"
 						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="password"
+						bind:value={password}
 					/>
 				</div>
 			</div>
