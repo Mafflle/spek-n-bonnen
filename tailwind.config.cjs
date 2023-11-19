@@ -24,6 +24,9 @@ const config = {
 					800: '#A60015',
 					900: '#A0000F'
 				}
+			},
+			boxShadow: {
+				custom: '0px 0px 0px 3px #ECA6A2'
 			}
 		}
 	}

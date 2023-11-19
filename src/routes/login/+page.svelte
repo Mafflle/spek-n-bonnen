@@ -5,7 +5,8 @@
 <div class="h-screen w-screen flex justify-center items-center bg-[#F5F5F5]">
 	<form>
 		<Card
-			class="bg-white shadow-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex gap-10"
+			class="bg-white shadow-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex gap-10 w-[28.25rem]"
+			size="lg"
 		>
 			<div class="greeting">
 				<div class="flex gap-[1.88rem] items-center w-full">
@@ -29,7 +30,7 @@
 						id="email"
 						size="lg"
 						placeholder="Enter your Email"
-						class="focus:border-2 focus:border-[#DA4E45] bg-white border-[#D9D9D9]"
+						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem]"
 						type="email"
 					/>
 				</div>
@@ -40,13 +41,16 @@
 						id="password"
 						size="lg"
 						placeholder="Enter your password"
-						class="focus:border-2 focus:border-[#DA4E45] bg-white border-[#D9D9D9]"
+						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem]"
 						type="password"
 					/>
 				</div>
 			</div>
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
-				<button class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[10px] w-full" type="submit">
+				<button
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[10px] w-[25rem]"
+					type="submit"
+				>
 					<div class="button-text text-white font-bold text-sm">Log in</div>
 				</button>
 
