@@ -18,7 +18,7 @@
 			</div>
 			<div class="card-text flex flex-col gap-2 text-center">
 				<h1 class="text-2xl tracking-[-0.03rem] font-medium">Forgotten password?</h1>
-				<div class="text-[#575757] text-[0.9375rem] tracking-[-0.00938rem]">
+				<div class="text-[#575757] text-[0.9375rem] tracking-[-0.00938rem] font-medium">
 					Don’t worry, enter your Email to get a new one
 				</div>
 			</div>
