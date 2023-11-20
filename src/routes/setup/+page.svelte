@@ -30,7 +30,7 @@
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
 			size="lg"
 		>
-			<div class="greeting">
+			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full">
 					<div class="avatar w-auto h-16 flex items-center justify-center">
 						<img src="/icons/user.svg" alt="avatar" />
