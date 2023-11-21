@@ -39,7 +39,7 @@
 						<h1 class="text-2xl font-medium tracking-[ -0.03rem] whitespace-nowrap">
 							Setup admin account
 						</h1>
-						<sub class="text-[0.9375rem] tracking-[-0.00938rem] text-[#575757] font-medium"
+						<sub class="text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]"
 							>Enter your credentials below</sub
 						>
 					</div>
