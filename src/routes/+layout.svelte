@@ -2,7 +2,7 @@
 	import { showToast } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import toast, { Toaster } from 'svelte-french-toast';
+	import { Toaster } from 'svelte-french-toast';
 	import 'iconify-icon';
 </script>
 

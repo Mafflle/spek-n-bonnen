@@ -80,7 +80,7 @@ export const actions = {
 			});
 
 			if (setup.ok && setup.status === 200) {
-				throw redirect(302, '/login');
+				throw redirect(302, 'auth/login');
 			} else if (!setup.ok) {
 				console.log(setup.status, setup.url);
 			}
