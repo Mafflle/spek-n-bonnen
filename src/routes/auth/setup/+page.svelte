@@ -1,7 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
 	import { showToast } from '$lib/utils';
-	import { Card, Label, Input } from 'flowbite-svelte';
 	import { slide } from 'svelte/transition';
 
 	/** @type {import('./$types').ActionData} */
@@ -53,9 +52,8 @@
 			};
 		}}
 	>
-		<Card
+		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
-			size="lg"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full">
@@ -72,17 +70,15 @@
 					</div>
 				</div>
 			</div>
-			<div class="input flex flex-col gap-[1.28rem]">
+			<div class=" flex flex-col gap-[1.28rem]">
 				<div class="name flex gap-8">
 					<div class="first-name">
-						<Label for="first-name" class="block mb-2 text-[ 0.875rem]">First name</Label>
-						<Input
-							id="first-name"
-							name="first-name"
-							size="lg"
-							placeholder="First name"
-							class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[11.5rem] rounded-[0.5rem]"
+						<label for="first-name" class="block mb-2 text-[ 0.875rem]">First name</label>
+						<input
 							type="text"
+							id="first-name"
+							placeholder="First name"
+							class="input w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 
 						{#if validationErrors?.firstName}
@@ -94,14 +90,12 @@
 						{/if}
 					</div>
 					<div class="last-name">
-						<Label for="last-name" class="block mb-2 text-[ 0.875rem]">Last name</Label>
-						<Input
-							id="last-name"
-							name="last-name"
-							size="lg"
-							placeholder="Last name"
-							class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[11.5rem] rounded-[0.5rem]"
+						<label for="last-name" class="block mb-2 text-[ 0.875rem]">Last name</label>
+						<input
 							type="text"
+							id="last-name"
+							placeholder="Last name"
+							class="input w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 						{#if validationErrors?.lastName}
 							<sub
@@ -112,14 +106,12 @@
 					</div>
 				</div>
 				<div class="email">
-					<Label for="email" class="block mb-2 text-[ 0.875rem]">Email</Label>
-					<Input
-						id="email"
-						name="email"
-						size="lg"
-						placeholder="Enter your Email"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
+					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
+					<input
 						type="email"
+						id="email"
+						placeholder="Enter your Email"
+						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -130,14 +122,12 @@
 				</div>
 
 				<div class="password">
-					<Label for="password" class="block mb-2 text-[ 0.875rem]">Password</Label>
-					<Input
-						id="password"
-						name="password"
-						size="lg"
-						placeholder="Enter your password"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
+					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
+					<input
 						type="password"
+						id="password"
+						placeholder="Enter your Password"
+						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
@@ -147,14 +137,12 @@
 					{/if}
 				</div>
 				<div class="password">
-					<Label for="confirm-password" class="block mb-2 text-[ 0.875rem]">Confirm password</Label>
-					<Input
-						id="confirm-password"
-						name="confirm-password"
-						size="lg"
-						placeholder="Confirm your password"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
+					<label for="confirm-password" class="block mb-2 text-[ 0.875rem]">Confirm password</label>
+					<input
 						type="password"
+						id="confirm-password"
+						placeholder="Confirm your Password"
+						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.confirmPassword}
 						<sub
@@ -181,6 +169,6 @@
 					{/if}
 				</button>
 			</div>
-		</Card>
+		</div>
 	</form>
 </div>

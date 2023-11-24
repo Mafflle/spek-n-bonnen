@@ -1,6 +1,4 @@
 <script>
-	import { Card, Label, Input } from 'flowbite-svelte';
-
 	/**
 	 * @type {string}
 	 */
@@ -9,9 +7,8 @@
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form>
-		<Card
+		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
-			size="lg"
 		>
 			<div class="pass-avatar">
 				<img src="/icons/pass.svg" alt="password svg" />
@@ -23,13 +20,11 @@
 				</div>
 			</div>
 			<div class="email-input">
-				<Input
-					id="email"
-					size="lg"
-					placeholder="Enter your Email"
-					class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded-[0.5rem]"
+				<input
 					type="email"
-					bind:value={email}
+					id="email"
+					placeholder="Enter your Email"
+					class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 			</div>
 			<div class="submit">
@@ -51,6 +46,6 @@
 					Back to log in
 				</div>
 			</a>
-		</Card>
+		</div>
 	</form>
 </div>
