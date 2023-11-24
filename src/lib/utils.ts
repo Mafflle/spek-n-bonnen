@@ -1,4 +1,6 @@
 import toast from 'svelte-french-toast';
+	import { passwordModal } from '$lib/stores';
+
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
 export const showToast = (message: string, type: ToastType) => {
@@ -32,3 +34,11 @@ export const showToast = (message: string, type: ToastType) => {
 		}
 	}
 };
+
+export const openPasswordResetModal = () => {
+		passwordModal.set(true);
+	};
+
+	export const closePasswordResetModal = () => {
+		passwordModal.set(false);
+	};

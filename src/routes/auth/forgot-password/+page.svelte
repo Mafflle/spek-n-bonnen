@@ -1,4 +1,7 @@
 <script>
+	import PasswordResetModal from '$lib/components/PasswordResetModal.svelte';
+	import { openPasswordResetModal } from '$lib/utils';
+
 	/**
 	 * @type {string}
 	 */
@@ -34,6 +37,9 @@
                     focus:shadow-custom
                     "
 					type="submit"
+					on:click={() => {
+						openPasswordResetModal();
+					}}
 				>
 					<div class="button-text text-white font-bold text-sm">Reset password</div>
 				</button>
@@ -48,4 +54,5 @@
 			</a>
 		</div>
 	</form>
+	<PasswordResetModal email="dummyname@gmail.com" />
 </div>
