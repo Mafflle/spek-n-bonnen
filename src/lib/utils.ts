@@ -2,6 +2,8 @@ import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
 import toast from 'svelte-french-toast';
+import { passwordModal } from '$lib/stores';
+
 import { getCurrentUser } from './user';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';

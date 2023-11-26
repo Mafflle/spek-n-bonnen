@@ -1,10 +1,7 @@
 const config = {
-	content: [
-		'./src/**/*.{html,js,svelte,ts}',
-		'./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}'
-	],
+	content: ['./src/**/*.{html,js,svelte,ts}'],
 
-	plugins: [require('flowbite/plugin')],
+	plugins: [require('daisyui')],
 
 	darkMode: 'class',
 
@@ -29,6 +26,9 @@ const config = {
 				custom: '0px 0px 0px 3px #ECA6A2'
 			}
 		}
+	},
+	daisyui: {
+		themes: ['light']
 	}
 };
 

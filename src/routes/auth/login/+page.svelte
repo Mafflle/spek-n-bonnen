@@ -3,7 +3,6 @@
 	import { currentUser } from '$lib/user';
 	import { showToast } from '$lib/utils';
 	import { AxiosError } from 'axios';
-	import { Card, Label, Input } from 'flowbite-svelte';
 	import { slide } from 'svelte/transition';
 	import { login, loginSchema } from './logic';
 	import { z } from 'zod';
@@ -69,7 +68,6 @@
 	<form on:submit|preventDefault={handleSubmit}>
 		<Card
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
-			size="lg"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full align-center">
@@ -86,16 +84,14 @@
 					</div>
 				</div>
 			</div>
-			<div class="input flex flex-col gap-[1.28rem]">
+			<div class=" flex flex-col gap-[1.28rem]">
 				<div class="email">
-					<Label for="email" class="block mb-2 text-[ 0.875rem]">Email</Label>
-					<Input
-						id="email"
-						name="email"
-						size="lg"
-						placeholder="Enter your Email"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
+					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
+					<input
 						type="email"
+						id="email"
+						placeholder="Enter your Email"
+						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						bind:value={requestBody.email}
 					/>
 					{#if validationErrors?.email}
@@ -107,15 +103,13 @@
 				</div>
 
 				<div class="password">
-					<Label for="password" class="block mb-2 text-[ 0.875rem]">Password</Label>
-					<Input
-						id="password"
-						name="password"
-						size="lg"
-						placeholder="Enter your password"
-						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
+					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
+					<input
 						type="password"
 						bind:value={requestBody.password}
+						id="password"
+						placeholder="Enter your Password"
+						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
@@ -147,6 +141,6 @@
 					</div>
 				</div>
 			</div>
-		</Card>
+		</div>
 	</form>
 </div>
