@@ -1,5 +1,7 @@
-/** @type {import('./$types').Actions} */
+import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+import { getCurrentUser } from '$lib/user';
+import { checkForUserInDatabase } from '$lib/utils';
 import { fail, redirect } from '@sveltejs/kit';
 
 import { ZodError, z } from 'zod';
@@ -53,6 +55,7 @@ const setupSchema = z
  * @property {string[]=} server
  */
 
+/** @type {import('./$types').Actions} */
 export const actions = {
 	setup: async ({ request, fetch }) => {
 		const formData = await request.formData();
@@ -79,8 +82,9 @@ export const actions = {
 				body: JSON.stringify(validatedData)
 			});
 
-			if (setup.ok && setup.status === 200) {
-				throw redirect(302, 'auth/login');
+			if (setup.ok && setup.status == 201) {
+				// console.log(setup.status);
+				throw redirect(302, '/auth/login');
 			} else if (!setup.ok) {
 				console.log(setup.status, setup.url);
 			}

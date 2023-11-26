@@ -1,9 +1,13 @@
-<script>
-	import { enhance } from '$app/forms';
-	import { setCurrentUser } from '$lib/user';
+<script lang="ts">
+	import { page } from '$app/stores';
+	import { currentUser } from '$lib/user';
 	import { showToast } from '$lib/utils';
+	import { AxiosError } from 'axios';
 	import { Card, Label, Input } from 'flowbite-svelte';
 	import { slide } from 'svelte/transition';
+	import { login, loginSchema } from './logic';
+	import { z } from 'zod';
+	import { goto } from '$app/navigation';
 
 	/**
 	 * @type {boolean}
@@ -19,40 +23,50 @@
 	/**
 	 * @type {validationError}
 	 */
-	let validationErrors = {};
+	let validationErrors: { email?: string; password?: string };
+
+	let requestBody = {
+		email: '',
+		password: ''
+	};
+
+	let next = $page.url.searchParams.get('previous');
+
+	const handleSubmit = async () => {
+		loading = true;
+
+		try {
+			const validatedData = loginSchema.parse(requestBody);
+			const res = await login(validatedData);
+			currentUser.set(res);
+			showToast('Login successful', 'success');
+			if (next) {
+				await goto(`${next}`);
+			} else await goto('/');
+			await goto('/');
+		} catch (error) {
+			if (error instanceof z.ZodError) {
+				validationErrors = error.flatten().fieldErrors;
+			} else if (error instanceof AxiosError) {
+				// console.log(error);
+
+				showToast(error.response?.data.message || 'Ooops something went wrong', 'error');
+			} else {
+				console.log(error);
+				showToast('Ooops something went wrong', 'error');
+			}
+		} finally {
+			loading = false;
+		}
+	};
 </script>
 
-<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
-	<form
-		action="?/login"
-		method="post"
-		use:enhance={() => {
-			//this function helps us to progressively enhance the form when js is enabled, it's better to read on it from joyOfCode's blog
-			loading = true;
+<svelte:head>
+	<title>Login - Spek-n-Boonen</title>
+</svelte:head>
 
-			return async ({ result, update }) => {
-				try {
-					if (result.status === 200) {
-						const user = result?.data;
-						setCurrentUser(user);
-						showToast('Login successful', 'success');
-					} else if (result.status === 400) {
-						// console.log('works');
-						if (result.data?.errors) {
-							validationErrors = result.data?.errors;
-						}
-					} else if (result.status === 401) {
-						showToast('Invalid credentials', 'error');
-					} else if (result.status === 500) {
-						showToast(`${result.data.message}`, 'error');
-					}
-				} finally {
-					loading = false;
-					await update(); //prevents form from resetting after being submitted
-				}
-			};
-		}}
-	>
+<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
+	<form on:submit|preventDefault={handleSubmit}>
 		<Card
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
 			size="lg"
@@ -82,6 +96,7 @@
 						placeholder="Enter your Email"
 						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="email"
+						bind:value={requestBody.email}
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -100,6 +115,7 @@
 						placeholder="Enter your password"
 						class="focus:border-1 focus:border-[#DA4E45] focus:shadow-custom bg-white border-[#D9D9D9] w-[25rem] rounded[0.5rem]"
 						type="password"
+						bind:value={requestBody.password}
 					/>
 					{#if validationErrors?.password}
 						<sub
@@ -126,8 +142,8 @@
 
 				<div class="forgot-password">
 					<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
-						<div class="text-[#9C9C9C]">Forgotten password?</div>
-						<a href="/forgot-password" class="hover:underline">Click here to reset</a>
+						<sub class="text-[#9C9C9C]">Forgotten password?</sub>
+						<a href="/auth/forgot-password" class="hover:underline">Click here to reset</a>
 					</div>
 				</div>
 			</div>

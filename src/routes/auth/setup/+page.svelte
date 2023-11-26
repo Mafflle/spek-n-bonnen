@@ -1,11 +1,11 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { showToast } from '$lib/utils';
+	import { goto } from '$app/navigation';
+	import { currentUser, getCurrentUser } from '$lib/user';
+	import { checkForUserInDatabase, showToast } from '$lib/utils';
 	import { Card, Label, Input } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-
-	/** @type {import('./$types').ActionData} */
-	export let form;
 
 	/**
 	 * @typedef {object} setupError
@@ -26,7 +26,22 @@
 	 */
 
 	let validationErrors;
+
+	onMount(async () => {
+		const isUserInDB = await checkForUserInDatabase();
+		const userProfile = await getCurrentUser();
+		console.log(userProfile);
+		if (isUserInDB && !userProfile) {
+			await goto('login');
+		} else if (userProfile) {
+			await goto('/');
+		}
+	});
 </script>
+
+<svelte:head>
+	<title>Setup - Spek-n-Boonen</title>
+</svelte:head>
 
 <div class="min-h-screen py-10 min-w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form

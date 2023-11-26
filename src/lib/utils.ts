@@ -1,4 +1,8 @@
+import { goto } from '$app/navigation';
+import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+import axios from 'axios';
 import toast from 'svelte-french-toast';
+import { getCurrentUser } from './user';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
 export const showToast = (message: string, type: ToastType) => {
@@ -31,4 +35,16 @@ export const showToast = (message: string, type: ToastType) => {
 			});
 		}
 	}
+};
+
+export const client = axios.create({
+	//axios client
+	baseURL: PUBLIC_API_ENDPOINT,
+	withCredentials: true
+});
+
+export const checkForUserInDatabase = async () => {
+	const res = await client.get('users/any-in-database');
+
+	return res.data;
 };
