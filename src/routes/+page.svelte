@@ -16,7 +16,7 @@
 	onMount(async () => {
 		await handleUserActions(next);
 		await getCurrentUser();
-		console.log($currentUser);
+		// console.log($currentUser);
 	});
 </script>
 

@@ -66,7 +66,7 @@
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form on:submit|preventDefault={handleSubmit}>
-		<Card
+		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
 		>
 			<div class="greeting w-full">
@@ -88,11 +88,12 @@
 				<div class="email">
 					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
 					<input
+						bind:value={requestBody.email}
 						type="email"
+						name="email"
 						id="email"
 						placeholder="Enter your Email"
 						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						bind:value={requestBody.email}
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -106,9 +107,10 @@
 					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
 					<input
 						type="password"
-						bind:value={requestBody.password}
+						name="password"
 						id="password"
-						placeholder="Enter your Password"
+						placeholder="Enter your password"
+						bind:value={requestBody.password}
 						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
@@ -136,8 +138,8 @@
 
 				<div class="forgot-password">
 					<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
-						<sub class="text-[#9C9C9C]">Forgotten password?</sub>
-						<a href="/auth/forgot-password" class="hover:underline">Click here to reset</a>
+						<div class="text-[#9C9C9C]">Forgotten password?</div>
+						<a href="/forgot-password" class="hover:underline">Click here to reset</a>
 					</div>
 				</div>
 			</div>

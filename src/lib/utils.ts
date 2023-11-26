@@ -4,8 +4,6 @@ import axios from 'axios';
 import toast from 'svelte-french-toast';
 import { passwordModal } from '$lib/stores';
 
-import { getCurrentUser } from './user';
-
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
 export const showToast = (message: string, type: ToastType) => {
 	if (message) {
@@ -50,3 +48,11 @@ export const checkForUserInDatabase = async () => {
 
 	return res.data;
 };
+
+export const openPasswordResetModal = () => {
+		passwordModal.set(true);
+	};
+
+	export const closePasswordResetModal = () => {
+		passwordModal.set(false);
+	};
