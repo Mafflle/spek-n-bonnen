@@ -139,7 +139,7 @@
 				<div class="forgot-password">
 					<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
 						<div class="text-[#9C9C9C]">Forgotten password?</div>
-						<a href="/forgot-password" class="hover:underline">Click here to reset</a>
+						<a href="forgot-password" class="hover:underline">Click here to reset</a>
 					</div>
 				</div>
 			</div>
