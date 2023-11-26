@@ -1,8 +1,5 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
-	import { currentUser, getCurrentUser } from '$lib/user';
-	import { checkForUserInDatabase, showToast } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
@@ -26,16 +23,7 @@
 
 	let validationErrors;
 
-	onMount(async () => {
-		const isUserInDB = await checkForUserInDatabase();
-		const userProfile = await getCurrentUser();
-		console.log(userProfile);
-		if (isUserInDB && !userProfile) {
-			await goto('login');
-		} else if (userProfile) {
-			await goto('/');
-		}
-	});
+	onMount(async () => {});
 </script>
 
 <svelte:head>

@@ -1,7 +1,5 @@
-import { goto } from '$app/navigation';
+
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { getCurrentUser } from '$lib/user';
-import { checkForUserInDatabase } from '$lib/utils';
 import { fail, redirect } from '@sveltejs/kit';
 
 import { ZodError, z } from 'zod';
