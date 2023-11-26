@@ -1,6 +1,7 @@
 import { goto } from '$app/navigation';
 import { getCurrentUser } from '$lib/user';
 import { checkForUserInDatabase, client } from '$lib/utils';
+import { AxiosError } from 'axios';
 
 export const handleUserActions = async (next?: string) => {
 	try {
@@ -15,6 +16,9 @@ export const handleUserActions = async (next?: string) => {
 			}
 		}
 	} catch (error) {
+		if (error instanceof AxiosError) {
+			await goto('auth/login?previous=/');
+		}
 		console.error('Error in setCurrentUser:', error);
 		console.error('Error in checkForUserInDatabase:', error);
 	}
