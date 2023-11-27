@@ -91,7 +91,7 @@
 				{#if loading}
 					<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 				{:else}
-					<span class="button-text">Reset password</span>
+					<span class="button-text">Send password reset link</span>
 				{/if}
 			</button>
 			<a href="/login" class="back flex items-center gap-[0.5625rem] hover:underline">
