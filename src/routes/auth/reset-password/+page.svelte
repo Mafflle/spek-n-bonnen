@@ -41,7 +41,7 @@
 			</div>
 			<div class="submit">
 				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[10px] w-[25rem]
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-[25rem]
                     hover:bg-[#C7453C] hover:rounded-[0.625rem]
                     focus:shadow-custom
                     "
