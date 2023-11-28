@@ -1,11 +1,6 @@
 <script>
 	import PasswordResetConfirmation from '$lib/components/PasswordResetConfirmation.svelte';
 	import { openPasswordConfirmation } from '$lib/utils';
-
-	// NOTE: The timeout is just for texting purposes, use openPasswordConfirmation to show confirmation dialog
-	// setTimeout(() => {
-	// 	openPasswordConfirmation();
-	// }, 1000);
 </script>
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">

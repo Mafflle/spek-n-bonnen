@@ -14,7 +14,7 @@
 	<!-- Open the modal using ID.showModal() method -->
 	<dialog id="my_modal_1" class="modal modal-open">
 		<div
-			class="modal-box flex flex-col justify-center items-center gap-10 rounded-2xl bg-white w-[30.0625rem] p-[ 3.125rem 1.875rem]"
+			class="modal-box flex flex-col justify-center items-center gap-10 rounded-2xl bg-white w-full lg:w-[30.0625rem] p-[ 3.125rem 1.875rem]"
 		>
 			<div class="email-avatar">
 				<img src="/icons/password-confirm.svg" alt="email svg" />
