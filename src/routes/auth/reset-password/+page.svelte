@@ -22,7 +22,7 @@
 					Enter your new password below
 				</div>
 			</div>
-			`
+
 			<div class="password-input">
 				<input
 					type="password"
