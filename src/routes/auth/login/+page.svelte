@@ -63,11 +63,10 @@
 <svelte:head>
 	<title>Login - Spek-n-Boonen</title>
 </svelte:head>
-
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form on:submit|preventDefault={handleSubmit}>
 		<div
-			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[22rem] lg:w-[28.25rem]"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full align-center">
@@ -75,25 +74,25 @@
 						<img src="/icons/user.svg" alt="avatar" />
 					</div>
 					<div class="admin gap-2 w-auto h-16 justify-center">
-						<h1 class="text-2xl font-medium tracking-[ -0.03rem] whitespace-nowrap">
+						<h1 class="text-[1.1rem] lg:text-2xl font-medium tracking-[-0.03rem] whitespace-nowrap">
 							Welcome back admin
 						</h1>
-						<sub class="text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]">
+						<sub class="text-[0.8rem] lg:text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]">
 							Enter your credentials to log in
 						</sub>
 					</div>
 				</div>
 			</div>
-			<div class=" flex flex-col gap-[1.28rem]">
+			<div class=" flex flex-col gap-[1.28rem] w-full">
 				<div class="email">
-					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
+					<label for="email" class="block mb-2 text-[0.875rem]">Email</label>
 					<input
 						bind:value={requestBody.email}
 						type="email"
 						name="email"
 						id="email"
 						placeholder="Enter your Email"
-						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -104,14 +103,14 @@
 				</div>
 
 				<div class="password">
-					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
+					<label for="password" class="block mb-2 text-[0.875rem]">Password</label>
 					<input
 						type="password"
 						name="password"
 						id="password"
 						placeholder="Enter your password"
 						bind:value={requestBody.password}
-						class="input w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
@@ -123,9 +122,9 @@
 			</div>
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-[25rem]
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
 					hover:bg-[#C7453C] hover:rounded-[0.625rem]
-                    focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
+					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
 					"
 					type="submit"
 				>
