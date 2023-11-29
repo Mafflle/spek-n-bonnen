@@ -3,7 +3,7 @@ const config = {
 
 	plugins: [require('daisyui')],
 
-	darkMode: 'class',
+	darkMode: 'false',
 
 	theme: {
 		extend: {

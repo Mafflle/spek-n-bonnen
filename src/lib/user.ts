@@ -1,4 +1,8 @@
 import { writable } from 'svelte/store';
+import { client } from './utils';
+import { AxiosError } from 'axios';
+import { redirect } from '@sveltejs/kit';
+import { goto } from '$app/navigation';
 
 export type User = {
 	id: string;
@@ -11,9 +15,19 @@ export type User = {
 	updatedAt: Date;
 };
 
-export const currentUser = writable<User>(); //current user store
+export const currentUser = writable<User | null>(); //current user store
 
-export const setCurrentUser = (user: User) => {
-	currentUser.set(user);
-	return currentUser;
+export const getCurrentUser = async (next?: string) => {
+	try {
+		const res = await client.get('auth/profile');
+		const profile: User = res.data;
+		currentUser.set(profile);
+		return profile;
+	} catch (error) {
+		if (error instanceof AxiosError) {
+			if (error.status === 403) {
+				await goto(`auth/login?next=${next}`);
+			}
+		}
+	}
 };
