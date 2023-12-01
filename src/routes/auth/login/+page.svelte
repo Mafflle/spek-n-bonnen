@@ -66,7 +66,7 @@
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form on:submit|preventDefault={handleSubmit}>
 		<div
-			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[22rem] lg:w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full align-center">
