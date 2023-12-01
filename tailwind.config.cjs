@@ -20,6 +20,9 @@ const config = {
 					700: '#AC081B',
 					800: '#A60015',
 					900: '#A0000F'
+				},
+				secondary: {
+					50: '#9c9c9c'
 				}
 			},
 			boxShadow: {
