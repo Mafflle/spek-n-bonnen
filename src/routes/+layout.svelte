@@ -14,3 +14,4 @@
 
 <Toaster />
 <slot />
+http://localhost:5173/auth/login

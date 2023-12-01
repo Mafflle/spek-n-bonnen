@@ -2,7 +2,7 @@
 	import { currentUser, getCurrentUser } from '$lib/user';
 	import { client } from '$lib/utils';
 	import { onMount } from 'svelte';
-	import { handleUserActions } from './logic';
+	import { handleUserActions } from '../logic';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
