@@ -69,14 +69,14 @@
 	<table class="table">
 		<thead>
 			<tr class="">
-				<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+				<th class="bg-[#F9F9F9] rounded-tl-[0.625rem] border-x-[0.5px] border-[#F9F9F9]">Name</th>
 				<th class="bg-[#F9F9F9]">Role</th>
 				<th class="bg-[#F9F9F9]">Email</th>
 				<th class="bg-[#F9F9F9]">Permissions</th>
-				<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+				<th class="bg-[#F9F9F9] rounded-tr-[0.625rem] border-x-[0.5px] border-[#F9F9F9]"></th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody class="border-x-[0.5px] border-[#D9D9D9] rounded-br-[0.625rem] rounded-bl-[0.625rem]">
 			<StaffMember
 				name="Oluwasheyifunmi oyefeso"
 				role="Customer service"
