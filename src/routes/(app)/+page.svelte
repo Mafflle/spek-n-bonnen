@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { currentUser } from '$lib/user';
 	import { client } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { currentUser } from '$lib/user';
 
 	const logout = async () => {
 		const request = client.post('auth/logout');
