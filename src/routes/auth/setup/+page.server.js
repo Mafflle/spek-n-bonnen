@@ -75,7 +75,7 @@ export const actions = {
 		try {
 			const validatedData = setupSchema.parse(dataToValidate);
 
-			const setup = await fetch(`${PUBLIC_API_ENDPOINT}users/setup-admin`, {
+			const setup = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/setup-admin/`, {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});

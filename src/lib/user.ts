@@ -17,17 +17,6 @@ export type User = {
 
 export const currentUser = writable<User | null>(); //current user store
 
-export const getCurrentUser = async (next?: string) => {
-	try {
-		const res = await client.get('auth/profile');
-		const profile: User = res.data;
-		currentUser.set(profile);
-		return profile;
-	} catch (error) {
-		if (error instanceof AxiosError) {
-			if (error.status === 403) {
-				await goto(`auth/login?next=${next}`);
-			}
-		}
-	}
+export const setCurrentUser = async (user: User) => {
+	currentUser.set(user)
 };

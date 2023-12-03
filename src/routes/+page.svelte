@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { currentUser, getCurrentUser } from '$lib/user';
+	import { currentUser } from '$lib/user';
 	import { client } from '$lib/utils';
 	import { onMount } from 'svelte';
-	import { handleUserActions } from './logic';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
@@ -12,12 +11,6 @@
 		await goto('auth/login');
 	};
 	const next = `${$page.route.id}`;
-
-	onMount(async () => {
-		await handleUserActions(next);
-		await getCurrentUser();
-		// console.log($currentUser);
-	});
 </script>
 
 <h1>Welcome to SvelteKit</h1>

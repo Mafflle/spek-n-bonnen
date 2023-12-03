@@ -4,6 +4,11 @@
 	import '../app.postcss';
 	import { Toaster } from 'svelte-french-toast';
 	import 'iconify-icon';
+	import { currentUser, setCurrentUser } from '$lib/user';
+
+	export let data;
+
+	setCurrentUser(data.user);
 </script>
 
 <svelte:head>
