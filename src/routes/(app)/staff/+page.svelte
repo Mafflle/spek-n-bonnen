@@ -18,12 +18,12 @@
 				placeholder="Type here"
 				class="input input-bordered w-[22rem] py-[0.68rem] px-[0.37rem] rounded-[0.375rem] b-[#D9D9D9] border-[0.5px]"
 			/>
+
 			<div class="filter-buttons flex items-start gap-5">
 				<button
 					class="filter-button flex py-2 px-[0.625rem] justify-center gap-[0.625rem] rounded-[0.375rem] border border-dashed border-[#D9D9D9]
                     hover:bg-white
                     disabled:bg-white disabled:text-[#9C9C9C]
-                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
                     "
 				>
 					<img src="/icons/filter.svg" alt="filter-icon" class="icon" />
@@ -32,6 +32,8 @@
 				<button
 					class="w-32 h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
+                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
+
                     "
 				>
 					<div class="w-5 h-5 relative">
