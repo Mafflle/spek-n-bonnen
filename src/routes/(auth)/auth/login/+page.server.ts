@@ -1,4 +1,4 @@
-import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+import {PUBLIC_API_ENDPOINT} from '$env/static/public'
 import type { Actions } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
