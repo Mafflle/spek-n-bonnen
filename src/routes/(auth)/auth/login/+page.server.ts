@@ -34,6 +34,7 @@ export const actions: Actions = {
 // console.log('works');
 
 			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/login/`, { method: 'POST', body: JSON.stringify(validatedData) })
+				// console.log(res);
 			
 			if (res.ok) {
 				const tokens = await res.json()
@@ -55,6 +56,9 @@ export const actions: Actions = {
 				}
 			} else if (!res.ok && res.status === 401) {
 				return fail(401, {message: 'Invalid email or password'})
+				
+			} else {
+				console.log(res);
 				
 			}
 

@@ -24,10 +24,9 @@
                 "
 >
 	<div class="button-content flex items-center w-[11.625rem] gap-[0.875rem] self-stretch">
+		<!-- <enhanced:img src={icon} /> -->
 		<img src={icon} alt="shopping-cart-icon" />
-		<div
-			class="button-text flex flex-col justify-center flex-shrink-0 self-stretch text-[0.875rem]"
-		>
+		<div class="button-text flex flex-col justify-center flex-shrink-0 self-stretch text-sm">
 			{text}
 		</div>
 	</div>

@@ -32,6 +32,7 @@
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
+						console.log(result);
 						await goto('/');
 					}
 				} else if (result.status === 400) {

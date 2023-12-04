@@ -38,12 +38,8 @@
 	<td class="text-[#9C9C9C]">{email}</td>
 	<td class="text-[#9C9C9C]">{permissions}</td>
 	<td>
-		<div
-			class="w-7 h-[26px] px-1.5 py-3 origin-top-left -rotate-90 flex justify-center items-center gap-2.5"
-		>
-			<div class="justify-center items-center gap-[5px] inline-flex rotate-90">
-				<img src="/icons/menu.svg" alt="" />
-			</div>
-		</div>
+		<button class=" px-1.5 py-3 flex justify-center items-center gap-2.5">
+			<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
+		</button>
 	</td>
 </tr>

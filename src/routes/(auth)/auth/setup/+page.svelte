@@ -1,28 +1,19 @@
-<script>
+<script lang="ts">
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { showToast } from '$lib/utils';
+	import { goto } from '$app/navigation';
 
-	/**
-	 * @typedef {object} setupError
-	 * @property {string[]=} email
-	 * @property {string[]=} firstName
-	 * @property {string[]=} lastName
-	 * @property {string[]=} password
-	 * @property {string[]=} confirmPassword
-	 */
+	let loading: boolean = false; //to show button loader or whatever loader we decide on
 
-	/**
-	 * @type {boolean}
-	 */
-	let loading = false; //to show button loader or whatever loader we decide on
-
-	/**
-	 * @type {setupError}
-	 */
-
-	let validationErrors;
+	let validationErrors: {
+		email?: [string];
+		firstName?: [string];
+		lastName?: [string];
+		password?: [string];
+		password2?: [string];
+	};
 
 	onMount(async () => {});
 </script>
@@ -42,10 +33,13 @@
 			return async ({ result, update }) => {
 				try {
 					if (result.status === 400) {
-						console.log('works');
+						// console.log('works');
 						if (result.data?.errors) {
 							validationErrors = result.data?.errors;
 						}
+					} else if (result.status === 200) {
+						await goto('auth/login');
+						showToast('Account created successfully', 'success');
 					} else if (result.status === 500) {
 						showToast(`${result.data.message}`, 'error');
 					}
@@ -81,6 +75,7 @@
 						<input
 							type="text"
 							id="first-name"
+							name="first-name"
 							placeholder="First name"
 							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
@@ -89,7 +84,7 @@
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
 								class="text-rose-500 text-xs tracking-[-0.0075rem]"
-								>{validationErrors.firstName}</sub
+								>{validationErrors.firstName[0]}</sub
 							>
 						{/if}
 					</div>
@@ -98,13 +93,15 @@
 						<input
 							type="text"
 							id="last-name"
+							name="last-name"
 							placeholder="Last name"
 							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 						{#if validationErrors?.lastName}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.lastName}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.lastName[0]}</sub
 							>
 						{/if}
 					</div>
@@ -114,13 +111,14 @@
 					<input
 						type="email"
 						id="email"
+						name="email"
 						placeholder="Enter your Email"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
 						>
 					{/if}
 				</div>
@@ -130,13 +128,15 @@
 					<input
 						type="password"
 						id="password"
+						name="password"
 						placeholder="Enter your Password"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors.password[0]}</sub
 						>
 					{/if}
 				</div>
@@ -145,14 +145,15 @@
 					<input
 						type="password"
 						id="confirm-password"
+						name="confirm-password"
 						placeholder="Confirm your Password"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
-					{#if validationErrors?.confirmPassword}
+					{#if validationErrors?.password2}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
 							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.confirmPassword}</sub
+							>{validationErrors.password2[0]}</sub
 						>
 					{/if}
 				</div>
