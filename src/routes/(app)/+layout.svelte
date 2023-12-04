@@ -17,6 +17,8 @@
 			<NavbarButton href="/" icon="/icons/shopping-cart.svg" text="Orders" alert={true} />
 			<NavbarButton href="/" icon="/icons/box.svg" text="Inventory" />
 			<NavbarButton href="/" icon="/icons/box.svg" text="Tasks" />
+			<NavbarButton href="/" icon="/icons/box.svg" text="Tasks" />
+			<NavbarButton href="/staff" icon="/icons/Staff.svg" text="Staff" />
 		</div>
 		<div
 			class="settings flex p-[0.625rem] flex-col justify-center items-start gap-[0.8125rem] text-[#6B6B6B]"
