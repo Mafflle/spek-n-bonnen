@@ -3,6 +3,36 @@
 	import StaffMember from '$lib/components/StaffMember.svelte';
 	import { openInviteUserModal } from '$lib/utils';
 	let isFocused = false;
+	let searchTerm = '';
+	let staffMembers = [
+		{
+			name: 'Oluwasheyifunmi oyefeso',
+			role: 'Customer service',
+			email: 'dummyname@gmail.com',
+			permissions: 'dummyname@gmail.com'
+		},
+		{
+			name: 'Some guy',
+			role: 'Customer service',
+			email: 'dummyname@gmail.com',
+			permissions: 'dummyname@gmail.com'
+		},
+		{
+			name: 'Another guy',
+			role: 'Customer service',
+			email: 'dummyname@gmail.com',
+			permissions: 'dummyname@gmail.com'
+		},
+		{
+			name: 'Yet Another guy',
+			role: 'Customer service',
+			email: 'dummyname@gmail.com',
+			permissions: 'dummyname@gmail.com'
+		}
+	];
+	$: filteredStaffMembers = staffMembers.filter((staff) =>
+		staff.name.toLowerCase().includes(searchTerm.toLowerCase())
+	);
 </script>
 
 <div
@@ -37,6 +67,7 @@
 					class="input input-bordered w-[22rem] py-[0.68rem] px-[0.37rem] rounded-[0.375rem] b-[#D9D9D9] border-[0.5px]"
 					on:focus={() => (isFocused = true)}
 					on:blur={() => (isFocused = false)}
+					bind:value={searchTerm}
 				/>
 			</label>
 
@@ -69,24 +100,14 @@
 			</tr>
 		</thead>
 		<tbody class="border-x-[0.5px] border-[#D9D9D9] rounded-br-[0.625rem] rounded-bl-[0.625rem]">
-			<StaffMember
-				name="Oluwasheyifunmi oyefeso"
-				role="Customer service"
-				email="dummyname@gmail.com"
-				permissions="dummyname@gmail.com"
-			/>
-			<StaffMember
-				name="Oluwasheyifunmi oyefeso"
-				role="Customer service"
-				email="dummyname@gmail.com"
-				permissions="dummyname@gmail.com"
-			/>
-			<StaffMember
-				name="Oluwasheyifunmi oyefeso"
-				role="Customer service"
-				email="dummyname@gmail.com"
-				permissions="dummyname@gmail.com"
-			/>
+			{#each filteredStaffMembers as staffMember}
+				<StaffMember
+					name={staffMember.name}
+					role={staffMember.role}
+					email={staffMember.email}
+					permissions={staffMember.permissions}
+				/>
+			{/each}
 		</tbody>
 	</table>
 </div>
