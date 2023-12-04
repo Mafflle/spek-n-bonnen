@@ -1,6 +1,12 @@
 <script>
+	import InviteUserModal from '$lib/components/InviteUserModal.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
+	import { openInviteUserModal } from '$lib/utils';
 	let isFocused = false;
+
+	setTimeout(() => {
+		openInviteUserModal();
+	}, 1000);
 </script>
 
 <div
@@ -98,3 +104,5 @@
 		</tbody>
 	</table>
 </div>
+
+<InviteUserModal />
