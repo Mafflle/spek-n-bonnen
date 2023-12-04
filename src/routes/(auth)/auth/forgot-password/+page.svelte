@@ -28,15 +28,6 @@
 			}
 		};
 	};
-
-	let message: string | null = $page.url.searchParams.get('message');
-	let type: string | null = $page.url.searchParams.get('type');
-	if (message && type) {
-		let errorType = getToastType(type);
-		// console.log( errorType);
-
-		showToast(message, errorType);
-	}
 </script>
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
