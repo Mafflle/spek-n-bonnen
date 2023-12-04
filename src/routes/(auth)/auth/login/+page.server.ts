@@ -2,6 +2,8 @@ import {PUBLIC_API_ENDPOINT} from '$env/static/public'
 import type { Actions } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
+import type { PageServerLoad } from './$types';
+import { dev } from '$app/environment';
 
  const loginSchema = z.object({
 	email: z
@@ -40,13 +42,13 @@ export const actions: Actions = {
 				const tokens = await res.json()
 				cookies.set('access', tokens.access, {
 					httpOnly: true,
-					secure: true,
+					secure: dev ? false : true ,
 					sameSite: 'lax',
 					path: '/',
 				})
 				cookies.set('refresh', tokens.refresh, {
 						httpOnly: true,
-					secure: true,
+					secure: dev ? false : true,
 					sameSite: 'lax',
 					path: '/',
 				})
@@ -79,6 +81,7 @@ export const actions: Actions = {
 		}
 	}
 };
+
 
 // export const login = async (requestBody: { email: string; password: string }): Promise<User> => {
 // 	const res = await client.post('auth/login', { ...requestBody });
