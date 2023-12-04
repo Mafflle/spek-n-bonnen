@@ -27,7 +27,7 @@
 {#if inviteUserModalOpen}
 	<!-- Open the modal using ID.showModal() method -->
 
-	<dialog id="my_modal_1" class="modal modal-open">
+	<dialog id="invite_user_modal" class="modal modal-open">
 		<div
 			class="modal-box flex flex-col justify-center items-center gap-10 rounded-2xl bg-white w-full lg:w-[30.0625rem] p-[ 3.125rem 1.875rem]"
 		>
@@ -47,7 +47,7 @@
 							type="text"
 							id="first-name"
 							placeholder="First name"
-							class="input w-full md:w-[12.25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							class="input w-full md:w-[12.25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-primary-50 rounded-[0.5rem]"
 						/>
 					</div>
 					<div class="last-name">
@@ -55,7 +55,7 @@
 							type="text"
 							id="last-name"
 							placeholder="Last name"
-							class="input w-full md:w-[12.25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							class="input w-full md:w-[12.25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-primary-50 rounded-[0.5rem]"
 						/>
 					</div>
 				</div>
@@ -65,7 +65,7 @@
 						type="email"
 						id="email"
 						placeholder="Enter your Email"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-primary-50 rounded-[0.5rem]"
 					/>
 				</div>
 
@@ -93,16 +93,21 @@
 						type="password"
 						id="password"
 						placeholder="Create user password"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-primary-50 rounded-[0.5rem]"
 					/>
 					<input
 						type="password"
 						id="confirm-password"
 						placeholder="Confirm user paswsword"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-primary-50 rounded-[0.5rem]"
 					/>
 				</div>
 			</div>
 		</div>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<form method="dialog" class="modal-backdrop" on:click={() => closeInviteUserModal()}>
+			<button>close</button>
+		</form>
 	</dialog>
 {/if}

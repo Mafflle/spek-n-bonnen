@@ -3,10 +3,6 @@
 	import StaffMember from '$lib/components/StaffMember.svelte';
 	import { openInviteUserModal } from '$lib/utils';
 	let isFocused = false;
-
-	setTimeout(() => {
-		openInviteUserModal();
-	}, 1000);
 </script>
 
 <div
@@ -29,9 +25,7 @@
 							<div class="w-6 h-6 relative">
 								<img src="/icons/search.svg" alt="search icon" />
 							</div>
-							<div
-								class="grow shrink w-[inherit] basis-0 text-neutral-400 text-[13px] font-normal font-['Satoshi']"
-							>
+							<div class="grow shrink w-[inherit] basis-0 text-neutral-400 text-[13px] font-normal">
 								Search for staffs...
 							</div>
 						</div>
@@ -62,11 +56,12 @@
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
 
                     "
+					on:click={() => openInviteUserModal()}
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/user-plus.svg" alt="user-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Invite staff</div>
+					<div class="text-white text-sm font-bold">Invite staff</div>
 				</button>
 			</div>
 		</div>
