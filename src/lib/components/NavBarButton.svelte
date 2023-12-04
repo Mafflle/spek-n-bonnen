@@ -1,4 +1,9 @@
 <script>
+	import { page } from '$app/stores';
+
+	const currentPath = $page.url.pathname;
+
+	console.log(currentPath);
 	/**
 	 * @type {String}
 	 */
@@ -26,7 +31,10 @@
 	<div class="button-content flex items-center w-[11.625rem] gap-[0.875rem] self-stretch">
 		<img src={icon} alt="shopping-cart-icon" />
 		<div
-			class="button-text flex flex-col justify-center flex-shrink-0 self-stretch text-[0.875rem]"
+			class="button-text flex flex-col justify-center flex-shrink-0 self-stretch text-[0.875rem] ${currentPath ==
+			href
+				? 'text-primary-50'
+				: 'text-blue-600'}"
 		>
 			{text}
 		</div>
