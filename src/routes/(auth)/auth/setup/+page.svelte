@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	import { showToast } from '$lib/utils';
 
 	/**
 	 * @typedef {object} setupError

@@ -2,7 +2,7 @@ import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
 import toast from 'svelte-french-toast';
-import { passwordConfirmation, passwordModal } from '$lib/stores';
+import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
 export const showToast = (message: string, type: ToastType) => {
@@ -64,4 +64,12 @@ export const openPasswordResetModal = () => {
 
 	export const closePasswordConfirmation = () => {
 		passwordConfirmation.set(false);
+	}
+
+	export const openInviteUserModal = () => {
+		inviteUserModal.set(true);
+	}
+
+	export const closeInviteUserModal = () => {
+		inviteUserModal.set(false);
 	}
