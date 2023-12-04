@@ -78,7 +78,7 @@ export const actions: Actions = {
         body: JSON.stringify({ ...validatedData, token: token})
 			});
 
-			console.log(res);
+			// console.log(res);
 			
 			if (res.ok) {
 				return {
@@ -88,14 +88,12 @@ export const actions: Actions = {
 				// const setupErrors = await res.json();
 				throw redirect(302, 'forgot-password?message=Token expired, get a new one here&type=info')
 			} else if (!res.ok && res.status === 400) {
-				const setupErrors = await res.json();
-				// console.log(setupErrors);
-				
-				return fail(400, { errors: setupErrors })
+				const resetErrors = await res.json();
+				return fail(400, { errors: resetErrors })
 			} else if (!res.ok && res.status === 404) {
-				const setupErrors = await res.json();
+				const resetErrors = await res.json();
 				
-				return fail(400, { errors: setupErrors })
+				return fail(400, { errors: resetErrors })
 			} 
 			else if (!res.ok) {
 				console.log(res.status, res.url, res.statusText);

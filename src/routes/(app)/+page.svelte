@@ -7,7 +7,7 @@
 
 	export let data;
 
-	console.log(data);
+	// console.log(data);
 
 	const next = `${$page.route.id}`;
 </script>
