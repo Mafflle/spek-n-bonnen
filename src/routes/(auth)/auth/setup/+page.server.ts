@@ -39,7 +39,7 @@ const setupSchema = z
 			ctx.addIssue({
 				code: 'custom',
 				message: 'Passwords do not match',
-				path: ['confirmPassword']
+				path: ['password2']
 			});
 		}
 	});
@@ -83,13 +83,12 @@ export const actions: Actions =  {
 
 			if (setup.ok && setup.status == 201) {
 				return {
-				success: true
-			}
-			} else if (!setup.ok) {
-				console.log(setup);
-				
-				return fail(500, {message: 'Ooops something went wrong'})
-			}
+					success: true
+				}
+			} else if (!setup.ok && setup.status === 400) {
+				const setupErrors = await setup.json();
+				return fail(400, { errors: setupErrors })
+			} else if (!setup.ok) { return fail(500, { message: 'Ooops something went wrong' }) }
 		} catch (error) {
 			/**
 			 * @typedef {object} errorType

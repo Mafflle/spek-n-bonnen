@@ -7,7 +7,8 @@ export const handleFetch = async ({ request, fetch, event }) => {
 	request.headers.set('Accept', 'application/json');
 		const access = event.cookies.get('access');
 // console.log('handleFetch');
-if (access) {
+	if (access) {
+	console.log('token is available')
 	request.headers.set('Authorization', `Bearer ${access}`);
 	
 }

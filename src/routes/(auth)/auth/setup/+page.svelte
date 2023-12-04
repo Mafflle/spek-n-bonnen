@@ -38,7 +38,7 @@
 							validationErrors = result.data?.errors;
 						}
 					} else if (result.status === 200) {
-						await goto('auth/login');
+						await goto('login');
 						showToast('Account created successfully', 'success');
 					} else if (result.status === 500) {
 						showToast(`${result.data.message}`, 'error');
