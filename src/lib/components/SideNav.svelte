@@ -26,7 +26,7 @@
 			SETTINGS
 		</div>
 		<NavBarButton href="/" icon="/icons/settings.svg" text="User permission" />
-		<form class="" action="?/logout" method="post">
+		<form class="" action="/?/logout" method="post">
 			<button
 				type="submit"
 				class="flex h-10 w-full py-[0.635rem] px-[1.75rem] items-center gap-[0.625rem] flex-shrink-0 rounded-[0.375rem]"
