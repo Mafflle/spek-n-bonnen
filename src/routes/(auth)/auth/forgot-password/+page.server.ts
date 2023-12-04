@@ -63,12 +63,18 @@ export const actions: Actions = {
 
 			if (res.ok) {
 				const status = await res.json()
-				console.log(status);
+				return {
+					success: true
+				}
 				
-			} else if (!res.ok) {
-				console.log(res);
+			} else if (!res.ok && res.status === 400) {
+				const status = await res.json()
+			
+				return fail(400, {errors: status})
+				
+			} else {
+				
 				return fail(500, {message: 'Ooops something went wrong'})
-				
 			}
 		} catch (error) {
 				const toSend = {

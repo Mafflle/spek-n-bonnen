@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { showToast } from '$lib/utils';
 	import { goto } from '$app/navigation';
@@ -161,6 +160,7 @@
 
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
+					disabled={loading}
 					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
                     hover:bg-[#C7453C] hover:rounded-[0.625rem] text-white font-bold text-sm max-h-12 flex items-center justify-center
                     focus:shadow-custom

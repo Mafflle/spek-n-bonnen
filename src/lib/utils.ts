@@ -65,3 +65,18 @@ export const openPasswordResetModal = () => {
 	export const closePasswordConfirmation = () => {
 		passwordConfirmation.set(false);
 	}
+
+export const getToastType = (error: string | undefined): ToastType => {
+	switch (error) {
+		case 'error':
+			return 'error';
+		case 'success':
+			return 'success';
+		case 'info':
+			return 'info'
+		case 'warning':
+			return 'warning';
+		default:
+			return 'custom'
+	}
+}
