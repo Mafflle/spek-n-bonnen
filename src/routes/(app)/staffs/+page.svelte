@@ -16,15 +16,7 @@
 			/>
 
 			<div class="filter-buttons flex items-start gap-5">
-				<button
-					class="filter-button flex py-2 px-[0.625rem] justify-center gap-[0.625rem] rounded-[0.375rem] border border-dashed border-[#D9D9D9]
-                    hover:bg-white
-                    disabled:bg-white disabled:text-[#9C9C9C]
-                    "
-				>
-					<img src="/icons/filter.svg" alt="filter-icon" class="icon" />
-					<div class="button-text text-sm font-bold tracking-[-0.00875rem]">Filters</div>
-				</button>
+			
 				<button
 					class="w-32 h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
