@@ -11,6 +11,8 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 
   if (access) {
     await initCurrentUser(access, cookies, refresh);
+    console.log('works');
+    
   } else {
   }
   const currUser = getCurrentUser();

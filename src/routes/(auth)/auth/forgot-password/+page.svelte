@@ -74,7 +74,7 @@
 					<span class="button-text">Send password reset link</span>
 				{/if}
 			</button>
-			<a href="/login" class="back flex items-center gap-[0.5625rem] hover:underline">
+			<a href="login" class="back flex items-center gap-[0.5625rem] hover:underline">
 				<div class="back-icon">
 					<img src="/icons/arrow-left.svg" alt="back icon" />
 				</div>
