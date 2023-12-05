@@ -97,7 +97,7 @@
 				</li>
 			</ol>
 		</nav>
-		<form class="w-full" action="?/logout" method="post">
+		<form class="w-full" action="/?/logout" method="post">
 			<button type="submit" class="flex w-full px-3 py-2 items-center gap-1 rounded-md">
 				<iconify-icon icon="mdi-light:logout" style="color: #6b6b6b;" width="25"></iconify-icon>
 				<span class="text-sm">Logout</span>
