@@ -35,9 +35,7 @@
 	);
 </script>
 
-<div
-	class="staff-page inline-flex pt-[2.875rem] pr-[1.0625rem] pb-[17.9375rem] pl-[2.1875rem] flex-col items-start gap-[3.8125rem]"
->
+<div class="staff-page inline-flex flex-col items-start gap-[3.8125rem]">
 	<div class="manage flex flex-col items-start gap-[2.5rem]">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
 			<div class="text-[2rem] tracking-[-0.04rem]">Staff management</div>

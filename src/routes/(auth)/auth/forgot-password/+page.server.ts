@@ -60,8 +60,6 @@ export const actions: Actions = {
 				body: JSON.stringify(validatedData),
 				method: 'POST'
 			})
-
-			console.log(res);
 			
 			if (res.ok) {
 				const status = await res.json()
