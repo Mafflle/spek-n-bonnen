@@ -3,9 +3,7 @@
 </script>
 
 <aside class="side-nav w-[15rem] sticky top-0 h-screen flex flex-col">
-	<div
-		class="sidebar-logo inline-flex flex-col items-start gap-[0.25rem] px-[1.75rem] py-[2.44rem]"
-	>
+	<div class="sidebar-logo flex flex-col items-start mb-10 gap-3 px-7 py-7">
 		<p class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</p>
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem] text-[#6B6B6B]">ERP SYSTEM</sub>
 	</div>

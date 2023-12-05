@@ -6,9 +6,7 @@
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
 			<div class="text-[2rem] tracking-[-0.04rem]">Staff management</div>
-			<sub class="text-[#6B6B6B] text-[0.8125rem] tracking-[-0.00813rem]">
-				Manage employees, assign roles and tasks
-			</sub>
+			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
 		</div>
 		<div class="filters flex items-start w-full justify-between">
 			<input
