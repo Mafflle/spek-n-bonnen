@@ -35,7 +35,7 @@ export const actions: Actions = {
 			const validatedData = loginSchema.parse(dataToValidate);
 			// console.log('works');
 
-			const res = await fetch(`${PUBLIC_API_ENDPOINT}/auth/login/`, {
+			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/login/`, {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
