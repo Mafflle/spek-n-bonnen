@@ -1,6 +1,14 @@
 <script>
 	import StaffMember from '$lib/components/StaffMember.svelte';
+
+	export let data;
+
+	console.log(data.groups);
 </script>
+
+<svelte:head>
+	<title>Staffs - Spek-n-Boonen</title>
+</svelte:head>
 
 <div class="staff-page flex-col items-start">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
