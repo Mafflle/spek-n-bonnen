@@ -19,14 +19,23 @@ const config = {
 					600: '#B21221',
 					700: '#AC081B',
 					800: '#A60015',
-					900: '#A0000F'
+					900: '#A0000F',
+					red: '#DC5950',
+					light: '#FFE8E7'
 				},
 				secondary: {
 					50: '#9c9c9c'
-				}
+				},
+				grey: {
+					100: '#6B6B6B'
+				},
+				sGray: '#F5F5F5'
 			},
 			boxShadow: {
 				custom: '0px 0px 0px 3px #ECA6A2'
+			},
+			fontFamily: {
+				satoshi: ['Satoshi', 'sans-serif']
 			}
 		}
 	},

@@ -1,6 +1,14 @@
 <script>
 	import StaffMember from '$lib/components/StaffMember.svelte';
+
+	export let data;
+
+	console.log(data.groups);
 </script>
+
+<svelte:head>
+	<title>Staffs - Spek-n-Boonen</title>
+</svelte:head>
 
 <div class="staff-page flex-col items-start">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
@@ -8,21 +16,42 @@
 			<div class="text-[2rem] tracking-[-0.04rem]">Staff management</div>
 			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
 		</div>
-		<div class="filters flex items-start w-full justify-between">
-			<input
-				type="text"
-				placeholder="Type here"
-				class="input input-bordered w-[22rem] py-[0.68rem] px-[0.37rem] rounded-[0.375rem] b-[#D9D9D9] border-[0.5px]"
-			/>
+		<div class="filters flex items-center w-full justify-between">
+			<div
+				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+			>
+				<span>
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+							stroke="#A9A9A9"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+						<path
+							d="M21 20.9999L16.65 16.6499"
+							stroke="#A9A9A9"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</span>
+				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
+			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
-			
 				<button
 					class="w-32 h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
-                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
-
-                    "
+                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/user-plus.svg" alt="user-plus" />

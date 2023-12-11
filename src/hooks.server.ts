@@ -16,3 +16,17 @@ export const handleFetch = async ({ request, fetch, event }) => {
 
 	return fetch(request);
 };
+
+export const handle = async ({ event, resolve }) => {
+	const access = event.cookies.get('access');
+	const refresh = event.cookies.get('refresh');
+
+	// console.log(access);
+	if (access && refresh) {
+		event.locals.accessToken = access;
+		event.locals.refreshToken = refresh;
+		event.request.headers.set('Authorization', `Bearer ${access}`);
+	}
+
+	return await resolve(event);
+};

@@ -8,6 +8,8 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: User | null;
+			accessToken: string | null;
+			refreshToken: string | null;
 		}
 		// interface PageData {}
 		// interface Platform {}
