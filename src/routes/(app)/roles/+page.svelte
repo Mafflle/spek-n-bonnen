@@ -1,26 +1,53 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
-	import { client, debounce } from '$lib/utils.js';
+	import { selectedPerms } from '$lib/stores.js';
+	import { client, debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	export let data;
 	let { roles, permissions } = data;
 
-	let showModal: boolean = true;
+	console.log(roles);
 
+	let name: string;
+	let validationErrors: { permissions?: [string]; name?: [string]; search?: string } = {};
+	let showModal: boolean = false;
 	let searching: boolean = false;
+	let permissionsSelected: boolean = false;
+	let isFilled: boolean = false;
+	let loading: boolean = false;
+
+	// conditional(s)
+
+	// Function(s)
+
+	// reactive function(s)
+	$: {
+		if (name || permissionsSelected) {
+			isFilled = true;
+		} else isFilled = false;
+	}
+
+	$: {
+		if (validationErrors.permissions) {
+			showToast('Please select permissions to assign to role', 'error');
+		}
+	}
+
+	// utility function(s)
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 
-	const defaulPermissions = permissions;
-
+	//permissions function(s)
 	const searchPermissions = debounce(async (search: string) => {
+		if (!search.trim()) return (validationErrors.search = 'Search keyword is required');
 		searching = true;
 		try {
 			const res = await fetch(`roles?search=${search}`, {
@@ -38,9 +65,48 @@
 		}
 	}, 700);
 
-	// onMount(async () => {
-	// 	submit();
-	// });
+	const createPermissionsInput = (options: Option[]) => {
+		const inputsContainer = document.getElementById('permissionsContainer');
+
+		while (inputsContainer?.firstChild) {
+			inputsContainer.removeChild(inputsContainer.firstChild);
+		}
+		if (options.length > 0) {
+			permissionsSelected = true;
+			options.forEach((option) => {
+				const input = document.createElement('input');
+				input.name = 'permission';
+				input.type = 'number';
+				input.value = `${option.value}`;
+				input.className = 'hidden';
+
+				inputsContainer?.appendChild(input);
+			});
+		} else permissionsSelected = false;
+	};
+
+	// Roles CRUD function(s)
+	const submit: SubmitFunction = async () => {
+		loading = true;
+
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					roles.results = [...roles.results, result.data.newRole];
+					$selectedPerms = [];
+					toggleModal();
+					showToast('New role created successfully', 'success');
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status == 500) {
+					showToast('Ooops something went wrong', 'error');
+				}
+			} finally {
+				loading = false;
+				update();
+			}
+		};
+	};
 </script>
 
 <svelte:head>
@@ -133,56 +199,78 @@
 .
 
 <Modal {showModal} on:close={() => (showModal = false)}>
-	<div
+	<form
+		action="?/create"
+		method="post"
+		use:enhance={submit}
 		slot="modal-content"
-		class="max-w-2xl w-full px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
+		class="max-w-2xl w-xl px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
 	>
 		<section class="flex items-center justify-between mb-5">
 			<h2 class="text-xl font-medium font-satoshi text-center">Create Role</h2>
-			<button type="button" class="bg-sGray text-sm py-2 px-4 rounded">Submit</button>
+			<button
+				disabled={loading}
+				type="submit"
+				class="{isFilled
+					? 'bg-primary-red text-white'
+					: 'bg-sGray'} text-sm py-2 px-4 rounded flex items-center"
+			>
+				{#if loading}
+					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
+				{:else}
+					Submit
+				{/if}
+			</button>
 		</section>
 		<div class="w-full flex flex-col gap-4 items-start justify-center">
-			<div class="name w-full mb-5">
+			<div class="name w-full flex flex-col items-start mb-5">
 				<label for="name" class="block mb-2 text-[0.875rem]">Name:</label>
 				<input
 					type="text"
 					name="name"
 					id="name"
+					bind:value={name}
+					disabled={loading}
 					placeholder="Enter role name"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-primary-100 focus:outline-primary-100 border-[#D9D9D9] rounded-[0.5rem]"
 				/>
-				<!-- {#if validationErrors?.email}
-              <sub
-                transition:slide={{ delay: 250, duration: 300 }}
-                class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-              >
-            {/if} -->
+				{#if validationErrors?.name}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					>
+				{/if}
 			</div>
 			<div class="max-w-full w-full">
-				<div class="name w-full mb-5">
+				<div class=" w-full mb-5">
 					<input
 						type="text"
 						name="search"
 						id="search"
 						placeholder="Search permissions"
 						on:input={(e) => searchPermissions(e?.target?.value)}
+						disabled={loading}
 						class="w-full px-2 focus:border-primary-100 focus:outline-none border-[#D9D9D9] border-b"
 					/>
-					<!-- {#if validationErrors?.email}
-              <sub
-                transition:slide={{ delay: 250, duration: 300 }}
-                class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-              >
-            {/if} -->
+					{#if validationErrors?.search}
+						<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
+							>{validationErrors.search}</sub
+						>
+					{/if}
 				</div>
 				{#if searching}
-					<div class="flex item-center justify-center w-full text-primary-100 py-5">
+					<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
 						<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 					</div>
 				{:else if permissions.count > 0}
 					<label for="name" class="block mb-2 text-[0.875rem]">Select permissions:</label>
 
-					<PillSelector options={permissions.results} />
+					<PillSelector
+						on:selected={(e) => createPermissionsInput(e.detail)}
+						options={permissions.results}
+						disableOptions={loading}
+					/>
+					<div class="hidden" id="permissionsContainer"></div>
 				{:else}
 					<div class="flex item-center justify-center w-full gap-2 text-primary-100 py-5">
 						<iconify-icon icon="nonicons:not-found-16" width="20"></iconify-icon>
@@ -191,5 +279,5 @@
 				{/if}
 			</div>
 		</div>
-	</div>
+	</form>
 </Modal>

@@ -11,5 +11,7 @@ export const updateSelectedPerms = (option: Option) => {
 	selectedPerms.subscribe((perms) => (allPerms = perms));
 	if (!allPerms.includes(option)) {
 		selectedPerms.update((perms: Option[]) => [...perms, option]);
+	} else {
+		selectedPerms.update((perms) => perms.splice(perms.indexOf(option), 1));
 	}
 };

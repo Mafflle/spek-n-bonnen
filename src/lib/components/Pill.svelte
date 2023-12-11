@@ -4,14 +4,15 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let option: Option;
+	export let disableOptions: boolean = false;
+
 	let selected = false;
 	const dispatch = createEventDispatcher();
-	export function toggle() {
+
+	const toggle = () => {
 		selected = !selected;
-		if (selected) {
-			dispatch('selected', option);
-		} else dispatch('cancel', option);
-	}
+		dispatch('selected', option);
+	};
 	let hovering: boolean = false;
 
 	onMount(() => {
@@ -24,6 +25,8 @@
 </script>
 
 <button
+	type="button"
+	disabled={disableOptions}
 	on:mouseenter={() => (hovering = true)}
 	on:mouseleave={() => {
 		if (!selected) hovering = false;
