@@ -42,6 +42,7 @@ type Errors = {
 	name?: [string];
 	permissions?: [string];
 };
+
 const roleSchema = z.object({
 	name: z
 		.string({ required_error: 'Role name is required' })
@@ -51,6 +52,7 @@ const roleSchema = z.object({
 		.array(z.number({ required_error: 'Permission is required' }))
 		.nonempty({ message: 'Permissions are required' })
 });
+
 export const actions: Actions = {
 	create: async ({ fetch, request }) => {
 		const formData = await request.formData();
@@ -70,7 +72,6 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
-			console.log(res);
 
 			if (res.ok) {
 				const newRole = await res.json();

@@ -2,34 +2,46 @@
 	import { isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import Pill from './Pill.svelte';
-	import { selectedPerms, updateSelectedPerms } from '$lib/stores';
+	import { container, updateSelectedOptions } from '$lib/stores';
 	export let options: Option[];
 	export let disableOptions: boolean = false;
 	let selectedArray: Option[] = [];
 
 	const dispatch = createEventDispatcher();
 	const onSelected = (option: Option) => {
-		if (!selectedArray.includes(option)) {
-			selectedArray = [...selectedArray, option];
-			updateSelectedPerms(option);
+		if (selectedArray.includes(option)) {
+			selectedArray = selectedArray.filter((item) => {
+				return item.value !== option.value;
+			});
+			updateSelectedOptions(option);
+
 			dispatch('selected', selectedArray);
 		} else {
-			selectedArray.splice(selectedArray.indexOf(option), 1);
-			updateSelectedPerms(option);
+			selectedArray = [...selectedArray, option];
+			updateSelectedOptions(option);
+
 			dispatch('selected', selectedArray);
 		}
 	};
 	onMount(() => {
-		if ($selectedPerms.length > 0) {
-			for (const item of $selectedPerms) {
-				if (!options.some((option) => isEqual(option, item))) options = [...options, item];
+		container.subscribe((items) => {
+			if (items.length > 0) {
+				selectedArray = items;
+
+				for (const item of items) {
+					if (options.some((option) => isEqual(option, item)) === false) {
+						options = [...options, item];
+					}
+				}
+
+				dispatch('selected', items);
 			}
-			dispatch('selected', $selectedPerms);
-		}
+		});
 	});
+	const unsubscribe = container.subscribe((items) => (selectedArray = items));
 	onDestroy(() => {
 		options = [];
-		selectedArray = [];
+		unsubscribe();
 	});
 </script>
 

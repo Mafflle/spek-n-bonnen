@@ -5,15 +5,13 @@
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
-	import { selectedPerms } from '$lib/stores.js';
+	import { options } from '$lib/stores.js';
 	import { client, debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { slide } from 'svelte/transition';
 
 	export let data;
 	let { roles, permissions } = data;
-
-	console.log(roles);
 
 	let name: string;
 	let validationErrors: { permissions?: [string]; name?: [string]; search?: string } = {};
@@ -47,7 +45,7 @@
 
 	//permissions function(s)
 	const searchPermissions = debounce(async (search: string) => {
-		if (!search.trim()) return (validationErrors.search = 'Search keyword is required');
+		// if (!search.trim()) return (validationErrors.search = 'Search keyword is required');
 		searching = true;
 		try {
 			const res = await fetch(`roles?search=${search}`, {
@@ -93,7 +91,12 @@
 			try {
 				if (result.status === 200) {
 					roles.results = [...roles.results, result.data.newRole];
-					$selectedPerms = [];
+					const inputsContainer = document.getElementById('permissionsContainer');
+
+					while (inputsContainer?.firstChild) {
+						inputsContainer.removeChild(inputsContainer.firstChild);
+					}
+					$options = [];
 					toggleModal();
 					showToast('New role created successfully', 'success');
 				} else if (result.status === 400) {
