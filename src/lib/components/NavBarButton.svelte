@@ -18,7 +18,7 @@
 		if ($page.url.pathname !== href) active = false;
 	}}
 	class="side-nav-button flex max-w-full py-3 px-3 items-center justify-between rounded-md
-                hover:bg-white {active && 'bg-white text-[#DA4E45] shadow-inner'}
+                hover:bg-primary-light {active && 'bg-primary-light text-[#DA4E45] shadow-inner'}
                 "
 >
 	<div class="button-content flex items-center w-[11.625rem] gap-[0.875rem] self-stretch">

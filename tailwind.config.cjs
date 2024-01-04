@@ -27,7 +27,9 @@ const config = {
 					50: '#9c9c9c'
 				},
 				grey: {
-					100: '#6B6B6B'
+					100: '#6B6B6B',
+					200: '#9c9c9c',
+					300: '#D9D9D9'
 				},
 				sGray: '#F5F5F5'
 			},
