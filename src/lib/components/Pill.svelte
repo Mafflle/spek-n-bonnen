@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectedPerms } from '$lib/stores';
+	import { container } from '$lib/stores';
 	import { isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 
@@ -16,10 +16,14 @@
 	let hovering: boolean = false;
 
 	onMount(() => {
-		$selectedPerms.map((item: Option) => {
-			if (isEqual(option, item)) {
-				selected = true;
-			}
+		// console.log('pill', $options);
+
+		container.subscribe((items) => {
+			items.map((item) => {
+				if (isEqual(option, item)) {
+					selected = true;
+				}
+			});
 		});
 	});
 </script>
