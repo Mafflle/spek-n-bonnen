@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-
 	export let showModal: boolean = false;
 	const dispatch = createEventDispatcher();
 </script>
