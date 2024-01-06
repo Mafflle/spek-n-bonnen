@@ -21,7 +21,8 @@ const config = {
 					800: '#A60015',
 					900: '#A0000F',
 					red: '#DC5950',
-					light: '#FFE8E7'
+					light: '#FFE8E7',
+					softPink: '#ECA6A2'
 				},
 				secondary: {
 					50: '#9c9c9c'
