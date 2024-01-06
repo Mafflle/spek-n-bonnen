@@ -2,6 +2,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import UploadBox from '$lib/components/UploadBox.svelte';
 	let showModal = false;
+	let loading = false;
 	function toggleModal() {
 		showModal = !showModal;
 	}
@@ -15,11 +16,35 @@
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
 					Add brand
 				</div>
-				<div class="close-button flex justify-center items-center w-1/12">
+				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
-				</div>
+				</button>
 			</div>
 			<UploadBox />
+			<div class="modal-input">
+				<input
+					type="text"
+					name="brand-name"
+					id="brand-name"
+					placeholder="Brand name"
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+			</div>
+			<div class="modal-submit">
+				<button
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
+					"
+					type="submit"
+				>
+					{#if loading}
+						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else}
+						<span class="button-text">Add brand </span>
+					{/if}
+				</button>
+			</div>
 		</div>
 	</div>
 </Modal>
