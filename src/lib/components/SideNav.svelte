@@ -90,7 +90,8 @@
 					<li class="w-full">
 						<NavBarButton
 							active={routes.indexOf(route) !== 0
-								? $page.url.pathname.startsWith(route.href)
+								? $page.url.pathname.startsWith(route.href) ||
+								  $page.url.pathname.includes(route.href)
 								: $page.url.pathname === route.href}
 							icon={route.icon}
 							href={route.href}

@@ -11,7 +11,10 @@
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
-		<div class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md">
+		<form
+			action="?/create"
+			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
 					Add brand
@@ -20,7 +23,7 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<UploadBox />
+			<UploadBox inputName="brand-image" maximumImages={1} />
 			<div class="modal-input">
 				<input
 					type="text"
@@ -45,7 +48,7 @@
 					{/if}
 				</button>
 			</div>
-		</div>
+		</form>
 	</div>
 </Modal>
 <div class="page h-full w-full">
