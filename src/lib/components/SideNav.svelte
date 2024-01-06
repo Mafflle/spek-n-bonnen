@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 	import NavBarButton from './NavBarButton.svelte';
 	const routes = [
 		{
@@ -69,9 +70,15 @@
 			pageTitle: 'User permission'
 		}
 	];
+	let showChildren: boolean = false;
+	const toggleChildren = () => {
+		showChildren = !showChildren;
+	};
 </script>
 
-<aside class="side-nav w-[15.5rem] sticky top-0 h-screen px-4 flex flex-col gap-5">
+<aside
+	class="side-nav w-[15.5rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 flex flex-col gap-5"
+>
 	<div class="sidebar-logo flex flex-col items-start mb-10 gap-3 px-3 pt-10">
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem] text-[#6B6B6B]">ERP SYSTEM</sub>
@@ -89,27 +96,30 @@
 							href={route.href}
 							activeIcon={route.activeIcon}
 							text={route.pageTitle}
+							onclick={toggleChildren}
 						/>
-						{#if route.children}
-							<div class="py-5">
-								<ul class="border-l-2 border-grey-300 pl-3">
-									<h1 class="text-xs uppercase font-bold text-grey-200">PROVIDERS</h1>
-									<div class="flex flex-col gap-3 justify-between">
-										{#each route.children as child}
-											<a
-												class="py-3 px-3 rounded-md flex gap-3 hover:bg-white hover:text-primary-red"
-												href={child.href}
-											>
-												<div
-													class="item-color w-5 h-5"
-													style="background-color: {child.color};"
-												></div>
-												<div class="item-title font-medium">{child.title}</div>
-											</a>
-										{/each}
-									</div>
-								</ul>
-							</div>
+						{#if showChildren}
+							{#if route.children}
+								<div in:slide={{ duration: 200 }} out:slide={{ duration: 200 }} class="py-5">
+									<ul class="ml-6 border-l-2 border-grey-300 pl-3">
+										<h1 class="text-xs uppercase font-semibold text-grey-200">PROVIDERS</h1>
+										<div class="flex flex-col gap-3 justify-between">
+											{#each route.children as child}
+												<a
+													class="py-3 px-3 rounded-md flex gap-3 hover:bg-white hover:text-primary-red"
+													href={child.href}
+												>
+													<div
+														class="item-color w-5 h-5"
+														style="background-color: {child.color};"
+													></div>
+													<div class="item-title font-medium text-xs">{child.title}</div>
+												</a>
+											{/each}
+										</div>
+									</ul>
+								</div>
+							{/if}
 						{/if}
 					</li>
 				{:else if route.pageTitle === 'Orders'}
