@@ -77,14 +77,14 @@
 </script>
 
 <aside
-	class="side-nav w-[15.5rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 flex flex-col gap-5"
+	class="side-nav w-[15.5rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 flex flex-col gap-5 bg-black-100 text-white"
 >
 	<div class="sidebar-logo flex flex-col items-start mb-10 gap-3 px-3 pt-10">
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
-		<sub class=" text-center text-[0.5rem] tracking-[0.125rem] text-[#6B6B6B]">ERP SYSTEM</sub>
+		<sub class=" text-center text-[0.5rem] tracking-[0.125rem]">ERP SYSTEM</sub>
 	</div>
 	<nav class="sidebar-nav w-full mb-4">
-		<ol class="w-full flex items-start flex-col gap-2 text-[#6B6B6B]">
+		<ol class="w-full flex items-start flex-col gap-2">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders' && routes.indexOf(route) !== 6}
 					<li class="w-full">
@@ -107,7 +107,7 @@
 										<div class="flex flex-col gap-3 justify-between">
 											{#each route.children as child}
 												<a
-													class="py-3 px-3 rounded-md flex gap-3 hover:bg-white hover:text-primary-red"
+													class="py-3 px-3 rounded-md flex gap-3 hover:bg-primary-light hover:text-primary-red"
 													href={child.href}
 												>
 													<div
@@ -138,7 +138,7 @@
 			{/each}
 		</ol>
 	</nav>
-	<div class="settings flex flex-col items-start gap-3 w-full text-[#6B6B6B]">
+	<div class="settings flex flex-col items-start gap-3 w-full">
 		<h4 class="settings-header text-secondary-50 px-3 text-xs font-bold">SETTINGS</h4>
 		<nav class="w-full">
 			<ol class="w-full">
