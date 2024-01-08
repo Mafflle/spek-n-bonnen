@@ -4,6 +4,7 @@
 	import UploadBox from '$lib/components/UploadBox.svelte';
 	let showModal = false;
 	let loading = false;
+	let grid = false;
 	function toggleModal() {
 		showModal = !showModal;
 	}
@@ -106,8 +107,11 @@
 			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
-				<button class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]">
-					<img src="/icons/filter-table.svg" alt="filter table" />
+				<button
+					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
+					on:click={() => (grid = !grid)}
+				>
+					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>
 				<button
 					on:click={toggleModal}
@@ -125,39 +129,40 @@
 	</div>
 	<!-- render if page is empty -->
 	{#if brands.length === 0}
-		<div class="empty h-full w-full flex justify-center items-center">
-			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
-				<div class="icon">
-					<img src="/icons/empty-Illustration.svg" alt="empty illustration " />
-				</div>
-				<div class="content">
-					<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No brand added</h3>
-						<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
-							You currently don’t have any brand saved, click the button below to create one
-						</div>
-					</div>
-				</div>
-				<div class="button">
-					<button
-						class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
-                hover:bg-[#C7453C]
-                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
-						on:click={toggleModal}
-					>
-						<div class="w-5 h-5 relative">
-							<img src="/icons/plus.svg" alt="user-plus" />
-						</div>
-						<p class="text-white text-sm font-bold">Add brand</p>
-					</button>
-				</div>
-			</div>
-		</div>
-	{:else}
+		<!-- ... -->
+	{:else if grid}
+		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
 			{#each brands as brand}
-				<Brand name={brand.name} date={monthsAgo(brand.date)} />
+				<Brand name={brand.name} date={monthsAgo(brand.date)} {grid} />
 			{/each}
+		</div>
+	{:else}
+		<!-- If grid is true, render the table -->
+		<div class="border rounded-xl">
+			<table class="table">
+				<thead>
+					<tr class="">
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Brand name</th>
+						<th class="bg-[#F9F9F9]">Date added</th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{#each brands as brand}
+						<Brand
+							name={brand.name}
+							date={new Date(brand.date).toLocaleDateString('en-US', {
+								month: '2-digit',
+								day: '2-digit',
+								year: '2-digit'
+							})}
+							{grid}
+						/>
+					{/each}
+				</tbody>
+			</table>
 		</div>
 	{/if}
 </div>
