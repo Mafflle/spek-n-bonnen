@@ -38,12 +38,12 @@
 				},
 				{
 					title: 'Vendors',
-					href: '/inventory/manufacturers',
+					href: '/inventory/vendors',
 					color: '#41AA00'
 				},
 				{
 					title: 'Manufacturers',
-					href: '/inventory/brands',
+					href: '/inventory/manufacturers',
 					color: '#FF1C0D'
 				}
 			]
