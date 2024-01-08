@@ -18,7 +18,9 @@
 		<!-- Your modal content goes here -->
 		<form
 			action="?/create"
+			method="post"
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			enctype="multipart/form-data"
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">

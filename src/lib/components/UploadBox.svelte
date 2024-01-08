@@ -2,7 +2,7 @@
 	import { showToast } from '$lib/utils';
 
 	let images: FileList | undefined = undefined;
-	export let displayImages: FileList[] | string | undefined = undefined;
+	export let displayImages: File[] | string | undefined = undefined;
 	let previewImage: string | undefined = undefined;
 
 	export let maximumImages: number = 10;
@@ -56,6 +56,8 @@
 			} else previewImage = displayImages;
 		}
 	}
+
+	$: console.log(images);
 </script>
 
 <div
@@ -63,6 +65,9 @@
 >
 	<input
 		bind:files={images}
+		on:change={(e) => {
+			console.log(e);
+		}}
 		on:drop={(e) => {
 			e.preventDefault();
 			images = e.dataTransfer?.files;
