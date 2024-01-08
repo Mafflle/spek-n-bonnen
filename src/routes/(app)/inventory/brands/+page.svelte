@@ -7,9 +7,21 @@
 	function toggleModal() {
 		showModal = !showModal;
 	}
-
+	function monthsAgo(date: Date) {
+		const now = new Date();
+		const givenDate = new Date(date);
+		const months =
+			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
+		return months;
+	}
 	let brands: { name: string; date: Date }[] = [
-		{ name: 'Brand 1', date: new Date('2021-08-01T00:00:00.000Z') }
+		{ name: 'Brand 1', date: new Date('2023-12-01T00:00:00.000Z') },
+		{ name: 'Brand 2', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'Brand 3', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'Brand 4', date: new Date('2020-08-01T00:00:00.000Z') },
+		{ name: 'Brand 5', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'Brand 6', date: new Date('2018-08-01T00:00:00.000Z') },
+		{ name: 'Brand 7', date: new Date('2021-08-01T00:00:00.000Z') }
 	];
 </script>
 
@@ -144,29 +156,10 @@
 			</div>
 		</div>
 	{:else}
-		<div class="border rounded-xl">
-			<table class="table">
-				<thead>
-					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Brand name</th>
-						<th class="bg-[#F9F9F9]">Date added</th>
-						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-					</tr>
-				</thead>
-
-				<tbody>
-					{#each brands as brand}
-						<Brand
-							name={brand.name}
-							date={new Date(brand.date).toLocaleDateString('en-US', {
-								month: '2-digit',
-								day: '2-digit',
-								year: '2-digit'
-							})}
-						/>
-					{/each}
-				</tbody>
-			</table>
+		<div class="w-full grid grid-cols-3 gap-10">
+			{#each brands as brand}
+				<Brand name={brand.name} date={monthsAgo(brand.date)} />
+			{/each}
 		</div>
 	{/if}
 </div>
