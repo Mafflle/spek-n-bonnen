@@ -103,7 +103,11 @@
 						/>
 					</svg>
 				</span>
-				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
+				<input
+					type="text"
+					placeholder="Search for staffs..."
+					class=" py-2 flex-auto outline-none"
+				/>
 			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
