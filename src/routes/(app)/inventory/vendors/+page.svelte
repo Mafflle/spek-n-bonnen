@@ -1,5 +1,4 @@
 <script lang="ts">
-	import vendor from '$lib/components/Vendor.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import UploadBox from '$lib/components/UploadBox.svelte';
 	import Vendor from '$lib/components/Vendor.svelte';
