@@ -87,5 +87,29 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
+	},
+	'delete-media': async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('image-id');
+
+		if (id) {
+			const deleteImage = await fetch(`${PUBLIC_API_ENDPOINT}api/images/${id}`, {
+				method: 'delete'
+			});
+
+			if (deleteImage.ok) {
+				return { success: true };
+			} else if (!deleteImage.ok) {
+				if (deleteImage.status === 400) {
+					const error = await deleteImage.json();
+					console.log(error);
+
+					return { errors: error.detail };
+				}
+			} else {
+				return fail(500);
+			}
+		} else return fail(500);
 	}
 };
