@@ -70,10 +70,6 @@
 			pageTitle: 'User permission'
 		}
 	];
-	let showChildren: boolean = false;
-	const toggleChildren = () => {
-		showChildren = !showChildren;
-	};
 </script>
 
 <aside
@@ -90,38 +86,14 @@
 					<li class="w-full">
 						<NavBarButton
 							active={routes.indexOf(route) !== 0
-								? $page.url.pathname.startsWith(route.href) ||
-								  $page.url.pathname.includes(route.href)
+								? $page.url.pathname.startsWith(route.href)
 								: $page.url.pathname === route.href}
 							icon={route.icon}
 							href={route.href}
 							activeIcon={route.activeIcon}
 							text={route.pageTitle}
-							onclick={toggleChildren}
+							children={route?.children}
 						/>
-						{#if showChildren}
-							{#if route.children}
-								<div in:slide={{ duration: 200 }} out:slide={{ duration: 200 }} class="py-5">
-									<ul class="ml-6 border-l-2 border-grey-300 pl-3">
-										<h1 class="text-xs uppercase font-semibold text-grey-200">PROVIDERS</h1>
-										<div class="flex flex-col gap-3 justify-between">
-											{#each route.children as child}
-												<a
-													class="py-3 px-3 rounded-md flex gap-3 hover:bg-primary-light hover:text-primary-red"
-													href={child.href}
-												>
-													<div
-														class="item-color w-5 h-5"
-														style="background-color: {child.color};"
-													></div>
-													<div class="item-title font-medium text-xs">{child.title}</div>
-												</a>
-											{/each}
-										</div>
-									</ul>
-								</div>
-							{/if}
-						{/if}
 					</li>
 				{:else if route.pageTitle === 'Orders'}
 					<li class="w-full">

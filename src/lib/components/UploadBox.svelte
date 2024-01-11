@@ -61,7 +61,7 @@
 </script>
 
 <div
-	class="w-full relative rounded-xl flex py-8 px-24 flex-col items-start gap-3 self-stretch border border-grey-300 border-dashed"
+	class="w-full relative rounded-xl flex py-8 px-24 flex-col items-start gap-3 self-stretch bg-primary-softPink-100 border-2 border-primary-red border-dashed"
 >
 	<input
 		bind:files={images}
@@ -91,8 +91,13 @@
 		<div class="image w-14 h-14 rounded-full flex justify-center items-center bg-[#f5f5f5]">
 			<img src="/icons/regular-image.svg" alt="reguar icon" />
 		</div>
-		<div class="text text-center text-sm leading-5 tracking-[-0.13px] text-[#CDCDCD]">
+		<span> Drag and drop file </span>
+		<span>or</span>
+		<button class="bg-primary-red py-2.5 px-4 text-sm font-medium text-white rounded-[30px]"
+			>Import from your computer</button
+		>
+		<!-- <div class="text text-center text-sm leading-5 tracking-[-0.13px] text-[#CDCDCD]">
 			Drag and drop file or click <b class="text-primary-100">upload</b> from your computer
-		</div>
+		</div> -->
 	</div>
 </div>

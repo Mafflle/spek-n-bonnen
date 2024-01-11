@@ -29,16 +29,19 @@ export const actions: Actions = {
 			console.log(dataToSend.get('image'));
 		}
 		if (dataToSend) {
-			const createLogo = await fetch(`${PUBLIC_API_ENDPOINT}api/images/images/`, {
+			const createLogo = await fetch(`${PUBLIC_API_ENDPOINT}api/images/`, {
 				method: 'POST',
 				body: dataToSend
 			});
-			// console.log(createLogo);
 
 			if (createLogo.ok) {
 				const brandLogo = await createLogo.json();
 				console.log(brandLogo);
-			} else console.log(createLogo.status, createLogo.statusText);
+			} else if (createLogo.status === 400) {
+				//TODO: Handle Bad Request
+			} else {
+				//TODO: Return "Something went wrong..." message
+			}
 		}
 	}
 };

@@ -73,7 +73,7 @@
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem]">Brand</div>
+			<h2 class="text-[2rem] tracking-[-0.04rem]">Brand</h2>
 			<sub class="text-[#6B6B6B] text-sm"> Providers / Brands</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">

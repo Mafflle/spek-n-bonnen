@@ -22,7 +22,7 @@ const config = {
 					900: '#A0000F',
 					red: '#DC5950',
 					light: '#FFE8E7',
-					softPink: '#ECA6A2'
+					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' }
 				},
 				secondary: {
 					50: '#9c9c9c'
