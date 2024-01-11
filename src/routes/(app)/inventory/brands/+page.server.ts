@@ -39,8 +39,10 @@ export const actions: Actions = {
 				console.log(brandLogo);
 			} else if (createLogo.status === 400) {
 				//TODO: Handle Bad Request
+				console.log(createLogo);
 			} else {
 				//TODO: Return "Something went wrong..." message
+				console.log(createLogo);
 			}
 		}
 	}

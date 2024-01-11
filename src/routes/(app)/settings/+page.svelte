@@ -32,6 +32,6 @@
 	</div>
 </div>
 
-<Modal {showModal}>
+<Modal on:close={() => (showModal = false)} {showModal}>
 	<MediaManager slot="modal-content" />
 </Modal>

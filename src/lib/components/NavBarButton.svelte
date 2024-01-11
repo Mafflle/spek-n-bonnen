@@ -19,20 +19,18 @@
 
 <div>
 	<span
-		class="flex max-w-full py-3 px-3 items-center justify-around rounded-md
-										hover:bg-primary-light {active && 'bg-primary-light text-[#DA4E45] shadow-inner'}
+		class="flex max-w-full h-full py-3 px-3 items-center justify-around rounded-md
+										hover:bg-primary-light hover:text-[#DA4E45] hover:shadow-inner {active &&
+			'bg-primary-light text-[#DA4E45]'}
 										"
+		on:mouseenter={() => {
+			if ($page.url.pathname !== href) active = true;
+		}}
+		on:mouseleave={() => {
+			if ($page.url.pathname !== href) active = false;
+		}}
 	>
-		<a
-			{href}
-			on:mouseenter={() => {
-				if ($page.url.pathname !== href) active = true;
-			}}
-			on:mouseleave={() => {
-				if ($page.url.pathname !== href) active = false;
-			}}
-			class="side-nav-button flex max-w-full w-full items-center justify-between"
-		>
+		<a {href} class="side-nav-button flex max-w-full w-full items-center justify-between">
 			<div class="button-content flex items-center w-full gap-2.5 self-stretch">
 				<!-- <enhanced:img src={icon} /> -->
 				<span>{@html active ? activeIcon : icon}</span>
