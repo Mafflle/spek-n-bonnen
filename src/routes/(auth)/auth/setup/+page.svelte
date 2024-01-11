@@ -1,37 +1,27 @@
-<script>
+<script lang="ts">
 	import { enhance } from '$app/forms';
-	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { showToast } from '$lib/utils';
+	import { goto } from '$app/navigation';
 
-	/**
-	 * @typedef {object} setupError
-	 * @property {string[]=} email
-	 * @property {string[]=} firstName
-	 * @property {string[]=} lastName
-	 * @property {string[]=} password
-	 * @property {string[]=} confirmPassword
-	 */
+	let loading: boolean = false; //to show button loader or whatever loader we decide on
 
-	/**
-	 * @type {boolean}
-	 */
-	let loading = false; //to show button loader or whatever loader we decide on
+	let validationErrors: {
+		email?: [string];
+		first_name?: [string];
+		last_name?: [string];
+		password?: [string];
+		password2?: [string];
+	};
 
-	/**
-	 * @type {setupError}
-	 */
-
-	let validationErrors;
-
-	onMount(async () => {});
+	// onMount(async () => {});
 </script>
 
 <svelte:head>
-	<title>Setup - Spek-n-Boonen</title>
+	<title>Setup Admin - Spek-n-Boonen</title>
 </svelte:head>
 
-<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
+<div class="min-h-screen max-w-screen py-6 flex justify-center items-center bg-[#F2F2F2]">
 	<form
 		action="?/setup"
 		method="post"
@@ -42,10 +32,13 @@
 			return async ({ result, update }) => {
 				try {
 					if (result.status === 400) {
-						console.log('works');
+						// console.log('works');
 						if (result.data?.errors) {
 							validationErrors = result.data?.errors;
 						}
+					} else if (result.status === 200) {
+						await goto('login');
+						showToast('Account created successfully', 'success');
 					} else if (result.status === 500) {
 						showToast(`${result.data.message}`, 'error');
 					}
@@ -57,102 +50,109 @@
 		}}
 	>
 		<div
-			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[22rem] lg:w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-2xl py-12 px-7 text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full">
 					<div class="avatar w-auto h-16 flex items-center justify-center">
 						<img src="/icons/user.svg" alt="avatar" />
 					</div>
-					<div class="admin gap-2 w-auto h-16 justify-center">
+					<div class="admin gap-2 w-auto justify-center">
 						<h1 class="text-[1.1rem] lg:text-2xl font-medium tracking-[-0.03rem] whitespace-nowrap">
 							Setup admin account
 						</h1>
-						<sub class="text-[0.8rem] lg:text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]">
-							Enter your credentials below</sub
-						>
+						<p class="text-[0.8rem] lg:text-[0.9375rem] tracking-[-0.00938rem] text-[#575757]">
+							Enter your credentials below
+						</p>
 					</div>
 				</div>
 			</div>
 			<div class=" flex flex-col gap-[1.28rem] w-full">
 				<div class="name flex flex-col md:flex-row gap-8">
-					<div class="first-name">
+					<div class="first-name flex flex-col">
 						<label for="first-name" class="block mb-2 text-[ 0.875rem]">First name</label>
 						<input
 							type="text"
 							id="first-name"
+							name="first-name"
 							placeholder="First name"
 							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 
-						{#if validationErrors?.firstName}
+						{#if validationErrors?.first_name}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
 								class="text-rose-500 text-xs tracking-[-0.0075rem]"
-								>{validationErrors.firstName}</sub
+								>{validationErrors.first_name[0]}</sub
 							>
 						{/if}
 					</div>
-					<div class="last-name">
+					<div class="last-name flex flex-col">
 						<label for="last-name" class="block mb-2 text-[ 0.875rem]">Last name</label>
 						<input
 							type="text"
 							id="last-name"
+							name="last-name"
 							placeholder="Last name"
 							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
-						{#if validationErrors?.lastName}
+						{#if validationErrors?.last_name}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.lastName}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.last_name[0]}</sub
 							>
 						{/if}
 					</div>
 				</div>
-				<div class="email">
+				<div class="email flex flex-col">
 					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
 					<input
 						type="email"
 						id="email"
+						name="email"
 						placeholder="Enter your Email"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
 						>
 					{/if}
 				</div>
 
-				<div class="password">
+				<div class="password flex flex-col">
 					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
 					<input
 						type="password"
 						id="password"
+						name="password"
 						placeholder="Enter your Password"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors.password[0]}</sub
 						>
 					{/if}
 				</div>
-				<div class="password">
+				<div class="password flex flex-col">
 					<label for="confirm-password" class="block mb-2 text-[ 0.875rem]">Confirm password</label>
 					<input
 						type="password"
 						id="confirm-password"
+						name="confirm-password"
 						placeholder="Confirm your Password"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
-					{#if validationErrors?.confirmPassword}
+					{#if validationErrors?.password2}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
 							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.confirmPassword}</sub
+							>{validationErrors.password2[0]}</sub
 						>
 					{/if}
 				</div>
@@ -160,6 +160,7 @@
 
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
+					disabled={loading}
 					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
                     hover:bg-[#C7453C] hover:rounded-[0.625rem] text-white font-bold text-sm max-h-12 flex items-center justify-center
                     focus:shadow-custom

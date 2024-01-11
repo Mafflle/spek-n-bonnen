@@ -1,10 +1,40 @@
-<script>
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import PasswordResetConfirmation from '$lib/components/PasswordResetConfirmation.svelte';
-	import { openPasswordConfirmation } from '$lib/utils';
+	import { openPasswordConfirmation, showToast } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { slide } from 'svelte/transition';
+
+	let validationErrors: { password?: [string]; confirmPassword?: [string] };
+	let loading: boolean = false;
+	let token = $page.url.searchParams.get('token');
+
+	const handleSubmit: SubmitFunction = async () => {
+		loading = true;
+
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					showToast('Password reset successfully', 'success');
+					await goto('login');
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status == 500) {
+					showToast(`Ooops something went wrong`, 'error');
+				}
+			} finally {
+				loading = false;
+				update;
+			}
+		};
+	};
 </script>
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
-	<form>
+	<form use:enhance={handleSubmit} method="post" action="?/resetpassword">
+		<input type="text" bind:value={token} class="hidden" name="token" />
 		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-full md:w-[22rem] lg:w-[28.25rem]"
 		>
@@ -22,27 +52,46 @@
 				<input
 					type="password"
 					id="password"
+					name="password"
 					placeholder="New password"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
+				{#if validationErrors?.password}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password[0]}</sub
+					>
+				{/if}
 			</div>
 			<div class="password-input">
 				<input
 					type="password"
+					name="confirm-password"
 					id="confirm-password"
 					placeholder="Confirm new password"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
+				{#if validationErrors?.confirmPassword}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]"
+						>{validationErrors.confirmPassword[0]}</sub
+					>
+				{/if}
 			</div>
 			<div class="submit w-full">
 				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+					disabled={loading}
+					class="bg-primary-50 py-3 px-2 rounded-lg w-full md:w-[25rem]
                     hover:bg-[#C7453C] hover:rounded-[0.625rem]
-                    focus:shadow-custom
-                    "
+                    focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center"
 					type="submit"
 				>
-					<div class="button-text text-white font-bold text-sm">Reset password</div>
+					{#if loading}
+						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else}
+						<span class="button-text">Reset password</span>
+					{/if}
 				</button>
 			</div>
 		</div>

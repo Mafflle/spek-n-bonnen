@@ -19,14 +19,29 @@ const config = {
 					600: '#B21221',
 					700: '#AC081B',
 					800: '#A60015',
-					900: '#A0000F'
+					900: '#A0000F',
+					red: '#DC5950',
+					light: '#FFE8E7',
+					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' }
 				},
 				secondary: {
 					50: '#9c9c9c'
-				}
+				},
+				grey: {
+					100: '#6B6B6B',
+					200: '#9c9c9c',
+					300: '#D9D9D9'
+				},
+				black: {
+					100: '#2D2D2D'
+				},
+				sGray: '#F5F5F5'
 			},
 			boxShadow: {
 				custom: '0px 0px 0px 3px #ECA6A2'
+			},
+			fontFamily: {
+				satoshi: ['Satoshi', 'sans-serif']
 			}
 		}
 	},

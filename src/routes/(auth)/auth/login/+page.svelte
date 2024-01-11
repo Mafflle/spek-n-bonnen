@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { currentUser } from '$lib/user';
 	import { showToast } from '$lib/utils';
-	import { AxiosError } from 'axios';
 	import { slide } from 'svelte/transition';
-	import { login, loginSchema } from './logic';
-	import { z } from 'zod';
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
 
 	/**
@@ -23,40 +21,32 @@
 	 * @type {validationError}
 	 */
 	let validationErrors: { email?: string; password?: string };
+	// console.log($page.url.searchParams.get('previous'));
 
-	let requestBody = {
-		email: '',
-		password: ''
-	};
-
-	let next = $page.url.searchParams.get('previous');
-
-	const handleSubmit = async () => {
+	const submit: SubmitFunction = async () => {
+		const previous = $page.url.searchParams.get('previous');
 		loading = true;
-
-		try {
-			const validatedData = loginSchema.parse(requestBody);
-			const res = await login(validatedData);
-			currentUser.set(res);
-			showToast('Login successful', 'success');
-			if (next) {
-				await goto(`${next}`);
-			} else await goto('/');
-			await goto('/');
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				validationErrors = error.flatten().fieldErrors;
-			} else if (error instanceof AxiosError) {
-				// console.log(error);
-
-				showToast(error.response?.data.message || 'Ooops something went wrong', 'error');
-			} else {
-				console.log(error);
-				showToast('Ooops something went wrong', 'error');
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					if (previous) {
+						await goto(`${previous}`);
+					} else {
+						// console.log(result);
+						await goto('/');
+					}
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status === 401) {
+					showToast(`${result.data.message}`, 'error');
+				} else if (result.status === 500) {
+					showToast(`${result.data.message}`, 'error');
+				}
+			} finally {
+				loading = false;
+				update();
 			}
-		} finally {
-			loading = false;
-		}
+		};
 	};
 </script>
 
@@ -64,9 +54,9 @@
 	<title>Login - Spek-n-Boonen</title>
 </svelte:head>
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
-	<form on:submit|preventDefault={handleSubmit}>
+	<form action="?/login" method="post" use:enhance={submit}>
 		<div
-			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-[22rem] lg:w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full align-center">
@@ -87,7 +77,6 @@
 				<div class="email">
 					<label for="email" class="block mb-2 text-[0.875rem]">Email</label>
 					<input
-						bind:value={requestBody.email}
 						type="email"
 						name="email"
 						id="email"
@@ -109,7 +98,6 @@
 						name="password"
 						id="password"
 						placeholder="Enter your password"
-						bind:value={requestBody.password}
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}

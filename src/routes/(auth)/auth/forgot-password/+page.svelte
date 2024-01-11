@@ -1,57 +1,37 @@
-<script>
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
 	import PasswordResetModal from '$lib/components/PasswordResetModal.svelte';
-	import { openPasswordResetModal, showToast } from '$lib/utils';
-	import { AxiosError } from 'axios';
+	import { getToastType, openPasswordResetModal, showToast } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import { slide } from 'svelte/transition';
-	import { z } from 'zod';
-	import { schema, sendForgotPasswordMail } from './logic';
 
-	/**
-	 * @typedef {object} validationError
-	 * @property {string[]=} email
-	 */
+	let loading: boolean = false;
+	let email: string = '';
+	let validationErrors: { email: string };
 
-	/**
-	 * @type {string}
-	 */
-	let email = '';
-
-	/**
-	 * @type {boolean}
-	 */
-	let loading = false;
-	/**
-	 * @type {validationError}
-	 */
-	let validationErrors;
-
-	const handleSubmit = async () => {
+	const handleSubmit: SubmitFunction = async () => {
 		loading = true;
-		try {
-			const validatedData = schema.parse({ email });
-			const sendPasswordMail = await sendForgotPasswordMail(validatedData);
-			// console.log(sendPasswordMail);
-			openPasswordResetModal();
-			showToast('Password reset link sent successfully', 'success');
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				validationErrors = error.flatten().fieldErrors;
-			} else if (error instanceof AxiosError) {
-				// console.log(error);
 
-				showToast(error.response?.data.message || 'Ooops something went wrong', 'error');
-			} else {
-				console.log(error);
-				showToast('Ooops something went wrong', 'error');
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					showToast('Password reset link sent successfully', 'success');
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status == 500) {
+					showToast(`Ooops something went wrong`, 'error');
+				}
+			} finally {
+				loading = false;
+				update;
 			}
-		} finally {
-			loading = false;
-		}
+		};
 	};
 </script>
 
 <div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
-	<form on:submit|preventDefault={handleSubmit}>
+	<form action="?/sendForgotPasswordMail" method="post" use:enhance={handleSubmit}>
 		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-full md:w-[22rem] lg:w-[28.25rem]"
 		>
@@ -69,20 +49,20 @@
 					type="email"
 					id="email"
 					placeholder="Enter your email"
+					name="email"
 					bind:value={email}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.email}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+					<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
+						>{validationErrors.email}</sub
 					>
 				{/if}
 			</div>
 
 			<button
 				disabled={loading}
-				class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+				class="bg-primary-50 py-3 px-2 rounded-lg w-full md:w-[25rem]
                     hover:bg-[#C7453C] hover:rounded-[0.625rem]
                     focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
                     "
@@ -94,7 +74,7 @@
 					<span class="button-text">Send password reset link</span>
 				{/if}
 			</button>
-			<a href="/login" class="back flex items-center gap-[0.5625rem] hover:underline">
+			<a href="login" class="back flex items-center gap-[0.5625rem] hover:underline">
 				<div class="back-icon">
 					<img src="/icons/arrow-left.svg" alt="back icon" />
 				</div>

@@ -5,6 +5,10 @@ import toast from 'svelte-french-toast';
 import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
+export type Option = {
+	value: number;
+	label: string;
+};
 export const showToast = (message: string, type: ToastType) => {
 	if (message) {
 		if (type === 'success') {
@@ -50,26 +54,54 @@ export const checkForUserInDatabase = async () => {
 };
 
 export const openPasswordResetModal = () => {
-		passwordModal.set(true);
+	passwordModal.set(true);
+};
+
+export const closePasswordResetModal = () => {
+	passwordModal.set(false);
+};
+
+export const openPasswordConfirmation = () => {
+	passwordConfirmation.set(true);
+};
+
+export const closePasswordConfirmation = () => {
+	passwordConfirmation.set(false);
+};
+
+export const openInviteUserModal = () => {
+	inviteUserModal.set(true);
+};
+
+export const closeInviteUserModal = () => {
+	inviteUserModal.set(false);
+};
+
+export const getToastType = (error: string | undefined): ToastType => {
+	switch (error) {
+		case 'error':
+			return 'error';
+		case 'success':
+			return 'success';
+		case 'info':
+			return 'info';
+		case 'warning':
+			return 'warning';
+		default:
+			return 'custom';
+	}
+};
+
+export const debounce = (cb: Function, delay = 1000) => {
+	let timeout: any;
+	return async (...args: any) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			cb(...args);
+		}, delay);
 	};
+};
 
-	export const closePasswordResetModal = () => {
-		passwordModal.set(false);
-	};
-
-
-	export const openPasswordConfirmation = () => {
-		passwordConfirmation.set(true);
-	}
-
-	export const closePasswordConfirmation = () => {
-		passwordConfirmation.set(false);
-	}
-
-	export const openInviteUserModal = () => {
-		inviteUserModal.set(true);
-	}
-
-	export const closeInviteUserModal = () => {
-		inviteUserModal.set(false);
-	}
+export const isEqual = (obj1: Option, obj2: Option) => {
+	return obj1.value === obj2.value && obj1.label === obj2.label;
+};
