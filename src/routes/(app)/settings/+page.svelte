@@ -1,6 +1,7 @@
 <script lang="ts">
 	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	export let data;
 
 	let showModal: boolean = false;
 	const toggleModal = () => {
@@ -33,5 +34,5 @@
 </div>
 
 <Modal on:close={() => (showModal = false)} {showModal}>
-	<MediaManager slot="modal-content" />
+	<MediaManager images={data.images.results} slot="modal-content" />
 </Modal>
