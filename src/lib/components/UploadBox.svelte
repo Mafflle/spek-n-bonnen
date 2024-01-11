@@ -7,7 +7,7 @@
 
 	export let maximumImages: number = 10;
 	export let inputName: string = 'images';
-	export let allowMultiple: boolean = true;
+	export const allowMultiple: boolean = true;
 	const setPreview = (image: File) => {
 		previewImage = URL.createObjectURL(image);
 	};
@@ -88,7 +88,9 @@
 				class=" h-full absolute w-full top-0 object-cover"
 			/>
 		{/if}
-		<div class="image w-14 h-14 rounded-full flex justify-center items-center bg-[#f5f5f5]">
+		<div
+			class="image w-14 h-14 rounded-full flex justify-center items-center border border-primary-softPink"
+		>
 			<img src="/icons/regular-image.svg" alt="reguar icon" />
 		</div>
 		<span> Drag and drop file </span>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Brand from '$lib/components/Brand.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import UploadBox from '$lib/components/UploadBox.svelte';
+	import Vendor from '$lib/components/Vendor.svelte';
 	let showModal = false;
 	let loading = false;
 	let grid = false;
@@ -15,14 +15,14 @@
 			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
 		return months;
 	}
-	let brands: { name: string; date: Date }[] = [
-		{ name: 'Brand 1', date: new Date('2023-12-01T00:00:00.000Z') },
-		{ name: 'Brand 2', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 3', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 4', date: new Date('2020-08-01T00:00:00.000Z') },
-		{ name: 'Brand 5', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 6', date: new Date('2018-08-01T00:00:00.000Z') },
-		{ name: 'Brand 7', date: new Date('2021-08-01T00:00:00.000Z') }
+	let vendors: { name: string; date: Date }[] = [
+		{ name: 'vendor 1', date: new Date('2023-12-01T00:00:00.000Z') },
+		{ name: 'vendor 2', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'vendor 3', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'vendor 4', date: new Date('2020-08-01T00:00:00.000Z') },
+		{ name: 'vendor 5', date: new Date('2021-08-01T00:00:00.000Z') },
+		{ name: 'vendor 6', date: new Date('2018-08-01T00:00:00.000Z') },
+		{ name: 'vendor 7', date: new Date('2021-08-01T00:00:00.000Z') }
 	];
 </script>
 
@@ -31,25 +31,23 @@
 		<!-- Your modal content goes here -->
 		<form
 			action="?/create"
-			method="post"
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			enctype="multipart/form-data"
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Add brand
+					Add vendor
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<UploadBox inputName="brand-image" maximumImages={1} />
+			<UploadBox inputName="vendor-image" maximumImages={1} />
 			<div class="modal-input">
 				<input
 					type="text"
-					name="brand-name"
-					id="brand-name"
-					placeholder="Brand name"
+					name="vendor-name"
+					id="vendor-name"
+					placeholder="Vendor name"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 			</div>
@@ -64,7 +62,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">Add brand </span>
+						<span class="button-text">Add vendor </span>
 					{/if}
 				</button>
 			</div>
@@ -74,8 +72,8 @@
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h2 class="text-[2rem] tracking-[-0.04rem]">Brand</h2>
-			<sub class="text-[#6B6B6B] text-sm"> Providers / Brands</sub>
+			<div class="text-[2rem] tracking-[-0.04rem]">Vendors</div>
+			<sub class="text-[#6B6B6B] text-sm"> Providers / Vendors</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
@@ -105,11 +103,7 @@
 						/>
 					</svg>
 				</span>
-				<input
-					type="text"
-					placeholder="Search for staffs..."
-					class=" py-2 flex-auto outline-none"
-				/>
+				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
@@ -126,21 +120,21 @@
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
-						<img src="/icons/plus.svg" alt="brand-plus" />
+						<img src="/icons/plus.svg" alt="vendor-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add brand</div>
+					<div class="text-white text-sm font-bold font-['Satoshi']">Add vendor</div>
 				</button>
 			</div>
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if brands.length === 0}
+	{#if vendors.length === 0}
 		<!-- ... -->
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each brands as brand}
-				<Brand name={brand.name} date={monthsAgo(brand.date).toString()} {grid} />
+			{#each vendors as vendor}
+				<Vendor name={vendor.name} date={monthsAgo(vendor.date).toString()} {grid} />
 			{/each}
 		</div>
 	{:else}
@@ -149,17 +143,17 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Brand name</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">vendor name</th>
 						<th class="bg-[#F9F9F9]">Date added</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
 				</thead>
 
 				<tbody>
-					{#each brands as brand}
-						<Brand
-							name={brand.name}
-							date={new Date(brand.date).toLocaleDateString('en-US', {
+					{#each vendors as vendor}
+						<Vendor
+							name={vendor.name}
+							date={new Date(vendor.date).toLocaleDateString('en-US', {
 								month: '2-digit',
 								day: '2-digit',
 								year: '2-digit'
