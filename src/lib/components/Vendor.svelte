@@ -6,11 +6,11 @@
 
 {#if grid}
 	<div
-		class="w-full brand flex flex-col items-start gap-3 rounded-t-xl border-[0.5px] border-grey-300"
+		class="w-full vendor flex flex-col items-start gap-3 rounded-t-xl border-[0.5px] border-grey-300"
 	>
-		<div class="brand-image h-32 self-stretch rounded-t-xl bg-[#f9f9f9]"></div>
-		<div class="brand-info flex w-full py-2 px-3 flex-col items-start gap-2 flex-[1 0 0]">
-			<div class="brand-name text-base font-medium">
+		<div class="vendor-image h-32 self-stretch rounded-t-xl bg-[#f9f9f9]"></div>
+		<div class="vendor-info flex w-full py-2 px-3 flex-col items-start gap-2 flex-[1 0 0]">
+			<div class="vendor-name text-base font-medium">
 				{name}
 			</div>
 			<div class="date-added flex items-center gap-2 self-stretch">

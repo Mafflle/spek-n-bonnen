@@ -5,7 +5,6 @@
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
-	import { options } from '$lib/stores.js';
 	import { client, debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { slide } from 'svelte/transition';
