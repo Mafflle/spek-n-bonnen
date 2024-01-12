@@ -1,13 +1,38 @@
 <script lang="ts">
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import { enhance } from '$app/forms';
 	import Brand from '$lib/components/Brand.svelte';
+	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
-	import UploadBox from '$lib/components/UploadBox.svelte';
+	import { showToast } from '$lib/utils.js';
+
+	dayjs.extend(relativeTime);
+
+	export let data;
+
 	let showModal = false;
 	let loading = false;
 	let grid = false;
+	let previewImage;
+	let showMediaManager = false;
+	let disabled = true;
+	let validationErrors: { name?: [string]; logo?: [string] };
+	let imageId: number;
+
+	$: {
+		if (previewImage) {
+			imageId = previewImage.id;
+		}
+	}
+
 	function toggleModal() {
 		showModal = !showModal;
 	}
+	function toggleMediaManager() {
+		showMediaManager = !showMediaManager;
+	}
+
 	function monthsAgo(date: Date) {
 		const now = new Date();
 		const givenDate = new Date(date);
@@ -15,15 +40,14 @@
 			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
 		return months;
 	}
-	let brands: { name: string; date: Date }[] = [
-		{ name: 'Brand 1', date: new Date('2023-12-01T00:00:00.000Z') },
-		{ name: 'Brand 2', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 3', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 4', date: new Date('2020-08-01T00:00:00.000Z') },
-		{ name: 'Brand 5', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Brand 6', date: new Date('2018-08-01T00:00:00.000Z') },
-		{ name: 'Brand 7', date: new Date('2021-08-01T00:00:00.000Z') }
-	];
+
+	const { brands } = data;
+
+	$: {
+		if (previewImage) {
+			disabled = false;
+		}
+	}
 </script>
 
 <Modal {showModal} on:close={toggleModal}>
@@ -33,7 +57,28 @@
 			action="?/create"
 			method="post"
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			enctype="multipart/form-data"
+			use:enhance={() => {
+				loading = true;
+				return async ({ result, update }) => {
+					try {
+						console.log(result);
+
+						if (result.status === 200) {
+							console.log(result.data);
+							showToast('Brand added successfully', 'success');
+						} else if (result.status === 400) {
+							validationErrors = result.data.errors;
+
+							if (validationErrors.logo) {
+								showToast('Select an image before adding brand', 'error');
+							}
+						}
+					} finally {
+						update();
+						loading = false;
+					}
+				};
+			}}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
@@ -43,8 +88,38 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
+			<div class="w-full">
+				<div
+					class="w-full relative rounded-xl flex py-8 px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
+				>
+					<div
+						class="upload-box-info relative w-full flex flex-col justify-center items-center gap-8"
+					>
+						{#if previewImage}
+							<img
+								src={previewImage.image}
+								alt=""
+								style="aspect-ratio: 4/3"
+								class=" h-full absolute w-full top-0 object-cover"
+							/>
+						{/if}
+						<div
+							class="image w-14 h-14 rounded-full flex justify-center items-center border border-primary-softPink"
+						>
+							<img src="/icons/regular-image.svg" alt="reguar icon" />
+						</div>
 
+						<button
+							on:click={toggleMediaManager}
+							type="button"
+							class="bg-primary-red py-2.5 px-4 text-sm font-medium text-white rounded-[30px]"
+							>Import from Media Manager</button
+						>
+					</div>
+				</div>
+			</div>
 			<div class="modal-input">
+				<input type="text" class="hidden" bind:value={imageId} name="brand-logo" />
 				<input
 					type="text"
 					name="brand-name"
@@ -60,6 +135,7 @@
 					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
 					"
 					type="submit"
+					{disabled}
 				>
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
@@ -71,6 +147,18 @@
 		</form>
 	</div>
 </Modal>
+
+<Modal showModal={showMediaManager} on:close={() => (showMediaManager = false)}>
+	<MediaManager
+		slot="modal-content"
+		images={data.images.results}
+		on:selected={(e) => {
+			previewImage = e.detail;
+			showMediaManager = false;
+		}}
+	/>
+</Modal>
+
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
@@ -107,7 +195,7 @@
 				</span>
 				<input
 					type="text"
-					placeholder="Search for staffs..."
+					placeholder="Search for brands..."
 					class=" py-2 flex-auto outline-none"
 				/>
 			</div>
@@ -134,13 +222,13 @@
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if brands.length === 0}
+	{#if brands.results.length === 0}
 		<!-- ... -->
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each brands as brand}
-				<Brand name={brand.name} date={monthsAgo(brand.date).toString()} {grid} />
+			{#each brands.results as brand}
+				<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
 			{/each}
 		</div>
 	{:else}
@@ -156,16 +244,8 @@
 				</thead>
 
 				<tbody>
-					{#each brands as brand}
-						<Brand
-							name={brand.name}
-							date={new Date(brand.date).toLocaleDateString('en-US', {
-								month: '2-digit',
-								day: '2-digit',
-								year: '2-digit'
-							})}
-							{grid}
-						/>
+					{#each brands.results as brand}
+						<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
 					{/each}
 				</tbody>
 			</table>

@@ -11,7 +11,7 @@
 	export let images: any[];
 	dayjs.extend(relativeTime);
 
-	console.log(images);
+	// console.log(images);
 
 	let showModal: boolean = false;
 	let showDeleteModal: boolean = false;
@@ -33,6 +33,7 @@
 		selectedImage = image;
 
 		dispatch('selected', selectedImage);
+		showToast('Image selected successfully', 'info');
 	};
 </script>
 
@@ -84,7 +85,7 @@
 					class="bg-primary-100 py-2 px-2.5 flex items-center gap-1 text-sm rounded-3xl text-white"
 				>
 					<span>
-						<img src="icons/plus.svg" alt="plus" />
+						<img src="/icons/plus.svg" alt="plus" />
 					</span>
 					<span>Upload media</span>
 				</button>
