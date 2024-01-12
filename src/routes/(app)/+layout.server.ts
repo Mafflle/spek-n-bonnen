@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
 		throw redirect(302, 'auth/login');
 	}
 
-	const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/`);
+	const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);
 
 	if (getImages.ok) {
 		const images = await getImages.json();
