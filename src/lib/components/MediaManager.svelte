@@ -6,6 +6,7 @@
 	import { fly, slide } from 'svelte/transition';
 	import Modal from './Modal.svelte';
 	import UploadBox from './UploadBox.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let images: any[];
 	dayjs.extend(relativeTime);
@@ -15,16 +16,23 @@
 	let showModal: boolean = false;
 	let showDeleteModal: boolean = false;
 	let loading: boolean = false;
-	let hovering: boolean = false;
 	let validationErrors: { name?: [string]; logo?: [string] };
 	let imageValidationError: string;
 	let selectedImage;
+	const dispatch = createEventDispatcher();
+
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 	const toggleDeleteModal = (currImage) => {
 		selectedImage = currImage;
 		showDeleteModal = !showDeleteModal;
+	};
+
+	const selectMedia = (image) => {
+		selectedImage = image;
+
+		dispatch('selected', selectedImage);
 	};
 </script>
 
@@ -85,6 +93,7 @@
 		<div class="grid grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
 			{#each images as image}
 				<div
+					on:click={() => selectMedia(image)}
 					class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
 				>
 					<div class="brand-image overflow-hidden relative h-32 self-stretch bg-[#f9f9f9]">

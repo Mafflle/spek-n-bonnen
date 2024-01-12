@@ -43,7 +43,7 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<UploadBox inputName="brand-image" maximumImages={1} />
+
 			<div class="modal-input">
 				<input
 					type="text"

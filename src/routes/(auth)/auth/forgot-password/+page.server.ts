@@ -1,14 +1,14 @@
-import { PUBLIC_API_ENDPOINT } from "$env/static/public";
-import { client } from "$lib/utils";
-import { fail, type Actions } from "@sveltejs/kit";
-import { z } from "zod";
+import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+import { client } from '$lib/utils';
+import { fail, type Actions } from '@sveltejs/kit';
+import { z } from 'zod';
 
- const schema = z.object({
-  email: z
-			.string({ required_error: 'Email is required' })
-			.email({ message: 'Not a valid email' })
-			.trim(),
-})
+const schema = z.object({
+	email: z
+		.string({ required_error: 'Email is required' })
+		.email({ message: 'Not a valid email' })
+		.trim()
+});
 
 // export const resetPasswordSchema = z
 //   .object({
@@ -38,50 +38,46 @@ import { z } from "zod";
 // 		}
 // 	});
 
-
 type Errors = {
 	email?: [string];
-}
+};
 
 export const actions: Actions = {
-	sendForgotPasswordMail:async ({request, fetch}) => {
+	sendForgotPasswordMail: async ({ request, fetch }) => {
 		const formData = await request.formData();
 
 		const email = formData.get('email');
 
 		const dataToValidate = {
-			...(email && {email})
-		}
+			...(email && { email })
+		};
 
 		try {
 			const validatedData = schema.parse(dataToValidate);
 
-			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/password-reset/`, {
+			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/forgot-password/`, {
 				body: JSON.stringify(validatedData),
 				method: 'POST'
-			})
-			
+			});
+
 			if (res.ok) {
-				const status = await res.json()
+				const status = await res.json();
 				return {
 					success: true
-				}
-				
+				};
 			} else if (!res.ok && res.status === 400) {
-				const status = await res.json()
-			
-				return fail(400, {errors: status})
-				
+				const status = await res.json();
+
+				return fail(400, { errors: status });
 			} else {
-				
-				return fail(500, {message: 'Ooops something went wrong'})
+				return fail(500, { message: 'Ooops something went wrong' });
 			}
 		} catch (error) {
-				const toSend = {
+			const toSend = {
 				message: 'Ooops something went wrong',
 				errors: {} as Errors
 			};
-				if (error instanceof z.ZodError) {
+			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
 
@@ -91,10 +87,8 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
-		}
 	}
-
-
+};
 
 // export const sendForgotPasswordMail = async (requestBody: {email?: string }) => {
 //   const res = await client.post('auth/forgot-password',  requestBody )
