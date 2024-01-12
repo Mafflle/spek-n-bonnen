@@ -6,6 +6,7 @@
 	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
+	import { slide } from 'svelte/transition';
 
 	dayjs.extend(relativeTime);
 
@@ -50,6 +51,7 @@
 	}
 </script>
 
+<!-- add brand modal -->
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
@@ -127,6 +129,12 @@
 					placeholder="Brand name"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
+				{#if validationErrors?.name}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					>
+				{/if}
 			</div>
 			<div class="modal-submit">
 				<button
@@ -148,6 +156,7 @@
 	</div>
 </Modal>
 
+<!-- media manager -->
 <Modal showModal={showMediaManager} on:close={() => (showMediaManager = false)}>
 	<MediaManager
 		slot="modal-content"
