@@ -24,7 +24,7 @@
 	// console.log($page.url.searchParams.get('previous'));
 
 	const submit: SubmitFunction = async () => {
-		const previous = $page.url.searchParams.get('previous');
+		const previous = $page.url.searchParams.get('from');
 		loading = true;
 		return async ({ result, update }) => {
 			try {

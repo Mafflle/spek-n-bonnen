@@ -4,7 +4,7 @@ import type { LayoutServerLoad } from './$types';
 import { currentUser, getCurrentUser, initCurrentUser } from '$lib/user';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 
-export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
+export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 	const access = cookies.get('access');
 	const refresh = cookies.get('refresh');
 	// console.log(access, refresh);
@@ -15,9 +15,11 @@ export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
 	} else {
 	}
 	const currUser = getCurrentUser();
-	// console.log('current', currUser);
+	const currUrl = url.pathname;
+	// console.log('curr', currUrl);
+
 	if (currUser === null || !currUser) {
-		throw redirect(302, 'auth/login');
+		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
 
 	const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);

@@ -70,6 +70,14 @@
 			pageTitle: 'Settings'
 		}
 	];
+
+	let currUrl = $page.url.pathname;
+
+	$: {
+		// console.log($page.url.pathname);
+
+		currUrl = $page.url.pathname;
+	}
 </script>
 
 <aside
@@ -108,6 +116,10 @@
 					</li>
 				{/if}
 			{/each}
+			<!-- <form action="/?/logout" method="post">
+				<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
+				<button type="submit" class="btn">logout</button>
+			</form> -->
 		</ol>
 	</nav>
 </aside>

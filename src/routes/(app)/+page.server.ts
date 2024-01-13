@@ -29,11 +29,15 @@ const uploadSchema = z.object({
 	logo: imageSchema
 });
 export const actions: Actions = {
-	logout: async ({ cookies }) => {
+	logout: async ({ cookies, url, request }) => {
+		const formData = await request.formData();
+
+		const currUrl = formData.get('currUrl');
 		cookies.delete('access');
 		cookies.delete('refresh ');
 		currentUser.set(null);
-		throw redirect(302, 'auth/login');
+
+		throw redirect(302, `auth/login?from=${currUrl}`);
 	},
 	upload: async ({ fetch, request, cookies }) => {
 		// console.log(cookies.get('access'));
