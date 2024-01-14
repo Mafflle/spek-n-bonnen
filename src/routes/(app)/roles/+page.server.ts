@@ -36,6 +36,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
 		showToast('Error fetching roles', 'error');
 	}
+
 };
 
 type Errors = {

@@ -4,7 +4,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Selector from '$lib/components/Selector.svelte';
-	import StaffMember from '$lib/components/StaffMember.svelte';
+	import Role from '$lib/components/Role.svelte';
 	import { client, debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { slide } from 'svelte/transition';
@@ -95,7 +95,7 @@
 					while (inputsContainer?.firstChild) {
 						inputsContainer.removeChild(inputsContainer.firstChild);
 					}
-					$options = [];
+					let options = [];
 					toggleModal();
 					showToast('New role created successfully', 'success');
 				} else if (result.status === 400) {
@@ -173,21 +173,15 @@
 			<thead>
 				<tr class="">
 					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-					<th class="bg-[#F9F9F9]">Role</th>
-					<th class="bg-[#F9F9F9]">Email</th>
+					<th class="bg-[#F9F9F9]">Id</th>
 					<th class="bg-[#F9F9F9]">Permissions</th>
 					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 				</tr>
 			</thead>
 			{#if roles.count > 0}
 				<tbody>
-					{#each { length: 8 } as user}
-						<StaffMember
-							name="Oluwasheyifunmi oyefeso"
-							role="Customer service"
-							email="dummyname@gmail.com"
-							permissions="dummyname@gmail.com"
-						/>
+					{#each roles.results as role}
+						<Role name={role.name} id={role.id} permissions={role.permissions} />
 					{/each}
 				</tbody>{/if}
 		</table>
