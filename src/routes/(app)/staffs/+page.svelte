@@ -33,7 +33,6 @@
 				console.log(result);
 
 				if (result.status === 200) {
-					console.log('success', result.data);
 					const inputsContainer = document.getElementById('rolesContainer');
 
 					while (inputsContainer?.firstChild) {
@@ -80,7 +79,7 @@
 			showToast('Please select roles to assign the staff', 'error');
 		}
 	}
-	console.log(users);
+	// console.log(users);
 
 	onMount(() => {
 		// console.log(groups);

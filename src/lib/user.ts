@@ -73,8 +73,6 @@ export const initCurrentUser = async (
 		} else if (!refreshTokens.ok) {
 			currentUser.set(null);
 		}
-		{
-		}
 	} else if (!res.ok) {
 		currentUser.set(null);
 	}

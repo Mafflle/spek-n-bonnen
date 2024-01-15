@@ -28,6 +28,8 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 		const images = await getImages.json();
 
 		return { currUser, images };
+	} else if (getImages.status === 401) {
+		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
-	console.log(getImages);
+	// console.log(getImages);
 };
