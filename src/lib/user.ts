@@ -14,14 +14,12 @@ export type User = {
 
 export const currentUser = writable<User | null>(); //current user store
 
-export const getCurrentUser = () => {
-	let user: User | null;
-	currentUser.subscribe((currUser) => {
-		// console.log('current', currUser);
-		user = currUser;
+export const getCurrentUser = (): Promise<User | null> => {
+	return new Promise((resolve) => {
+		currentUser.subscribe((currUser) => {
+			resolve(currUser);
+		});
 	});
-
-	return user;
 };
 
 export const initCurrentUser = async (
