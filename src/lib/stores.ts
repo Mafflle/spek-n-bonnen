@@ -6,16 +6,27 @@ type Permission = {
 	codename: string;
 	content_type: number;
 };
+
 export type Role = {
 	id: number;
 	name: string;
 	permissions: Permission[];
 };
+
+export type Brand = {
+	id: number;
+	name: string;
+	logo: number;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
 export const container = writable<Option[]>([]);
 export let Roles = writable<Role[]>([]);
+export let Brands = writable<Brand[]>([]);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {

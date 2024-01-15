@@ -7,6 +7,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
+	import { Brands } from '$lib/stores.js';
 
 	dayjs.extend(relativeTime);
 
@@ -44,6 +45,7 @@
 
 	const { brands } = data;
 
+	Brands.set(brands.results);
 	$: {
 		if (previewImage) {
 			disabled = false;
@@ -67,11 +69,12 @@
 				loading = true;
 				return async ({ result, update }) => {
 					try {
-						console.log(result);
-
 						if (result.status === 200) {
 							console.log(result.data);
+
+							Brands.set([result.data.newBrand, ...$Brands]);
 							showToast('Brand added successfully', 'success');
+							toggleModal();
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
 
@@ -240,8 +243,8 @@
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each brands.results as brand}
-				<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
+			{#each $Brands as brand}
+				<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} id={0} />
 			{/each}
 		</div>
 	{:else}
@@ -257,8 +260,13 @@
 				</thead>
 
 				<tbody>
-					{#each brands.results as brand}
-						<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
+					{#each $Brands as brand}
+						<Brand
+							name={brand.name}
+							date={dayjs(brand.updated_at).fromNow()}
+							{grid}
+							id={brand.id}
+						/>
 					{/each}
 				</tbody>
 			</table>

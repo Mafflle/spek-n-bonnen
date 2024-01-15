@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
 };
 
 export const actions: Actions = {
-	create: async ({ fetch, request, cookies }) => {
+	create: async ({ fetch, request }) => {
 		// console.log(cookies.get('access'));
 
 		const formData = await request.formData();
@@ -81,5 +81,24 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
+	},
+
+	delete: async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id');
+		if (id) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/${id}/`, {
+				method: 'delete'
+			});
+
+			if (deleteRole.ok) {
+				return {
+					success: true
+				};
+			} else if (!deleteRole.ok) {
+				console.log(deleteRole);
+			}
+		} else return fail(400);
 	}
 };
