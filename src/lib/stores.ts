@@ -21,6 +21,13 @@ export type Brand = {
 	updated_at: Date;
 };
 
+export type Manufacturer = {
+	id: number;
+	name: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export type User = {
 	id: number;
 	first_name: string;
@@ -37,6 +44,7 @@ export let inviteUserModal = writable(false);
 export const container = writable<Option[]>([]);
 export let Roles = writable<Role[]>([]);
 export let Brands = writable<Brand[]>([]);
+export let Manufacturers = writable<Manufacturer[]>([]);
 export let Users = writable<User[]>([]);
 
 export const updateSelectedOptions = (option: Option) => {
