@@ -20,6 +20,9 @@ export const getCurrentUser = (): Promise<User | null> => {
 			resolve(currUser);
 		});
 	});
+	
+
+	return user;
 };
 
 export const initCurrentUser = async (
