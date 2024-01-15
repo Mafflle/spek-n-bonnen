@@ -35,14 +35,6 @@
 		showMediaManager = !showMediaManager;
 	}
 
-	function monthsAgo(date: Date) {
-		const now = new Date();
-		const givenDate = new Date(date);
-		const months =
-			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
-		return months;
-	}
-
 	const { brands } = data;
 
 	Brands.set(brands.results);

@@ -21,12 +21,23 @@ export type Brand = {
 	updated_at: Date;
 };
 
+export type User = {
+	id: number;
+	first_name: string;
+	last_name: string;
+	email: string;
+	is_staff: boolean;
+	is_admin: boolean;
+	is_superuser: boolean;
+};
+
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
 export const container = writable<Option[]>([]);
 export let Roles = writable<Role[]>([]);
 export let Brands = writable<Brand[]>([]);
+export let Users = writable<User[]>([]);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {
