@@ -36,7 +36,6 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
 		showToast('Error fetching roles', 'error');
 	}
-
 };
 
 type Errors = {
@@ -96,5 +95,23 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
+	},
+	delete: async ({ fetch, request, params }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id');
+		if (id) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/${id}/`, {
+				method: 'delete'
+			});
+
+			if (deleteRole.ok) {
+				return {
+					success: true
+				};
+			} else if (!deleteRole.ok) {
+				console.log(deleteRole);
+			}
+		} else return fail(400);
 	}
 };

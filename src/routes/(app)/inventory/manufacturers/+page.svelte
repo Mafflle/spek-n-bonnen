@@ -27,6 +27,9 @@
 	];
 </script>
 
+<svelte:head>
+	<title>Manufacturers - Spek-n-Boonen</title>
+</svelte:head>
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->

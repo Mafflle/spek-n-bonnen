@@ -51,6 +51,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Brands - Spek-n-Boonen</title>
+</svelte:head>
+
 <!-- add brand modal -->
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">

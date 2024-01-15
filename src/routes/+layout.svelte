@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.postcss';
+	import '../app.pcss';
 	import { Toaster } from 'svelte-french-toast';
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
