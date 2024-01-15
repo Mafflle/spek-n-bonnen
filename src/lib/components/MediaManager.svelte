@@ -93,6 +93,8 @@
 		</div>
 		<div class="grid grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
 			{#each images as image}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
 					on:click={() => selectMedia(image)}
 					class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
