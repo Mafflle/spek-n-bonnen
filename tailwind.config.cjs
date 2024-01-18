@@ -1,14 +1,30 @@
+import { fontFamily } from 'tailwindcss/defaultTheme';
+/** @type {import('tailwindcss').Config} */
+
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	plugins: [require('daisyui')],
 
-	darkMode: 'false',
+	darkMode: ['class'],
+	safelist: ['dark'],
 
 	theme: {
+		container: {
+			center: true,
+			padding: '2rem',
+			screens: {
+				'2xl': '1400px'
+			}
+		},
 		extend: {
 			colors: {
 				// flowbite-svelte
+				border: 'hsl(var(--border) / <alpha-value>)',
+				input: 'hsl(var(--input) / <alpha-value>)',
+				ring: 'hsl(var(--ring) / <alpha-value>)',
+				background: 'hsl(var(--background) / <alpha-value>)',
+				foreground: 'hsl(var(--foreground) / <alpha-value>)',
 				primary: {
 					50: '#DA4E45',
 					100: '#D3443F',
@@ -22,10 +38,13 @@ const config = {
 					900: '#A0000F',
 					red: '#DC5950',
 					light: '#FFE8E7',
-					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' }
+					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' },
+					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
 				},
 				secondary: {
-					50: '#9c9c9c'
+					50: '#9c9c9c',
+					DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+					foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
 				},
 				grey: {
 					100: '#6B6B6B',
@@ -35,13 +54,39 @@ const config = {
 				black: {
 					100: '#2D2D2D'
 				},
-				sGray: '#F5F5F5'
+				sGray: '#F5F5F5',
+				destructive: {
+					DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
+					foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)'
+				},
+				muted: {
+					DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+					foreground: 'hsl(var(--muted-foreground) / <alpha-value>)'
+				},
+				accent: {
+					DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+					foreground: 'hsl(var(--accent-foreground) / <alpha-value>)'
+				},
+				popover: {
+					DEFAULT: 'hsl(var(--popover) / <alpha-value>)',
+					foreground: 'hsl(var(--popover-foreground) / <alpha-value>)'
+				},
+				card: {
+					DEFAULT: 'hsl(var(--card) / <alpha-value>)',
+					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
+				}
+			},
+			borderRadius: {
+				lg: 'var(--radius)',
+				md: 'calc(var(--radius) - 2px)',
+				sm: 'calc(var(--radius) - 4px)'
 			},
 			boxShadow: {
 				custom: '0px 0px 0px 3px #ECA6A2'
 			},
 			fontFamily: {
-				satoshi: ['Satoshi', 'sans-serif']
+				satoshi: ['Satoshi', 'sans-serif'],
+				sans: ['Inter', ...fontFamily.sans]
 			}
 		}
 	},

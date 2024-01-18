@@ -1,16 +1,42 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
-	import Selector from '$lib/components/Selector.svelte';
-	import StaffMember from '$lib/components/StaffMember.svelte';
-	import { client, debounce, showToast, type Option } from '$lib/utils.js';
+	import Role from '$lib/components/Role.svelte';
+	import { Roles, container } from '$lib/stores.js';
+	import { debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { onDestroy } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	export let data;
 	let { roles, permissions } = data;
+	Roles.set(roles.results);
+
+	// let allRoles: Role[] = roles.results;
+	// const table = createTable(readable(allRoles));
+
+	// const columns = table.createColumns([
+	// 	table.column({
+	// 		accessor: 'id',
+	// 		header: 'Id'
+	// 	}),
+	// 	table.column({
+	// 		accessor: 'name',
+	// 		header: 'Name'
+	// 	}),
+	// 	table.column({
+	// 		accessor: 'permissions',
+	// 		header: 'Permissions',
+	// 		cell: (permissions) => {permissions.value}
+	// 	}),
+	// 	table.column({
+	// 		accessor: ({ id }) => id,
+	// 		header: ''
+	// 	})
+	// ]);
+
+	// const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = table.createViewModel(columns);
 
 	let name: string;
 	let validationErrors: { permissions?: [string]; name?: [string]; search?: string } = {};
@@ -89,17 +115,20 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					roles.results = [...roles.results, result.data.newRole];
+					Roles.update((roles) => {
+						return (roles = [...roles, result.data.newRole]);
+					});
 					const inputsContainer = document.getElementById('permissionsContainer');
 
 					while (inputsContainer?.firstChild) {
 						inputsContainer.removeChild(inputsContainer.firstChild);
 					}
-					$options = [];
+					container.set([]);
 					toggleModal();
 					showToast('New role created successfully', 'success');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
+					showToast(`${result.data.message}`, 'error');
 				} else if (result.status == 500) {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -109,6 +138,10 @@
 			}
 		};
 	};
+
+	onDestroy(() => {
+		container.set([]);
+	});
 </script>
 
 <svelte:head>
@@ -155,7 +188,7 @@
 			<div class="filter-buttons flex items-start gap-5">
 				<button
 					on:click={toggleModal}
-					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+					class=" px-2.5 py-2.5 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
@@ -169,25 +202,19 @@
 	</div>
 
 	<div class="border rounded-xl">
-		<table class="table">
-			<thead>
-				<tr class="">
+		<table class="w-full table">
+			<thead class="table-header-group">
+				<tr class="table-row">
+					<th class="bg-[#F9F9F9]">Id</th>
 					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-					<th class="bg-[#F9F9F9]">Role</th>
-					<th class="bg-[#F9F9F9]">Email</th>
 					<th class="bg-[#F9F9F9]">Permissions</th>
 					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 				</tr>
 			</thead>
-			{#if roles.count > 0}
-				<tbody>
-					{#each { length: 8 } as user}
-						<StaffMember
-							name="Oluwasheyifunmi oyefeso"
-							role="Customer service"
-							email="dummyname@gmail.com"
-							permissions="dummyname@gmail.com"
-						/>
+			{#if $Roles.length > 0}
+				<tbody class="table-row-group">
+					{#each $Roles as role}
+						<Role name={role.name} id={role.id} permissions={role.permissions} />
 					{/each}
 				</tbody>{/if}
 		</table>
@@ -196,6 +223,39 @@
 				<h3 class="text-lg font-semibold text-center">No roles created yet</h3>
 			</div>
 		{/if}
+
+		<!-- <Table.Root {...$tableAttrs}>
+			<Table.Header>
+				{#each $headerRows as headerRow}
+					<Subscribe rowAttr={headerRow.attrs()}>
+						<Table.Row>
+							{#each headerRow.cells as cell (cell.id)}
+								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
+									<Table.Head {...attrs}>
+										<Render of={cell.render()} />
+									</Table.Head>
+								</Subscribe>
+							{/each}
+						</Table.Row>
+					</Subscribe>
+				{/each}
+			</Table.Header>
+			<Table.Body {...$tableBodyAttrs}>
+				{#each $pageRows as row (row.id)}
+					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+						<Table.Row {...rowAttrs}>
+							{#each row.cells as cell (cell.id)}
+								<Subscribe attrs={cell.attrs()} let:attrs>
+									<Table.Cell {...attrs}>
+										<Render of={cell.render()} />
+									</Table.Cell>
+								</Subscribe>
+							{/each}
+						</Table.Row>
+					</Subscribe>
+				{/each}
+			</Table.Body>
+		</Table.Root> -->
 	</div>
 </div>
 .

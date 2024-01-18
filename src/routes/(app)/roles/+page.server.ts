@@ -72,6 +72,7 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
+			// console.log('create role', res);
 
 			if (res.ok) {
 				const newRole = await res.json();
@@ -79,6 +80,10 @@ export const actions: Actions = {
 				return {
 					newRole
 				};
+			} else {
+				const body = await res.json();
+				// console.log('create role request error', body);
+				return fail(400, { message: 'Error while creating new role', errors: body });
 			}
 		} catch (error) {
 			const toSend = {
@@ -95,5 +100,23 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
+	},
+	delete: async ({ fetch, request, params }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id');
+		if (id) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/${id}/`, {
+				method: 'delete'
+			});
+
+			if (deleteRole.ok) {
+				return {
+					success: true
+				};
+			} else if (!deleteRole.ok) {
+				console.log(deleteRole);
+			}
+		} else return fail(400);
 	}
 };

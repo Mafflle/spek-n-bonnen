@@ -7,6 +7,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
+	import { Brands } from '$lib/stores.js';
 
 	dayjs.extend(relativeTime);
 
@@ -34,22 +35,19 @@
 		showMediaManager = !showMediaManager;
 	}
 
-	function monthsAgo(date: Date) {
-		const now = new Date();
-		const givenDate = new Date(date);
-		const months =
-			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
-		return months;
-	}
-
 	const { brands } = data;
 
+	Brands.set(brands.results);
 	$: {
 		if (previewImage) {
 			disabled = false;
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>Brands - Spek-n-Boonen</title>
+</svelte:head>
 
 <!-- add brand modal -->
 <Modal {showModal} on:close={toggleModal}>
@@ -63,11 +61,12 @@
 				loading = true;
 				return async ({ result, update }) => {
 					try {
-						console.log(result);
-
 						if (result.status === 200) {
 							console.log(result.data);
+
+							Brands.set([result.data.newBrand, ...$Brands]);
 							showToast('Brand added successfully', 'success');
+							toggleModal();
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
 
@@ -102,7 +101,7 @@
 								src={previewImage.image}
 								alt=""
 								style="aspect-ratio: 4/3"
-								class=" h-full absolute w-full top-0 object-cover"
+								class=" h-full absolute w-full top-0 object-cover pointer-events-none"
 							/>
 						{/if}
 						<div
@@ -236,8 +235,8 @@
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each brands.results as brand}
-				<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
+			{#each $Brands as brand}
+				<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} id={0} />
 			{/each}
 		</div>
 	{:else}
@@ -253,8 +252,13 @@
 				</thead>
 
 				<tbody>
-					{#each brands.results as brand}
-						<Brand name={brand.name} date={dayjs(brand.updated_at).fromNow()} {grid} />
+					{#each $Brands as brand}
+						<Brand
+							name={brand.name}
+							date={dayjs(brand.updated_at).fromNow()}
+							{grid}
+							id={brand.id}
+						/>
 					{/each}
 				</tbody>
 			</table>

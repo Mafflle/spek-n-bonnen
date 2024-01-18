@@ -1,56 +1,99 @@
 <script lang="ts">
-	import Manufacturers from '$lib/components/Manufacturers.svelte';
-	import manufacturers from '$lib/components/Manufacturers.svelte';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import { enhance } from '$app/forms';
+	import Manufacturer from '$lib/components/Manufacturer.svelte';
+	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
-	import UploadBox from '$lib/components/UploadBox.svelte';
+	import { showToast } from '$lib/utils.js';
+	import { slide } from 'svelte/transition';
+	import { Manufacturers } from '$lib/stores.js';
+
+	dayjs.extend(relativeTime);
+
+	export let data;
+
 	let showModal = false;
 	let loading = false;
 	let grid = false;
+	let showMediaManager = false;
+	let disabled = false;
+	let validationErrors: { name?: [string] };
+	let imageId: number;
+
 	function toggleModal() {
 		showModal = !showModal;
 	}
-	function monthsAgo(date: Date) {
-		const now = new Date();
-		const givenDate = new Date(date);
-		const months =
-			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
-		return months;
+	function toggleMediaManager() {
+		showMediaManager = !showMediaManager;
 	}
-	let manufacturerss: { name: string; date: Date }[] = [
-		{ name: 'Manufacturer 1', date: new Date('2023-12-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 2', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 3', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 4', date: new Date('2020-08-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 5', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 6', date: new Date('2018-08-01T00:00:00.000Z') },
-		{ name: 'Manufacturer 7', date: new Date('2021-08-01T00:00:00.000Z') }
-	];
+
+	const { manufacturers } = data;
+
+	Manufacturers.set(manufacturers.results);
+	// $: {
+	// 	if (previewImage) {
+	// 		disabled = false;
+	// 	}
+	// }
 </script>
 
+<!-- The rest of the code is similar to the Brands code, just replace "Brand" with "Manufacturer" -->
+
+<svelte:head>
+	<title>Manufacturers - Spek-n-Boonen</title>
+</svelte:head>
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
 		<form
 			action="?/create"
+			method="post"
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			use:enhance={() => {
+				loading = true;
+				return async ({ result, update }) => {
+					try {
+						if (result.status === 200) {
+							console.log(result.data);
+
+							Manufacturers.set([result.data.newManufacturer, ...$Manufacturers]);
+							showToast('Brand added successfully', 'success');
+							toggleModal();
+						} else if (result.status === 400) {
+							validationErrors = result.data.errors;
+						}
+					} finally {
+						update();
+						loading = false;
+					}
+				};
+			}}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Add manufacturers
+					Add manufacturer
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<UploadBox inputName="manufacturer-image" maximumImages={1} />
+
 			<div class="modal-input">
+				<!-- <input type="text" class="hidden" bind:value={imageId} name="manufacturer-logo" /> -->
 				<input
 					type="text"
 					name="manufacturer-name"
 					id="manufacturer-name"
-					placeholder="manufacturer name"
+					placeholder="Manufacturer name"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
+				{#if validationErrors?.name}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					>
+				{/if}
 			</div>
 			<div class="modal-submit">
 				<button
@@ -59,11 +102,12 @@
 					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
 					"
 					type="submit"
+					{disabled}
 				>
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">Add manufacturer </span>
+						<span class="button-text">Add Manufacturer </span>
 					{/if}
 				</button>
 			</div>
@@ -129,15 +173,15 @@
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if manufacturerss.length === 0}
+	{#if manufacturers.length === 0}
 		<!-- ... -->
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each manufacturerss as manufacturers}
-				<Manufacturers
-					name={manufacturers.name}
-					date={monthsAgo(manufacturers.date).toString()}
+			{#each $Manufacturers as manufacturer}
+				<Manufacturer
+					name={manufacturer.name}
+					date={dayjs(manufacturer.updated_at).fromNow()}
 					{grid}
 				/>
 			{/each}
@@ -155,14 +199,10 @@
 				</thead>
 
 				<tbody>
-					{#each manufacturerss as manufacturers}
-						<Manufacturers
-							name={manufacturers.name}
-							date={new Date(manufacturers.date).toLocaleDateString('en-US', {
-								month: '2-digit',
-								day: '2-digit',
-								year: '2-digit'
-							})}
+					{#each $Manufacturers as manufacturer}
+						<Manufacturer
+							name={manufacturer.name}
+							date={dayjs(manufacturer.updated_at).fromNow()}
 							{grid}
 						/>
 					{/each}

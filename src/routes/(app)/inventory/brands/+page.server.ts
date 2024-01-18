@@ -1,6 +1,6 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { uploadImage } from '$lib/api';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { data } from 'autoprefixer';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ type Errors = {
 	logo?: [string];
 	server?: [string];
 };
-export const load: PageServerLoad = async ({ cookies, fetch }) => {
+export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 	const getAllBrands = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`);
 
 	if (getAllBrands.ok) {
@@ -26,11 +26,13 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
 		return {
 			brands
 		};
+	} else if (!getAllBrands.ok) {
+		throw redirect(302, `/auth/login?from=${url.pathname}`);
 	}
 };
 
 export const actions: Actions = {
-	create: async ({ fetch, request, cookies }) => {
+	create: async ({ fetch, request, url }) => {
 		// console.log(cookies.get('access'));
 
 		const formData = await request.formData();
@@ -61,6 +63,8 @@ export const actions: Actions = {
 				//TODO: Handle Bad Request
 				const badBody = await createBrand.json();
 				console.log(badBody);
+			} else if (createBrand.status == 401) {
+				throw redirect(302, `/auth/login?from=${url.pathname}`);
 			} else {
 				//TODO: Return "Something went wrong..." message
 				console.log(createBrand);
@@ -81,5 +85,24 @@ export const actions: Actions = {
 			console.log('error', error);
 			return fail(500, toSend);
 		}
+	},
+
+	delete: async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id');
+		if (id) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/${id}/`, {
+				method: 'delete'
+			});
+
+			if (deleteRole.ok) {
+				return {
+					success: true
+				};
+			} else if (!deleteRole.ok) {
+				console.log(deleteRole);
+			}
+		} else return fail(400);
 	}
 };
