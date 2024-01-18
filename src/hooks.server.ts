@@ -77,7 +77,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		console.log('request intercepted');
 		await retryRequest(4);
 	}
-	return res;
+	return fetch(request);
 
 	// console.log('hey');
 };
