@@ -45,6 +45,7 @@
 	let permissionsSelected: boolean = false;
 	let isFilled: boolean = false;
 	let loading: boolean = false;
+	let currRoleId: number;
 
 	// conditional(s)
 
@@ -67,6 +68,14 @@
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
+	const toggleEditModal = (role) => {
+		showModal = !showModal;
+		name = role.name;
+		currRoleId = role.id;
+
+		container.set(role.permissions);
+	};
+	$: console.log($Roles);
 
 	//permissions function(s)
 	const searchPermissions = debounce(async (search: string) => {
@@ -109,23 +118,40 @@
 	};
 
 	// Roles CRUD function(s)
-	const submit: SubmitFunction = async () => {
+	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
+		if (currRoleId) formData.set('role-id', `${currRoleId}`);
+
+		console.log(formData.getAll('permission'));
 
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					Roles.update((roles) => {
-						return (roles = [...roles, result.data.newRole]);
-					});
-					const inputsContainer = document.getElementById('permissionsContainer');
+					if (result.data.edited === true) {
+						// console.log(result.data);
 
-					while (inputsContainer?.firstChild) {
-						inputsContainer.removeChild(inputsContainer.firstChild);
+						const editedRole = result.data.role;
+						Roles.update((roles) => {
+							const updatedRole = roles.map((role) => {
+								if (role.id === editedRole.id) {
+									role = editedRole;
+								}
+								return role;
+							});
+							// console.log(updatedRole);
+							return updatedRole;
+						});
+						showToast('	Role updated successfully', 'success');
+						container.set([]);
+						toggleModal();
+					} else {
+						Roles.update((roles) => {
+							return (roles = [...roles, result.data.role]);
+						});
+						showToast('New role created successfully', 'success');
+						container.set([]);
+						toggleModal();
 					}
-					container.set([]);
-					toggleModal();
-					showToast('New role created successfully', 'success');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 					showToast(`${result.data.message}`, 'error');
@@ -214,7 +240,12 @@
 			{#if $Roles.length > 0}
 				<tbody class="table-row-group">
 					{#each $Roles as role}
-						<Role name={role.name} id={role.id} permissions={role.permissions} />
+						<Role
+							on:edit={(e) => toggleEditModal(e.detail)}
+							name={role.name}
+							id={role.id}
+							permissions={role.permissions}
+						/>
 					{/each}
 				</tbody>{/if}
 		</table>

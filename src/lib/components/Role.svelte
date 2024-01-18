@@ -7,10 +7,13 @@
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import { Roles } from '$lib/stores';
+	import { createEventDispatcher } from 'svelte';
 
 	export let name: string;
 	export let id: number;
 	export let permissions: { codename: string; content_type: number; id: number; name: string }[];
+
+	const dispatch = createEventDispatcher();
 
 	let loading: boolean = false;
 
@@ -29,6 +32,19 @@
 				update();
 			}
 		};
+	};
+
+	const edit = (roleName: string, id: number, perms) => {
+		perms = perms.map((perm) => {
+			return {
+				value: perm.id,
+				label: perm.codename
+			};
+		});
+		// console.log(perms);
+
+		const role = { id, name: roleName, permissions: perms };
+		dispatch('edit', role);
 	};
 </script>
 
@@ -76,15 +92,14 @@
 			<DropdownMenu.Content class="py-3 px-2">
 				<div class="grid gap-5 w-full">
 					<div class="grid gap-3">
-						<form class="grid items-center">
-							<Button
-								class="text-xs flex items-center py-2 rounded h-auto gap-1"
-								variant="secondary"
-							>
-								<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
-								<span class="text-sm">Edit</span>
-							</Button>
-						</form>
+						<Button
+							on:click={() => edit(name, id, permissions)}
+							class="text-xs flex items-center py-2 rounded h-auto gap-1"
+							variant="secondary"
+						>
+							<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
+							<span class="text-sm">Edit</span>
+						</Button>
 						<form
 							action="?/delete"
 							method="post"
