@@ -8,8 +8,12 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 	const previous = url.searchParams.get('from');
 
 	if (currentUser) {
-		if (previous === '/') {
+		if (previous) {
+			if (previous === '/') {
+				throw redirect(302, '/');
+			} else throw redirect(302, `${previous}`);
+		} else {
 			throw redirect(302, '/');
-		} else throw redirect(302, `${previous}`);
+		}
 	}
 };

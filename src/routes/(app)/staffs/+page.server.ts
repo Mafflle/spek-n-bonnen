@@ -1,6 +1,6 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { showToast } from '$lib/utils';
-import { fail, type Action, type Actions } from '@sveltejs/kit';
+import { fail, type Action, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
 
@@ -52,7 +52,7 @@ const inviteSchema = z
 		}
 	});
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 	const access = cookies.get('access');
 	// console.log(access);
 
@@ -67,14 +67,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 			groups: data.results,
 			users
 		};
-	} else {
-		console.log(groups.url, groups.statusText);
-		console.log(staffs.url, staffs.statusText);
-
-		return {
-			groups: [],
-			staffs: []
-		};
+	} else if (groups.status === 401 || staffs.status === 401) {
+		throw redirect(302, `/auth/login?from=${url.pathname}`);
 	}
 };
 

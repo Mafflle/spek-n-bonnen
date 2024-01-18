@@ -72,6 +72,7 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
+			// console.log('create role', res);
 
 			if (res.ok) {
 				const newRole = await res.json();
@@ -79,6 +80,10 @@ export const actions: Actions = {
 				return {
 					newRole
 				};
+			} else {
+				const body = await res.json();
+				// console.log('create role request error', body);
+				return fail(400, { message: 'Error while creating new role', errors: body });
 			}
 		} catch (error) {
 			const toSend = {

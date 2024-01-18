@@ -41,7 +41,6 @@
 	const unsubscribe = container.subscribe((items) => (selectedArray = items));
 	onDestroy(() => {
 		options = [];
-		unsubscribe();
 	});
 </script>
 

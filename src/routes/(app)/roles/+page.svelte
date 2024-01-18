@@ -3,9 +3,10 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Role from '$lib/components/Role.svelte';
-	import { Roles } from '$lib/stores.js';
+	import { Roles, container } from '$lib/stores.js';
 	import { debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { onDestroy } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	export let data;
@@ -114,17 +115,20 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					roles.results = [...roles.results, result.data.newRole];
+					Roles.update((roles) => {
+						return (roles = [...roles, result.data.newRole]);
+					});
 					const inputsContainer = document.getElementById('permissionsContainer');
 
 					while (inputsContainer?.firstChild) {
 						inputsContainer.removeChild(inputsContainer.firstChild);
 					}
-					let options = [];
+					container.set([]);
 					toggleModal();
 					showToast('New role created successfully', 'success');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
+					showToast(`${result.data.message}`, 'error');
 				} else if (result.status == 500) {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -134,6 +138,10 @@
 			}
 		};
 	};
+
+	onDestroy(() => {
+		container.set([]);
+	});
 </script>
 
 <svelte:head>

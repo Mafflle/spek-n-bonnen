@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Accordion from '$lib/components/ui/accordion';
+	import { page } from '$app/stores';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import Button from './ui/button/button.svelte';
 
@@ -23,7 +23,7 @@
 		<Collapsible.Trigger asChild let:builder>
 			<div
 				class="flex max-w-full w-full h-full px-3 items-center justify-around rounded-md
-										hover:bg-grey-200 hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
+										hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
 										"
 			>
 				<a {href} class="side-nav-button w-full flex items-center justify-between">
@@ -72,12 +72,19 @@
 		</Collapsible.Content>
 	</Collapsible.Root>
 {:else}
-	<span
+	<a
 		class="flex max-w-full h-full py-3 px-3 items-center justify-around rounded-md
-										hover:bg-grey-200 hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
+										hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
 										"
+		{href}
+		on:mouseenter={() => {
+			if ($page.url.pathname === href && active === true) active = false;
+		}}
+		on:mouseleave={() => {
+			if ($page.url.pathname === href && active === false) active = true;
+		}}
 	>
-		<a {href} class="side-nav-button flex max-w-full w-full items-center justify-between">
+		<span class="side-nav-button flex max-w-full w-full items-center justify-between">
 			<div class="button-content flex items-center w-full gap-2.5 self-stretch">
 				<!-- <enhanced:img src={icon} /> -->
 				<span>{@html active ? activeIcon : icon}</span>
@@ -94,6 +101,6 @@
 					<span class="alert-text text-white text-xs font-bold">4</span>
 				</div>
 			{/if}
-		</a>
-	</span>
+		</span>
+	</a>
 {/if}

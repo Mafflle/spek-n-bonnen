@@ -91,7 +91,10 @@
 			};
 		});
 	});
-	onDestroy(() => (groups = {}));
+	onDestroy(() => {
+		groups = {};
+		container.set([]);
+	});
 </script>
 
 <svelte:head>
