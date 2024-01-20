@@ -19,7 +19,7 @@
 		loading = true;
 		return async ({ result, update }) => {
 			try {
-				if (result.status == 200) {
+				if (result.status == 204) {
 					Manufacturers.update((manufacturers) =>
 						manufacturers.filter((manufacturer) => manufacturer.id !== id)
 					);
