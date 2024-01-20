@@ -45,6 +45,7 @@
 		"dotenv": "^16.3.1",
 		"iconify-icon": "^1.0.8",
 		"lucide-svelte": "^0.309.0",
+		"nanoid": "^3.0.0",
 		"svelte-file-dropzone": "^2.0.2",
 		"svelte-french-toast": "^1.2.0",
 		"tailwind-merge": "^2.2.0",
