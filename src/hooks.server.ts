@@ -52,8 +52,9 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			const newAccessToken: string | undefined = event.cookies.get('access');
 
 			if (newAccessToken) {
-				return request.headers.set('Authorization', `Bearer ${access}`);
+				request.headers.set('Authorization', `Bearer ${access}`);
 			}
+			console.log('request headers set');
 		} else if (attempt < maxAttempts && !refreshTokens.ok) {
 			//when refresh fails, it tries again for confirmation
 			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
@@ -68,19 +69,20 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		}
 	};
 
-	const res = await fetch(request);
+	const res = fetch(request.clone());
 
-	if (res.ok) {
-		console.log('no interception');
-
-		return res;
-	} else if (res.status === 401) {
-		console.log('response', res.url, res.status);
+	if (!(await res).ok && (await res).status === 401) {
+		const body = await (await res).json();
+		console.log('response', body);
 
 		console.log('request intercepted');
 		await retryRequest();
-		return fetch(request);
 	}
+	return fetch(request.clone())
+		.then((res) => res)
+		.catch((error) => {
+			console.log('failed', error);
+		});
 
 	// console.log('hey');
 };
