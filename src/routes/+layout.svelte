@@ -4,9 +4,6 @@
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
-
-	export let data;
-	let showModal = Boolean($navigating);
 </script>
 
 <svelte:head>

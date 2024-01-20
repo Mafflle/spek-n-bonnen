@@ -38,7 +38,7 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
-
+			console.log(res.status);
 			if (res.ok) {
 				const tokens = await res.json();
 				cookies.set('access', tokens.access, {
