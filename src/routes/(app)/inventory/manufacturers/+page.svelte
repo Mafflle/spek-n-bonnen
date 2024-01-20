@@ -8,10 +8,13 @@
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
 	import { Manufacturers } from '$lib/stores.js';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	dayjs.extend(relativeTime);
 
 	export let data;
+	const { manufacturers } = data;
+	Manufacturers.set(manufacturers.results);
 
 	let showModal = false;
 	let loading = false;
@@ -20,22 +23,65 @@
 	let disabled = false;
 	let validationErrors: { name?: [string] };
 	let imageId: number;
+	let currManufacturerId: number;
+	let name: string;
 
 	function toggleModal() {
 		showModal = !showModal;
 	}
-	function toggleMediaManager() {
-		showMediaManager = !showMediaManager;
-	}
+	// function toggleMediaManager() {
+	// 	showMediaManager = !showMediaManager;
+	// }
 
-	const { manufacturers } = data;
+	const toggleEditModal = (manufacturer) => {
+		showModal = !showModal;
+		name = manufacturer.Name;
+		currManufacturerId = manufacturer.id;
+	};
 
-	Manufacturers.set(manufacturers.results);
 	// $: {
 	// 	if (previewImage) {
 	// 		disabled = false;
 	// 	}
 	// }
+	const submit: SubmitFunction = async ({ formData }) => {
+		loading = true;
+		if (currManufacturerId) formData.set('manufacturer-id', `${currManufacturerId}`);
+
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					if (result.data.edited === true) {
+						const editedManufacturer = result.data.updatedManufacturer;
+						Manufacturers.update((manufacturers) => {
+							return manufacturers.map((manufacturer) => {
+								if (manufacturer.id === editedManufacturer.id) {
+									return editedManufacturer;
+								}
+								return manufacturer;
+							});
+						});
+						showToast('Manufacturer updated successfully', 'success');
+						toggleModal();
+					} else {
+						Manufacturers.update((manufacturers) => {
+							return [...manufacturers, result.data.manufacturer];
+						});
+						showToast('New manufacturer created successfully', 'success');
+						toggleModal();
+					}
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+					showToast(`${result.data.message}`, 'error');
+				} else if (result.status == 500) {
+					showToast('Ooops something went wrong', 'error');
+				}
+			} finally {
+				loading = false;
+				update();
+			}
+		};
+	};
 </script>
 
 <!-- The rest of the code is similar to the Brands code, just replace "Brand" with "Manufacturer" -->
@@ -50,25 +96,7 @@
 			action="?/create"
 			method="post"
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			use:enhance={() => {
-				loading = true;
-				return async ({ result, update }) => {
-					try {
-						if (result.status === 200) {
-							console.log(result.data);
-
-							Manufacturers.set([result.data.newManufacturer, ...$Manufacturers]);
-							showToast('Brand added successfully', 'success');
-							toggleModal();
-						} else if (result.status === 400) {
-							validationErrors = result.data.errors;
-						}
-					} finally {
-						update();
-						loading = false;
-					}
-				};
-			}}
+			use:enhance={submit}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
@@ -178,12 +206,16 @@
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each $Manufacturers as manufacturer}
-				<Manufacturer
-					name={manufacturer.name}
-					date={dayjs(manufacturer.updated_at).fromNow()}
-					{grid}
-				/>
+			{#each $Manufacturers as manufacturer (manufacturer?.id)}
+				{#if manufacturer}
+					<Manufacturer
+						on:edit={(e) => toggleEditModal(e.detail)}
+						name={manufacturer.name}
+						id={manufacturer.id}
+						date={dayjs(manufacturer.updated_at).fromNow()}
+						{grid}
+					/>
+				{/if}
 			{/each}
 		</div>
 	{:else}
@@ -199,12 +231,16 @@
 				</thead>
 
 				<tbody>
-					{#each $Manufacturers as manufacturer}
-						<Manufacturer
-							name={manufacturer.name}
-							date={dayjs(manufacturer.updated_at).fromNow()}
-							{grid}
-						/>
+					{#each $Manufacturers as manufacturer (manufacturer?.id)}
+						{#if manufacturer}
+							<Manufacturer
+								on:edit={(e) => toggleEditModal(e.detail)}
+								name={manufacturer.name}
+								id={manufacturer.id}
+								date={dayjs(manufacturer.updated_at).fromNow()}
+								{grid}
+							/>
+						{/if}
 					{/each}
 				</tbody>
 			</table>

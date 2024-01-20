@@ -31,55 +31,92 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 };
 
 export const actions: Actions = {
-	create: async ({ fetch, request, url }) => {
-		// console.log(cookies.get('access'));
+    create: async ({ fetch, request }) => {
+        const formData = await request.formData();
 
+        const id = formData.get('manufacturer-id');
+        const name = formData.get('manufacturer-name');
+
+        const dataToValidate = {
+            ...(name && { name }),
+        };
+
+        try {
+            const validatedData = createManufacturerSchema.parse(dataToValidate);
+
+            if (id) {
+                const editManufacturer = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/${id}/`, {
+                    method: 'PUT',
+                    body: JSON.stringify(validatedData)
+                });
+
+                if (editManufacturer.ok) {
+                    const updatedManufacturer = await editManufacturer.json();
+                    return {
+                        updatedManufacturer,
+						edited: true
+                    };
+                } else if (editManufacturer.status === 400) {
+                    const badBody = await editManufacturer.json();
+                    console.log(badBody);
+                } else if (editManufacturer.status == 401) {
+                    throw redirect(302, `/auth/login?from=${url.pathname}`);
+                } else {
+                    console.log(editManufacturer);
+                }
+            } else {
+                const createManufacturer = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`, {
+                    method: 'POST',
+                    body: JSON.stringify(validatedData)
+                });
+
+                if (createManufacturer.ok) {
+                    const newManufacturer = await createManufacturer.json();
+                    return {
+                        newManufacturer
+                    };
+                } else if (createManufacturer.status === 400) {
+                    const badBody = await createManufacturer.json();
+                    console.log(badBody);
+                } else if (createManufacturer.status == 401) {
+                    throw redirect(302, `/auth/login?from=${url.pathname}`);
+                } else {
+                    console.log(createManufacturer);
+                }
+            }
+        } catch (error) {
+            const toSend = {
+                message: 'Ooops something went wrong',
+                errors: {} as Errors
+            };
+            if (error instanceof z.ZodError) {
+                toSend.message = 'Validation error';
+                toSend.errors = error.flatten().fieldErrors;
+                console.log(toSend.errors);
+
+                return fail(400, toSend);
+            }
+
+            console.log('error', error);
+            return fail(500, toSend);
+        }
+    },
+	delete: async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const name = formData.get('manufacturer-name');
-
-		const dataToValidate = {
-			...(name && { name }),
-		};
-		try {
-			const validatedData = createManufacturerSchema.parse(dataToValidate);
-
-			const createManufacturer = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`, {
-				method: 'POST',
-				body: JSON.stringify(validatedData)
+		const id = formData.get('id');
+		if (id) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/${id}/`, {
+				method: 'delete'
 			});
 
-			if (createManufacturer.ok) {
-				const newManufacturer = await createManufacturer.json();
-				// console.log(newManufacturer);
+			if (deleteRole.ok) {
 				return {
-					newManufacturer
+					success: true
 				};
-			} else if (createManufacturer.status === 400) {
-				//TODO: Handle Bad Request
-				const badBody = await createManufacturer.json();
-				console.log(badBody);
-			} else if (createManufacturer.status == 401) {
-				throw redirect(302, `/auth/login?from=${url.pathname}`);
-			} else {
-				//TODO: Return "Something went wrong..." message
-				console.log(createManufacturer);
+			} else if (!deleteRole.ok) {
+				console.log(deleteRole);
 			}
-		} catch (error) {
-			const toSend = {
-				message: 'Ooops something went wrong',
-				errors: {} as Errors
-			};
-			if (error instanceof z.ZodError) {
-				toSend.message = 'Validation error';
-				toSend.errors = error.flatten().fieldErrors;
-				console.log(toSend.errors);
-
-				return fail(400, toSend);
-			}
-
-			console.log('error', error);
-			return fail(500, toSend);
-		}
-	},
+		} else return fail(400);
+	}
 };
