@@ -116,10 +116,10 @@
 					</li>
 				{/if}
 			{/each}
-			<!-- <form action="/?/logout" method="post">
+			<form action="/?/logout" method="post">
 				<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
-				<button type="submit" class="btn">logout</button>
-			</form> -->
+				<button type="submit" class="w-full">logout</button>
+			</form>
 		</ol>
 	</nav>
 </aside>

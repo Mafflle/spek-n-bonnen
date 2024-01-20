@@ -4,7 +4,7 @@
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import SearchInput from '$lib/components/SearchInput.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
-	import { container } from '$lib/stores.js';
+	import { Users, container } from '$lib/stores.js';
 	import { showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
@@ -26,6 +26,7 @@
 		groups?: [string];
 	} = {};
 
+	Users.set(users.results);
 	const submit: SubmitFunction = async () => {
 		loading = true;
 		return async ({ result, update }) => {
@@ -39,6 +40,7 @@
 						inputsContainer.removeChild(inputsContainer.firstChild);
 					}
 					container.update((options) => (options = []));
+					Users.update((users) => [result.data.newStaff, ...users]);
 					showToast('Staff invited successfully', 'success');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
@@ -166,8 +168,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each users.results as user}
+				{#each $Users as user}
 					<StaffMember
+						id={user.id}
 						name={`${user.first_name} ${user.last_name}`}
 						role="Customer service"
 						email={user.email}

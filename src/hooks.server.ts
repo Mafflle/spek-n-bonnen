@@ -17,8 +17,9 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	}
 
 	const retryRequest = async (attempt = 1) => {
-		const maxAttempts = 3; // Adjust as needed
+		const maxAttempts = 4; // Adjust as needed
 		const delay = Math.pow(2, attempt - 1) * 1000;
+		console.log(maxAttempts, attempt);
 
 		// refreshes tokens
 		const refreshTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
@@ -31,7 +32,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		});
 
 		// upon successfull token refresh
-		if (refreshTokens.ok) {
+		if (attempt < maxAttempts && refreshTokens.ok) {
 			console.log('successfully refreshed');
 
 			const tokens = await refreshTokens.json();
@@ -51,9 +52,9 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			const newAccessToken: string | undefined = event.cookies.get('access');
 
 			if (newAccessToken) {
-				request.headers.set('Authorization', `Bearer ${access}`);
+				return request.headers.set('Authorization', `Bearer ${access}`);
 			}
-		} else if (attempt < maxAttempts) {
+		} else if (attempt < maxAttempts && !refreshTokens.ok) {
 			//when refresh fails, it tries again for confirmation
 			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
 			// wait for a bit before refreshing
@@ -74,10 +75,12 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 		return res;
 	} else if (res.status === 401) {
+		console.log('response', res.url, res.status);
+
 		console.log('request intercepted');
-		await retryRequest(4);
+		await retryRequest();
+		return fetch(request);
 	}
-	return fetch(request);
 
 	// console.log('hey');
 };

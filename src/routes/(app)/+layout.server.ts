@@ -27,6 +27,15 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 	if (res.ok) {
 		const user = await res.json();
 		currentUser.set(user);
+		const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);
+
+		if (getImages.ok) {
+			const images = await getImages.json();
+
+			return { images };
+		} else if (getImages.status === 401) {
+			throw redirect(302, `/auth/login?from=${url.pathname}`);
+		}
 	} else if (!res.ok && res.status === 401) {
 		currentUser.set(null);
 		throw redirect(302, `/auth/login?from=${url.pathname}`);
