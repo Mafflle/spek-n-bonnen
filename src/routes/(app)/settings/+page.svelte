@@ -9,6 +9,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Settings - Spek-n-Boonen</title>
+</svelte:head>
+
 <div class="max-w-full h-full">
 	<div class="w-full flex flex-col items-start gap-9">
 		<section class="w-full">

@@ -2,7 +2,6 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { Actions } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import type { PageServerLoad } from './$types';
 import { dev } from '$app/environment';
 
 const loginSchema = z.object({
@@ -39,7 +38,7 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
-
+			console.log(res.status);
 			if (res.ok) {
 				const tokens = await res.json();
 				cookies.set('access', tokens.access, {

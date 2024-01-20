@@ -6,25 +6,34 @@
 	import { fly, slide } from 'svelte/transition';
 	import Modal from './Modal.svelte';
 	import UploadBox from './UploadBox.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let images: any[];
 	dayjs.extend(relativeTime);
 
-	console.log(images);
+	// console.log(images);
 
 	let showModal: boolean = false;
 	let showDeleteModal: boolean = false;
 	let loading: boolean = false;
-	let hovering: boolean = false;
 	let validationErrors: { name?: [string]; logo?: [string] };
 	let imageValidationError: string;
 	let selectedImage;
+	const dispatch = createEventDispatcher();
+
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 	const toggleDeleteModal = (currImage) => {
 		selectedImage = currImage;
 		showDeleteModal = !showDeleteModal;
+	};
+
+	const selectMedia = (image) => {
+		selectedImage = image;
+
+		dispatch('selected', selectedImage);
+		showToast('Image selected successfully', 'info');
 	};
 </script>
 
@@ -76,7 +85,7 @@
 					class="bg-primary-100 py-2 px-2.5 flex items-center gap-1 text-sm rounded-3xl text-white"
 				>
 					<span>
-						<img src="icons/plus.svg" alt="plus" />
+						<img src="/icons/plus.svg" alt="plus" />
 					</span>
 					<span>Upload media</span>
 				</button>
@@ -84,7 +93,10 @@
 		</div>
 		<div class="grid grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
 			{#each images as image}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
+					on:click={() => selectMedia(image)}
 					class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
 				>
 					<div class="brand-image overflow-hidden relative h-32 self-stretch bg-[#f9f9f9]">

@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { showToast } from '$lib/utils';
-	import { onMount } from 'svelte';
-	import '../app.postcss';
+	import '../app.pcss';
 	import { Toaster } from 'svelte-french-toast';
 	import 'iconify-icon';
-	import { currentUser } from '$lib/user';
-
-	export let data;
+	import { navigating } from '$app/stores';
+	import PageLoader from '$lib/components/PageLoader.svelte';
 </script>
 
 <svelte:head>
@@ -14,6 +11,10 @@
 	<link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet" />
 	<link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
 </svelte:head>
+
+{#if $navigating}
+	<PageLoader />
+{/if}
 
 <Toaster />
 <slot />

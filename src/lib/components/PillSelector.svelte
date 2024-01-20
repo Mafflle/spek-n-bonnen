@@ -13,12 +13,12 @@
 			selectedArray = selectedArray.filter((item) => {
 				return item.value !== option.value;
 			});
-			updateSelectedOptions(option);
+			container.set(selectedArray);
 
 			dispatch('selected', selectedArray);
 		} else {
 			selectedArray = [...selectedArray, option];
-			updateSelectedOptions(option);
+			container.set(selectedArray);
 
 			dispatch('selected', selectedArray);
 		}
@@ -41,7 +41,6 @@
 	const unsubscribe = container.subscribe((items) => (selectedArray = items));
 	onDestroy(() => {
 		options = [];
-		unsubscribe();
 	});
 </script>
 

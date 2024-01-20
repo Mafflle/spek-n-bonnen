@@ -83,7 +83,7 @@
 					src={previewImage}
 					alt=""
 					style="aspect-ratio: 4/3"
-					class=" h-full absolute w-full top-0 object-cover"
+					class=" h-full absolute w-full top-0 object-cover pointer-events-none"
 				/>
 			{/if}
 			<div

@@ -29,13 +29,17 @@ const uploadSchema = z.object({
 	logo: imageSchema
 });
 export const actions: Actions = {
-	logout: async ({ cookies }) => {
+	logout: async ({ cookies, url, request }) => {
+		const formData = await request.formData();
+
+		const currUrl = formData.get('currUrl');
 		cookies.delete('access');
 		cookies.delete('refresh ');
 		currentUser.set(null);
-		throw redirect(302, 'auth/login');
+
+		throw redirect(302, `auth/login?from=${currUrl}`);
 	},
-	upload: async ({ fetch, request, cookies }) => {
+	upload: async ({ fetch, request, url }) => {
 		// console.log(cookies.get('access'));
 
 		const formData = await request.formData();
@@ -67,7 +71,8 @@ export const actions: Actions = {
 				} else if (createMedia.status === 400) {
 					//TODO: Handle Bad Request
 					console.log(createMedia);
-				} else {
+				} else if (createMedia.status === 401) {
+					throw redirect(302, `/auth/login?from=${url.pathname}`);
 					//TODO: Return "Something went wrong..." message
 					console.log(createMedia);
 				}
@@ -88,7 +93,7 @@ export const actions: Actions = {
 			return fail(500, toSend);
 		}
 	},
-	'delete-media': async ({ fetch, request }) => {
+	'delete-media': async ({ fetch, request, url }) => {
 		const formData = await request.formData();
 
 		const id = formData.get('image-id');
@@ -100,16 +105,17 @@ export const actions: Actions = {
 
 			if (deleteImage.ok) {
 				return { success: true };
-			} else if (!deleteImage.ok) {
-				if (deleteImage.status === 400) {
-					const error = await deleteImage.json();
-					console.log(error);
-
-					return { errors: error.detail };
-				}
-			} else {
-				return fail(500);
 			}
-		} else return fail(500);
+			if (deleteImage.status === 400) {
+				const error = await deleteImage.json();
+				console.log(error);
+
+				return { errors: error.detail };
+			} else if (deleteImage.status === 401) {
+				throw redirect(302, `/auth/login?from=${url.pathname}`);
+			} else return fail(500);
+		} else {
+			return fail(500);
+		}
 	}
 };

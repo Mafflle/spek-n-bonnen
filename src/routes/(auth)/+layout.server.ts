@@ -1,14 +1,19 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { getCurrentUser } from '$lib/user';
-import { goto } from '$app/navigation';
 
-export const load: LayoutServerLoad = async ({ locals, cookies }) => {
+export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 	const currentUser = getCurrentUser();
 	const access = cookies.get('access');
-	// console.log(currentUser);
+	const previous = url.searchParams.get('from');
 
 	if (currentUser) {
-		throw redirect(302, '/');
+		if (previous) {
+			if (previous === '/') {
+				throw redirect(302, '/');
+			} else throw redirect(302, `${previous}`);
+		} else {
+			throw redirect(302, '/');
+		}
 	}
 };
