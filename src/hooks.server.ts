@@ -17,8 +17,9 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	}
 
 	const retryRequest = async (attempt = 1) => {
-		const maxAttempts = attempt + 3; // Adjust as needed
+		const maxAttempts = 4; // Adjust as needed
 		const delay = Math.pow(2, attempt - 1) * 1000;
+		console.log(maxAttempts, attempt);
 
 		// refreshes tokens
 		const refreshTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {

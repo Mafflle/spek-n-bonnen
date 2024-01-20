@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Button } from './ui/button';
-	import * as Popover from './ui/popover';
+	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
 	import { Users } from '$lib/stores';
 
@@ -53,45 +53,43 @@
 	<td class="text-[#9C9C9C]">{email}</td>
 	<td class="text-[#9C9C9C]">{permissions}</td>
 	<td>
-		<Popover.Root>
+		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">
 				<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
 			</button> -->
 
-			<Popover.Trigger asChild let:builder>
+			<DropdownMenu.Trigger asChild let:builder>
 				<Button builders={[builder]} class=" px-1.5 flex justify-center items-center">
 					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"
 					></iconify-icon></Button
 				>
-			</Popover.Trigger>
-			<Popover.Content>
-				<div class="grid gap-6">
-					<div class="space-y-2">
-						<h4 class="font-medium leading-none">Actions</h4>
-						<!-- <p class="text-sm text-muted-foreground">Update, </p> -->
-					</div>
-					<div class="grid grid-cols-2 gap-3">
-						<form class="grid items-center gap-4">
-							<Button variant="secondary">Edit</Button>
-						</form>
-						<form
-							action="?/delete"
-							method="post"
-							use:enhance={deleteBrand}
-							class="grid items-center gap-4"
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="py-3 px-2">
+				<div class="grid gap-3">
+					<form class="grid items-center gap-4">
+						<Button
+							class="text-xs flex items-center py-2 w-full rounded h-auto gap-1"
+							variant="secondary"
 						>
-							<input type="text" class="hidden" bind:value={id} name="id" />
-							<Button disabled variant="destructive" type="submit"
-								>{#if loading}
-									<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
-								{:else}
-									<span class="button-text">Delete </span>
-								{/if}</Button
-							>
-						</form>
-					</div>
+							<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
+							<span class="text-sm">Edit</span></Button
+						>
+					</form>
+					<form class="grid items-center gap-4">
+						<input type="text" class="hidden" bind:value={id} name="id" />
+						<Button
+							variant="destructive"
+							class="text-sm flex items-center gap-1 py-2 rounded h-auto w-full"
+							>{#if loading}
+								<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
+							{:else}
+								<iconify-icon icon="codicon:trash" width="15"></iconify-icon>
+								<span class="button-text text-xs">Delete </span>
+							{/if}</Button
+						>
+					</form>
 				</div>
-			</Popover.Content>
-		</Popover.Root>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</td>
 </tr>
