@@ -75,7 +75,7 @@
 
 		container.set(role.permissions);
 	};
-	$: console.log($Roles);
+	// $: console.log($Roles);
 
 	//permissions function(s)
 	const searchPermissions = debounce(async (search: string) => {
@@ -122,7 +122,7 @@
 		loading = true;
 		if (currRoleId) formData.set('role-id', `${currRoleId}`);
 
-		console.log(formData.getAll('permission'));
+		// console.log(formData.getAll('permission'));
 
 		return async ({ result, update }) => {
 			try {

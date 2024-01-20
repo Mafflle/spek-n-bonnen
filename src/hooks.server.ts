@@ -67,17 +67,17 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		}
 	};
 
-	const res = await fetch(request);
+	const res = fetch(request);
 
-	if (res.ok) {
+	if ((await res).ok) {
 		console.log('no interception');
 
 		return res;
-	} else if (res.status === 401) {
+	} else if ((await res).status === 401) {
 		console.log('request intercepted');
 		await retryRequest(4);
+		return fetch(request);
 	}
-	return fetch(request);
 
 	// console.log('hey');
 };
