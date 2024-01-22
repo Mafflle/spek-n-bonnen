@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import type { string } from 'zod';
 
 	const dispatch = createEventDispatcher();
 	let open = false;
@@ -70,7 +69,7 @@
 <div class="selector max-w-full relative">
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div
-		class="bg-white border-b-2 {open &&
+		class="bg-white border h-12 px-4 py-3 focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem] {open &&
 			'border-primary-50'} hover:border-primary-50 transition-all relative text-base max-w-full p-1 flex items-center justify-between cursor-pointer"
 		on:click={toggle}
 	>
@@ -111,7 +110,7 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="w-4 h-4"
+				class="w-4 h-4 text-grey-200"
 			>
 				<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 			</svg>
@@ -121,10 +120,9 @@
 		<ul
 			in:slide={{ duration: 200 }}
 			out:slide={{ duration: 200 }}
-			class="bg-white max-h-60 {makeAbsolute &&
-				'absolute'} w-full overflow-y-auto border-secondary-50 border text-[14px] text-[#454545] rounded-[5px] mt-2 mb-2 pb-3"
+			class="bg-white max-h-60 z-10 absolute w-full overflow-y-auto shadow-md text-[14px] text-[#454545] rounded-[5px] mt-2 mb-2 py-3"
 		>
-			<div class="flex items-center px-2 sticky top-0 bg-white">
+			<!-- <div class="flex items-center px-2 sticky top-0 bg-white">
 				<div class="text-secondary">
 					<svg
 						width="24"
@@ -167,7 +165,7 @@
 						>
 					{/if}
 				</div>
-			</div>
+			</div> -->
 			{#each options as option}
 				<li
 					class="p-2 text-[14px] hover:bg-primary-100 cursor-pointer hover:text-white
