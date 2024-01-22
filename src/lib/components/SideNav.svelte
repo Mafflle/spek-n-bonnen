@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { slide } from 'svelte/transition';
 	import NavBarButton from './NavBarButton.svelte';
 	const routes = [
 		{
@@ -44,6 +43,11 @@
 				{
 					title: 'Manufacturers',
 					href: '/inventory/manufacturers',
+					color: '#FF1C0D'
+				},
+				{
+					title: 'Carcasses',
+					href: '/inventory/carcass',
 					color: '#FF1C0D'
 				}
 			]

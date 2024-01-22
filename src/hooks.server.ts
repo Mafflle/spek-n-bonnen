@@ -32,6 +32,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		});
 
 		// upon successfull token refresh
+		console.log('refreshing', refreshToken);
+
 		if (attempt < maxAttempts && refreshTokens.ok) {
 			console.log('successfully refreshed');
 
@@ -56,6 +58,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			}
 			console.log('request headers set');
 		} else if (attempt < maxAttempts && !refreshTokens.ok) {
+			console.log(refreshTokens.status, refreshTokens.statusText);
+
 			//when refresh fails, it tries again for confirmation
 			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
 			// wait for a bit before refreshing
