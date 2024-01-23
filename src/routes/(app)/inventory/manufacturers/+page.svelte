@@ -14,6 +14,8 @@
 
 	export let data;
 	const { manufacturers } = data;
+	console.log(manufacturers.results);
+
 	Manufacturers.set(manufacturers.results);
 
 	let showModal = false;
@@ -56,7 +58,7 @@
 						Manufacturers.update((manufacturers) => {
 							return manufacturers.map((manufacturer) => {
 								if (manufacturer.id === editedManufacturer.id) {
-									return editedManufacturer;
+									manufacturer = editedManufacturer;
 								}
 								return manufacturer;
 							});
@@ -65,8 +67,10 @@
 						toggleModal();
 					} else {
 						Manufacturers.update((manufacturers) => {
-							return [...manufacturers, result.data.manufacturer];
+							const updated = [result.data.manufacturer, ...manufacturers];
+							return updated;
 						});
+
 						showToast('New manufacturer created successfully', 'success');
 						toggleModal();
 					}
