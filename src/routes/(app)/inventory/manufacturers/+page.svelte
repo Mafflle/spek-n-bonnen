@@ -214,9 +214,9 @@
 				</div>
 				<div class="content">
 					<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No vendor added</h3>
+						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No manufacturer added</h3>
 						<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
-							You currently don’t have any vendor saved, click the button below to create one
+							You currently don’t have any manufacturer saved, click the button below to create one
 						</div>
 					</div>
 				</div>
@@ -230,7 +230,7 @@
 						<div class="w-5 h-5 relative">
 							<img src="/icons/plus.svg" alt="user-plus" />
 						</div>
-						<p class="text-white text-sm font-bold">Add vendor</p>
+						<p class="text-white text-sm font-bold">Add manufacturer</p>
 					</button>
 				</div>
 			</div>
