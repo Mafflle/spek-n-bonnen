@@ -54,7 +54,7 @@
 			try {
 				if (result.status === 200) {
 					if (result.data.edited === true) {
-						const editedManufacturer = result.data.updatedManufacturer;
+						const editedManufacturer = result.data.manufacturer;
 						Manufacturers.update((manufacturers) => {
 							return manufacturers.map((manufacturer) => {
 								if (manufacturer.id === editedManufacturer.id) {
@@ -64,6 +64,7 @@
 							});
 						});
 						showToast('Manufacturer updated successfully', 'success');
+						console.log(result.data);
 						toggleModal();
 					} else {
 						Manufacturers.update((manufacturers) => {
@@ -206,7 +207,34 @@
 	</div>
 	<!-- render if page is empty -->
 	{#if manufacturers.length === 0}
-		<!-- ... -->
+		<div class="empty h-full w-full flex justify-center items-center">
+			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
+				<div class="icon">
+					<img src="/icons/empty-Illustration.svg" alt="empty illustration " />
+				</div>
+				<div class="content">
+					<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
+						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No vendor added</h3>
+						<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
+							You currently don’t have any vendor saved, click the button below to create one
+						</div>
+					</div>
+				</div>
+				<div class="button">
+					<button
+						class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+			hover:bg-[#C7453C]
+			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+						on:click={toggleModal}
+					>
+						<div class="w-5 h-5 relative">
+							<img src="/icons/plus.svg" alt="user-plus" />
+						</div>
+						<p class="text-white text-sm font-bold">Add vendor</p>
+					</button>
+				</div>
+			</div>
+		</div>
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">

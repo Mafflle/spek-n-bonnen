@@ -4,20 +4,18 @@ import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 const createManufacturerSchema = z.object({
-	name: z
-		.string({ required_error: 'Manufacturer name is required' })
-		.trim()
-		.min(3, { message: 'Manufacturer name should be at least 3 characters ' }),
+    name: z
+        .string({ required_error: 'Manufacturer name is required' })
+        .trim()
+        .min(3, { message: 'Manufacturer name should be at least 3 characters ' }),
 });
 
 type Errors = {
-	name?: [string];
-	server?: [string];
+    name?: [string];
+    server?: [string];
 };
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
-
-
     const getAllManufacturers = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`);
 
     if (getAllManufacturers.ok) {
@@ -53,8 +51,8 @@ export const actions: Actions = {
                 if (editManufacturer.ok) {
                     const updatedManufacturer = await editManufacturer.json();
                     return {
-                        updatedManufacturer,
-						edited: true
+                        manufacturer: updatedManufacturer,
+                        edited: true
                     };
                 } else if (editManufacturer.status === 400) {
                     const badBody = await editManufacturer.json();
@@ -73,7 +71,7 @@ export const actions: Actions = {
                 if (createManufacturer.ok) {
                     const newManufacturer = await createManufacturer.json();
                     return {
-                        newManufacturer
+                        manufacturer: newManufacturer
                     };
                 } else if (createManufacturer.status === 400) {
                     const badBody = await createManufacturer.json();
@@ -101,22 +99,22 @@ export const actions: Actions = {
             return fail(500, toSend);
         }
     },
-	delete: async ({ fetch, request }) => {
-		const formData = await request.formData();
+    delete: async ({ fetch, request }) => {
+        const formData = await request.formData();
 
-		const id = formData.get('id');
-		if (id) {
-			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/${id}/`, {
-				method: 'delete'
-			});
+        const id = formData.get('id');
+        if (id) {
+            const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/${id}/`, {
+                method: 'delete'
+            });
 
-			if (deleteRole.ok) {
-				return {
-					success: true
-				};
-			} else if (!deleteRole.ok) {
-				console.log(deleteRole);
-			}
-		} else return fail(400);
-	}
+            if (deleteRole.ok) {
+                return {
+                    success: true
+                };
+            } else if (!deleteRole.ok) {
+                console.log(deleteRole);
+            }
+        } else return fail(400);
+    }
 };
