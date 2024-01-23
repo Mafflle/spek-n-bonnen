@@ -17,9 +17,9 @@
 	</div>
 	<Separator class="my-8" />
 	<form action="w-full">
-		<section class=" h-[430px] flex items-start justify-center text-sm w-full gap-10">
+		<section class="  flex items-start justify-center text-sm w-full gap-10">
 			<!-- Providers -->
-			<section class=" px-2 max-h-[450px] h-full overflow-y-scroll no-scrollbar w-full">
+			<section class=" px-2 h-full overflow-y-scroll no-scrollbar w-full">
 				<div class="pb-3 sticky top-0 w-full bg-white px-2">
 					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">PROVIDERS</h3>
 				</div>
