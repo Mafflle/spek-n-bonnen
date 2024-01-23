@@ -32,7 +32,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		});
 
 		// upon successfull token refresh
-		console.log('refreshing', refreshToken);
+		console.log('refreshing', refreshTokens);
 
 		if (attempt < maxAttempts && refreshTokens.ok) {
 			console.log('successfully refreshed');

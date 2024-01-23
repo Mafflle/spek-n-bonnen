@@ -136,13 +136,18 @@
 					<!-- Tabs trigger -->
 					<section class="sticky top-0 px-1 py-4 w-full bg-white">
 						<Tabs.List class="w-full bg-[#F7F7F7] py-2.5 px-1 ">
-							<Tabs.Trigger class="w-full font-bold" value="physical-info"
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="physical-info"
 								>Physical information</Tabs.Trigger
 							>
-							<Tabs.Trigger class="w-full font-bold" value="vendor">Vendor</Tabs.Trigger>
-							<Tabs.Trigger class="w-full font-bold" value="traceability">Traceability</Tabs.Trigger
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="vendor"
+								>Vendor</Tabs.Trigger
 							>
-							<Tabs.Trigger class="w-full font-bold" value="origin">Origin</Tabs.Trigger>
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="traceability"
+								>Traceability</Tabs.Trigger
+							>
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="origin"
+								>Origin</Tabs.Trigger
+							>
 						</Tabs.List>
 					</section>
 					<!-- Tabs trigger -->
