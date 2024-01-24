@@ -9,45 +9,58 @@
 
 	const dispatch = createEventDispatcher();
 	const onSelected = (option: Option) => {
-		if (selectedArray.includes(option)) {
-			selectedArray = selectedArray.filter((item) => {
-				return item.value !== option.value;
-			});
-			container.set(selectedArray);
+		// let updatedArray: Option[] = [];
+		// if (selectedArray.some((item) => isEqual(item, option))) {
+		// 	updatedArray = selectedArray.filter((item) => {
+		// 		return item.value !== option.value;
+		// 	});
+		// } else {
+		// 	updatedArray = [option, ...selectedArray];
+		// }
+		// if (updatedArray.length > 0) {
+		// 	container.set(updatedArray);
+		// 	// console.log($container);
 
-			dispatch('selected', selectedArray);
-		} else {
-			selectedArray = [...selectedArray, option];
-			container.set(selectedArray);
-
-			dispatch('selected', selectedArray);
-		}
+		// }
+		dispatch('selected', selectedArray);
 	};
-	onMount(() => {
-		container.subscribe((items) => {
-			if (items.length > 0) {
-				selectedArray = items;
 
-				for (const item of items) {
-					if (options.some((option) => isEqual(option, item)) === false) {
-						options = [...options, item];
-					}
-				}
-
-				dispatch('selected', items);
+	$: {
+		$container.map((item) => {
+			if (options.some((option) => isEqual(option, item)) === false) {
+				options = [...options, item];
 			}
+			return options;
 		});
+	}
+
+	// $: console.log(selectedArray);
+	onMount(() => {
+		// console.log(options);
 	});
 	const unsubscribe = container.subscribe((items) => (selectedArray = items));
 	onDestroy(() => {
 		options = [];
+		unsubscribe;
 	});
+
+	const checkSelected = (option) => {
+		if ($container.some((item) => isEqual(item, option))) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 </script>
 
-<div class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full">
-	<div class="roles flex items-start gap-[0.625rem] w-full max-w-full flex-wrap">
+<div
+	class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full h-full max-h-32 mb-3"
+>
+	<div
+		class="roles flex items-start gap-[0.625rem] w-full max-w-full overflow-x-scroll no-scrollbar flex-wrap"
+	>
 		{#each options as option, i (i)}
-			<Pill {disableOptions} {option} on:selected={(e) => onSelected(e.detail)} />
+			<Pill selected={checkSelected(option)} {option} on:selected={(e) => onSelected(e.detail)} />
 		{/each}
 	</div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let primal: string;
+	export let name: string;
 	export let description: string;
 	export let grid: boolean;
 </script>
@@ -11,7 +11,7 @@
 		<div class="vendor-image h-32 self-stretch rounded-t-xl bg-[#f9f9f9]"></div>
 		<div class="vendor-info flex w-full py-2 px-3 flex-col items-start gap-2 flex-[1 0 0]">
 			<div class="vendor-name text-base font-medium">
-				{primal}
+				{name}
 			</div>
 			<div class="date-added flex items-center gap-2 self-stretch">
 				<div class="date text-xs flex-[1 0 0]">
@@ -26,7 +26,7 @@
 			<div class="   justify-start items-center gap-3 inline-flex">
 				<!-- <div class="w-[38px] h-[38px] bg-neutral-100 rounded-full"></div> -->
 				<span class="grow shrink basis-0 text-sm font-medium">
-					{primal}
+					{name}
 				</span>
 			</div>
 		</td>
