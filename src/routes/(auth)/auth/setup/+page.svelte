@@ -21,7 +21,7 @@
 	<title>Setup Admin - Spek-n-Boonen</title>
 </svelte:head>
 
-<div class="min-h-screen max-w-screen py-6 flex justify-center items-center bg-[#F2F2F2]">
+<div class="min-h-screen max-w-screen flex justify-center items-center bg-[#F2F2F2]">
 	<form
 		action="?/setup"
 		method="post"
@@ -48,9 +48,10 @@
 				}
 			};
 		}}
+		class="w-full mx-2 my-5 md:my-0 flex items-center justify-center"
 	>
 		<div
-			class="bg-white shadow-none border-none rounded-2xl py-12 px-7 text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-2xl px-5 py-7 md:py-12 md:px-7 text-[#2d2d2d] flex flex-col justify-center items-center gap-10 xs:w-[95%] min-w-5/6 md:max-w-[30.25rem]"
 		>
 			<div class="greeting w-full">
 				<div class="flex gap-[1.88rem] items-center w-full">
@@ -68,15 +69,15 @@
 				</div>
 			</div>
 			<div class=" flex flex-col gap-[1.28rem] w-full">
-				<div class="name flex flex-col md:flex-row gap-8">
-					<div class="first-name flex flex-col">
+				<div class="name flex flex-col gap-4 md:flex-row w-full md:gap-6">
+					<div class="first-name flex flex-col w-full">
 						<label for="first-name" class="block mb-2 text-[ 0.875rem]">First name</label>
 						<input
 							type="text"
 							id="first-name"
 							name="first-name"
 							placeholder="First name"
-							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 
 						{#if validationErrors?.first_name}
@@ -87,14 +88,14 @@
 							>
 						{/if}
 					</div>
-					<div class="last-name flex flex-col">
+					<div class="last-name flex flex-col w-full">
 						<label for="last-name" class="block mb-2 text-[ 0.875rem]">Last name</label>
 						<input
 							type="text"
 							id="last-name"
 							name="last-name"
 							placeholder="Last name"
-							class="input w-full md:w-[11.5rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
 						{#if validationErrors?.last_name}
 							<sub
@@ -105,14 +106,14 @@
 						{/if}
 					</div>
 				</div>
-				<div class="email flex flex-col">
+				<div class="email flex flex-col w-full">
 					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
 					<input
 						type="email"
 						id="email"
 						name="email"
 						placeholder="Enter your Email"
-						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -129,7 +130,7 @@
 						id="password"
 						name="password"
 						placeholder="Enter your Password"
-						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password}
 						<sub
@@ -146,7 +147,7 @@
 						id="confirm-password"
 						name="confirm-password"
 						placeholder="Confirm your Password"
-						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.password2}
 						<sub
@@ -161,7 +162,7 @@
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
 					disabled={loading}
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full
                     hover:bg-[#C7453C] hover:rounded-[0.625rem] text-white font-bold text-sm max-h-12 flex items-center justify-center
                     focus:shadow-custom
                     "
