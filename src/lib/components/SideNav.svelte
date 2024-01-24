@@ -31,19 +31,24 @@
 			pageTitle: 'Inventory',
 			children: [
 				{
-					title: 'Brands',
-					href: '/inventory/brands',
-					color: '#CFB53B'
-				},
-				{
-					title: 'Vendors',
-					href: '/inventory/vendors',
-					color: '#41AA00'
-				},
-				{
-					title: 'Manufacturers',
-					href: '/inventory/manufacturers',
-					color: '#FF1C0D'
+					title: 'Providers',
+					childRoutes: [
+						{
+							title: 'Brands',
+							href: '/inventory/brands',
+							color: '#CFB53B'
+						},
+						{
+							title: 'Vendors',
+							href: '/inventory/vendors',
+							color: '#41AA00'
+						},
+						{
+							title: 'Manufacturers',
+							href: '/inventory/manufacturers',
+							color: '#FF1C0D'
+						}
+					]
 				},
 				{
 					title: 'Carcasses',
@@ -90,7 +95,7 @@
 </script>
 
 <aside
-	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 flex flex-col gap-5 bg-black-100 text-white"
+	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 hidden md:flex flex-col gap-5 bg-black-100 text-white"
 >
 	<div class="sidebar-logo flex flex-col items-start mb-10 gap-3 px-3 pt-10">
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
@@ -132,3 +137,37 @@
 		</ol>
 	</nav>
 </aside>
+
+<nav class="w-screen flex md:hidden items-center justify-center xs:fixed bottom-4 right-0">
+	<ol
+		class="w-[85%] h-10 bg-black-100 z-10 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
+	>
+		{#each routes as route}
+			{#if route.pageTitle !== 'Orders'}
+				<li class="w-full">
+					<NavBarButton
+						active={routes.indexOf(route) !== 0
+							? $page.url.pathname.startsWith(route.href)
+							: $page.url.pathname === route.href}
+						icon={route.icon}
+						href={route.href}
+						activeIcon={route.activeIcon}
+						text={route.pageTitle}
+						children={route?.children}
+					/>
+				</li>
+			{:else if route.pageTitle === 'Orders'}
+				<li class="w-full">
+					<NavBarButton
+						active={$page.url.pathname.startsWith(route.href)}
+						icon={route.icon}
+						href={route.href}
+						activeIcon={route.activeIcon}
+						text={route.pageTitle}
+						alert={true}
+					/>
+				</li>
+			{/if}
+		{/each}
+	</ol>
+</nav>
