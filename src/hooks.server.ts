@@ -54,7 +54,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			if (newAccessToken) {
 				request.headers.set('Authorization', `Bearer ${access}`);
 			}
-			console.log('request headers set');
+			return fetch(request.clone());
 		} else if (attempt < maxAttempts && !refreshTokens.ok) {
 			//when refresh fails, it tries again for confirmation
 			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
