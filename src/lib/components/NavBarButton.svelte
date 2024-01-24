@@ -21,7 +21,7 @@
 </script>
 
 {#if children.length > 0}
-	<Collapsible.Root class="md:w-full md:flex hidden items-start flex-col ">
+	<Collapsible.Root class="md:w-full lg:flex hidden items-start flex-col ">
 		<a
 			on:mouseenter={() => {
 				if ($page.url.pathname === href && active === true) active = false;
@@ -110,7 +110,7 @@
 		</Collapsible.Content>
 	</Collapsible.Root>
 	<Menubar.Root
-		class="flex  p-0 md:justify-start justify-center m-0 w-fit md:hidden	border-0 space-x-0   "
+		class="flex  p-0 md:justify-start justify-center m-0 w-fit lg:hidden	border-0 space-x-0    "
 	>
 		<Menubar.Menu>
 			<Menubar.Trigger
@@ -133,7 +133,7 @@
 						<div class="button-content flex items-center justify-center">
 							<span>{@html active ? activeIcon : icon}</span>
 							<span
-								class="button-text hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
+								class="button-text hidden lg:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
 							>
 								{text}
 							</span>
@@ -198,7 +198,7 @@
 	</Menubar.Root>
 {:else}
 	<a
-		class="flex max-w-full md:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-around rounded-full md:rounded-md
+		class="flex max-w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
 			' bg-primary-light text-[#DA4E45]'}
 										"
@@ -210,25 +210,27 @@
 			if ($page.url.pathname === href && active === false) active = true;
 		}}
 	>
-		<span class="side-nav-button flex max-w-full w-full items-center justify-between">
+		<span
+			class="side-nav-button relative flex max-w-full w-full items-center justify-center lg:justify-between"
+		>
 			<div
-				class="button-content flex items-center justify-center md:justify-start w-full md:gap-2.5 md:self-stretch"
+				class="button-content flex items-center justify-center lg:justify-start w-full md:gap-2.5"
 			>
 				<!-- <enhanced:img src={icon} /> -->
 				<span class="">{@html active ? activeIcon : icon}</span>
 				<span
-					class="button-text hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
+					class="button-text hidden lg:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
 				>
 					{text}
 				</span>
 			</div>
 			{#if alert}
 				<div
-					class="button-alert absolute md:static -top-1.5 md:w-6 -right-1 flex py-[0.1875rem] flex-col justify-center items-center gap-[0.625rem] self-stretch
-						md:rounded-[1.875rem] md:bg-[#FF1C0D]
+					class="button-alert absolute lg:w-8 -top-2 md:-right-6 flex py-[0.1875rem] flex-col justify-center items-center gap-[0.625rem]
+						lg:rounded-[1.875rem] lg:bg-[#FF1C0D]
 						"
 				>
-					<span class="alert-text text-primary-red md:text-white text-xs font-bold">4</span>
+					<span class="alert-text text-primary-red lg:text-white text-xs font-bold">4</span>
 				</div>
 			{/if}
 		</span>

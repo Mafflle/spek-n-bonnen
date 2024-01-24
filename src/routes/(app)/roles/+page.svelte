@@ -208,20 +208,26 @@
 						/>
 					</svg>
 				</span>
-				<input type="text" placeholder="Type here" class=" py-1 md:py-2 flex-auto outline-none" />
+				<input
+					type="text"
+					placeholder="Type here"
+					class="w-full py-1 md:py-2 flex-auto outline-none"
+				/>
 			</div>
 
-			<div class="filter-buttons flex items-start">
+			<div class="filter-buttons flex items-start grow-1">
 				<button
 					on:click={toggleModal}
-					class=" md:p-2.5 p-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
+					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="relative">
 						<img src="/icons/user-plus.svg" class="w-full h-full" alt="user-plus" />
 					</div>
-					<span class="text-white text-sm font-bold font-['Satoshi']">Create roles</span>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Create roles</span
+					>
 				</button>
 			</div>
 		</div>
