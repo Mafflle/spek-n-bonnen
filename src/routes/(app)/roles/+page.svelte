@@ -180,9 +180,9 @@
 			<h1 class="text-[2rem] tracking-[-0.04rem]">Role management</h1>
 			<sub class="text-[#6B6B6B] text-sm"> Create roles, delete and update roles</sub>
 		</div>
-		<div class="filters flex items-center w-full gap-6 md:gap-0 justify-between">
+		<div class="filters flex items-center w-full gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center xs:w-[55%] sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center grow-1 sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -228,7 +228,7 @@
 	</div>
 
 	<div class="border rounded-xl max-w-full w-full overflow-x-scroll no-scrollbar">
-		<table class=" table w-full table-pin-cols">
+		<table class=" table w-full">
 			<thead class="">
 				<tr class="table-row">
 					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>

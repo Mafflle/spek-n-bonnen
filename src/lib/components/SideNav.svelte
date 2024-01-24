@@ -102,7 +102,7 @@
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem]">ERP SYSTEM</sub>
 	</div>
 	<nav class="sidebar-nav w-full mb-4">
-		<ol class="w-full flex items-start flex-col gap-2">
+		<ol class="w-full flex items-start flex-col gap-3">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders'}
 					<li class="w-full">
@@ -140,7 +140,7 @@
 
 <nav class="w-screen flex md:hidden items-center justify-center z-50 fixed bottom-5 right-0">
 	<ol
-		class="w-[85%] h-10 bg-black-100 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
+		class="w-[90%] h-10 bg-black-100 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
 	>
 		{#each routes as route}
 			{#if route.pageTitle !== 'Orders'}
