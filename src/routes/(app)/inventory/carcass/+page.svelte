@@ -8,12 +8,12 @@
 <div class="w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h2 class="text-3xl font-semibold">Carcass</h2>
+			<h2 class="text-[2em] tracking-[2] font-satoshi font-bold">Carcass</h2>
 			<sub class="text-[#6B6B6B] text-sm"> Providers / Carcass</sub>
 		</div>
-		<div class="filters flex items-center w-full justify-between">
+		<div class="filter-buttons flex items-start gap-2 sm:gap-5 w-full justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -50,9 +50,9 @@
 				href="carcass/manage"
 				class="px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1"
 			>
-				<span>Add carcass</span>
-				<img src="/icons/plus.svg" alt="Plus icon to represent adding" /></a
-			>
+				<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
+				<span class="hidden sm:block">Add carcass</span>
+			</a>
 		</div>
 	</div>
 </div>

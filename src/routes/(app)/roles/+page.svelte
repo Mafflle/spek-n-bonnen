@@ -177,12 +177,12 @@
 <div class="staff-page flex-col items-start">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h1 class="text-[2rem] tracking-[-0.04rem]">Role management</h1>
+			<h1 class="text-[2rem] tracking-[-0.04rem] font-bold">Role management</h1>
 			<sub class="text-[#6B6B6B] text-sm"> Create roles, delete and update roles</sub>
 		</div>
 		<div class="filters flex items-center w-full gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center grow-1 sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center grow-1 w-full sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -208,20 +208,26 @@
 						/>
 					</svg>
 				</span>
-				<input type="text" placeholder="Type here" class=" py-1 md:py-2 flex-auto outline-none" />
+				<input
+					type="text"
+					placeholder="Type here"
+					class="w-full py-1 md:py-2 flex-auto outline-none"
+				/>
 			</div>
 
-			<div class="filter-buttons flex items-start">
+			<div class="filter-buttons flex items-start grow-1">
 				<button
 					on:click={toggleModal}
-					class=" md:p-2.5 p-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
+					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="relative">
 						<img src="/icons/user-plus.svg" class="w-full h-full" alt="user-plus" />
 					</div>
-					<span class="text-white text-sm font-bold font-['Satoshi']">Create roles</span>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Create roles</span
+					>
 				</button>
 			</div>
 		</div>

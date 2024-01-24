@@ -95,7 +95,7 @@
 </script>
 
 <aside
-	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 hidden md:flex flex-col gap-5 bg-black-100 text-white"
+	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar px-4 hidden lg:flex flex-col gap-5 bg-black-100 text-white"
 >
 	<div class="sidebar-logo flex flex-col items-start mb-10 gap-3 px-3 pt-10">
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
@@ -138,7 +138,7 @@
 	</nav>
 </aside>
 
-<nav class="w-screen flex md:hidden items-center justify-center z-50 fixed bottom-5 right-0">
+<nav class="w-screen flex lg:hidden items-center justify-center z-50 fixed bottom-5 right-0">
 	<ol
 		class="w-[90%] h-10 bg-black-100 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
 	>
