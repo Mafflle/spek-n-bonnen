@@ -28,6 +28,15 @@ export type Manufacturer = {
 	updated_at: Date;
 };
 
+export type Primal = {
+	id: number;
+	name: string;
+	slug: string;
+	description: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export type User = {
 	id: number;
 	first_name: string;
@@ -45,7 +54,9 @@ export const container = writable<Option[]>([]);
 export let Roles = writable<Role[]>([]);
 export let Brands = writable<Brand[]>([]);
 export let Manufacturers = writable<Manufacturer[]>([]);
+export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
+
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {
