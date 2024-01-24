@@ -110,11 +110,13 @@
 		</Collapsible.Content>
 	</Collapsible.Root>
 	<Menubar.Root
-		class="md:w-full h-full flex justify-center p-0 md:justify-start md:hover:bg-grey-200 md:hover:text-white  {active &&
-			'bg-primary-light text-[#DA4E45]'} rounded-full md:hidden md:rounded-md	border-0 space-x-0 w-full "
+		class="flex  p-0 md:justify-start justify-center m-0 w-fit md:hidden	border-0 space-x-0   "
 	>
 		<Menubar.Menu>
-			<Menubar.Trigger class="p-0 w-full">
+			<Menubar.Trigger
+				class="p-0 space-x-0 w-full flex items-center justify-center rounded-full {active &&
+					'bg-primary-light text-[#DA4E45]'} w-8 h-8"
+			>
 				<a
 					on:mouseenter={() => {
 						if ($page.url.pathname === href && active === true) active = false;
@@ -122,13 +124,13 @@
 					on:mouseleave={() => {
 						if ($page.url.pathname === href && active === false) active = true;
 					}}
-					class="flex max-w-full md:w-full h-full items-center justify-around rounded-md
-	  md:hover:shadow-inner p-2 md:p-3
+					class="flex items-center justify-center rounded-md
+	  md:hover:shadow-inner md:p-3
 	"
 					{href}
 				>
-					<span class="side-nav-button w-full flex items-center justify-between">
-						<div class="button-content flex items-center gap-2.5 self-stretch">
+					<span class="side-nav-button w-full flex items-center justify-center">
+						<div class="button-content flex items-center justify-center">
 							<span>{@html active ? activeIcon : icon}</span>
 							<span
 								class="button-text hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
@@ -196,7 +198,7 @@
 	</Menubar.Root>
 {:else}
 	<a
-		class="flex max-w-full w-full md:h-full md:border-0 relative p-2 md:py-3 md:px-3 items-center justify-around rounded-full md:rounded-md
+		class="flex max-w-full md:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-around rounded-full md:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
 			' bg-primary-light text-[#DA4E45]'}
 										"
@@ -222,11 +224,11 @@
 			</div>
 			{#if alert}
 				<div
-					class="button-alert absolute md:static -top-1 -right-1 flex w-[1.875rem] py-[0.1875rem] px-[0.625rem] flex-col justify-center items-center gap-[0.625rem] self-stretch
+					class="button-alert absolute md:static -top-1.5 md:w-6 -right-1 flex py-[0.1875rem] flex-col justify-center items-center gap-[0.625rem] self-stretch
 						md:rounded-[1.875rem] md:bg-[#FF1C0D]
 						"
 				>
-					<span class="alert-text text-primary-red text-xs font-bold">4</span>
+					<span class="alert-text text-primary-red md:text-white text-xs font-bold">4</span>
 				</div>
 			{/if}
 		</span>

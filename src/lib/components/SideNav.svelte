@@ -144,7 +144,7 @@
 	>
 		{#each routes as route}
 			{#if route.pageTitle !== 'Orders'}
-				<li class="w-full">
+				<li class="">
 					<NavBarButton
 						active={routes.indexOf(route) !== 0
 							? $page.url.pathname.startsWith(route.href)
@@ -157,7 +157,7 @@
 					/>
 				</li>
 			{:else if route.pageTitle === 'Orders'}
-				<li class="w-full">
+				<li class="">
 					<NavBarButton
 						active={$page.url.pathname.startsWith(route.href)}
 						icon={route.icon}
