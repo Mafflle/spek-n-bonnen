@@ -202,9 +202,9 @@
 			<h2 class="text-[2em] -tracking-[2px] font-satoshi font-bold">Brand</h2>
 			<sub class="text-[#6B6B6B] text-sm"> Providers / Brands</sub>
 		</div>
-		<div class="filters flex items-center w-full justify-between">
+		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -237,7 +237,7 @@
 				/>
 			</div>
 
-			<div class="filter-buttons flex items-start gap-5">
+			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
 					on:click={() => (grid = !grid)}
@@ -246,14 +246,14 @@
 				</button>
 				<button
 					on:click={toggleModal}
-					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-sm sm:rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="brand-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add brand</div>
+					<div class="text-white hidden sm:block text-sm font-bold font-['Satoshi']">Add brand</div>
 				</button>
 			</div>
 		</div>
@@ -290,7 +290,7 @@
 		</div>
 	{:else if grid}
 		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-3 gap-10">
+		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Brands as brand}
 				<BrandCard
 					on:edit={(e) => toggleEditModal(e.detail)}

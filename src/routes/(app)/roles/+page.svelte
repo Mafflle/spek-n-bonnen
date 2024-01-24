@@ -177,12 +177,12 @@
 <div class="staff-page flex-col items-start">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h1 class="text-[2rem] tracking-[-0.04rem]">Role management</h1>
+			<h1 class="text-[2rem] tracking-[-0.04rem] font-bold">Role management</h1>
 			<sub class="text-[#6B6B6B] text-sm"> Create roles, delete and update roles</sub>
 		</div>
 		<div class="filters flex items-center w-full gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center grow-1 sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center grow-1 w-full sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg

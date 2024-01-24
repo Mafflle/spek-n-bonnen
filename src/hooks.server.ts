@@ -32,7 +32,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		});
 
 		// upon successfull token refresh
-		console.log('refreshing', refreshTokens);
+		// console.log('refreshing', refreshTokens);
 
 		if (attempt < maxAttempts && refreshTokens.ok) {
 			console.log('successfully refreshed');
@@ -56,7 +56,6 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			if (newAccessToken) {
 				request.headers.set('Authorization', `Bearer ${access}`);
 			}
-			console.log('request headers set');
 		} else if (attempt < maxAttempts && !refreshTokens.ok) {
 			console.log(refreshTokens.status, refreshTokens.statusText);
 
@@ -73,16 +72,16 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		}
 	};
 
-	const res = fetch(request.clone());
+	const res = await fetch(request.clone());
 
-	if (!(await res).ok && (await res).status === 401) {
-		const body = await (await res).json();
+	if (!res.ok && res.status === 401) {
+		const body = await res.json();
 		console.log('response', body);
 
 		console.log('request intercepted');
 		await retryRequest();
 	}
-	return fetch(request.clone())
+	return fetch(request)
 		.then((res) => res)
 		.catch((error) => {
 			console.log('failed', error);
