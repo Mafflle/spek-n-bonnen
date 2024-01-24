@@ -56,6 +56,7 @@ const config = {
 					100: '#2D2D2D'
 				},
 				sGray: '#F5F5F5',
+				pGrey: '#f0f0f0',
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
 					foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)'

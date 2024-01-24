@@ -182,7 +182,7 @@
 		</div>
 		<div class="filters flex items-center w-full gap-6 md:gap-0 justify-between">
 			<div
-				class="flex items-center w-3/5 sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center xs:w-[55%] sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
