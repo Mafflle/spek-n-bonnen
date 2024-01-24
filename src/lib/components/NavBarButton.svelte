@@ -19,7 +19,7 @@
 	const toggleChildren = () => {
 		showChildren = !showChildren;
 	};
-	console.log(children);
+	// console.log(children);
 </script>
 
 {#if children.length > 0}

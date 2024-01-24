@@ -180,9 +180,9 @@
 			<h1 class="text-[2rem] tracking-[-0.04rem]">Role management</h1>
 			<sub class="text-[#6B6B6B] text-sm"> Create roles, delete and update roles</sub>
 		</div>
-		<div class="filters flex items-center w-full justify-between">
+		<div class="filters flex items-center w-full gap-6 md:gap-0 justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center w-3/5 sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -208,33 +208,32 @@
 						/>
 					</svg>
 				</span>
-				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
+				<input type="text" placeholder="Type here" class=" py-1 md:py-2 flex-auto outline-none" />
 			</div>
 
-			<div class="filter-buttons flex items-start gap-5">
+			<div class="filter-buttons flex items-start">
 				<button
 					on:click={toggleModal}
-					class=" px-2.5 py-2.5 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
+					class=" md:p-2.5 p-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
-					<div class="w-5 h-5 relative">
-						<img src="/icons/user-plus.svg" alt="user-plus" />
+					<div class="relative">
+						<img src="/icons/user-plus.svg" class="w-full h-full" alt="user-plus" />
 					</div>
-					<p class="text-white text-sm font-bold font-['Satoshi']">Create roles</p>
+					<span class="text-white text-sm font-bold font-['Satoshi']">Create roles</span>
 				</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="border rounded-xl">
-		<table class="w-full table">
-			<thead class="table-header-group">
+	<div class="border rounded-xl max-w-full w-full overflow-x-scroll no-scrollbar">
+		<table class=" table w-full table-pin-cols">
+			<thead class="">
 				<tr class="table-row">
-					<th class="bg-[#F9F9F9]">Id</th>
 					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 					<th class="bg-[#F9F9F9]">Permissions</th>
-					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
 				</tr>
 			</thead>
 			{#if $Roles.length > 0}
@@ -297,10 +296,12 @@
 		method="post"
 		use:enhance={submit}
 		slot="modal-content"
-		class="max-w-2xl w-xl px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
+		class="max-w-2xl w-xl px-4 md:px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
 	>
 		<section class="flex items-center justify-between mb-5">
-			<h2 class="text-xl font-medium font-satoshi text-center">Create Role</h2>
+			<h2 class="text-xl font-medium font-satoshi text-center">
+				{currRoleId ? 'Edit role' : 'Create role'}
+			</h2>
 			<button
 				disabled={loading}
 				type="submit"

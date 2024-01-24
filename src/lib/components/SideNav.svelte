@@ -138,9 +138,9 @@
 	</nav>
 </aside>
 
-<nav class="w-screen flex md:hidden items-center justify-center xs:fixed bottom-4 right-0">
+<nav class="w-screen flex md:hidden items-center justify-center z-50 fixed bottom-5 right-0">
 	<ol
-		class="w-[85%] h-10 bg-black-100 z-10 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
+		class="w-[85%] h-10 bg-black-100 flex items-center justify-between px-3 py-6 rounded-full shadow-md"
 	>
 		{#each routes as route}
 			{#if route.pageTitle !== 'Orders'}
