@@ -49,6 +49,11 @@
 					title: 'Carcasses',
 					href: '/inventory/carcass',
 					color: '#FF1C0D'
+				},
+				{
+					title: 'Primals',
+					href: '/inventory/primals',
+					color: '#FF1C0D'
 				}
 			]
 		},
