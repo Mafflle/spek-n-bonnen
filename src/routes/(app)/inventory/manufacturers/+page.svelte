@@ -150,12 +150,12 @@
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem]">Manufacturers</div>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Manufacturers</div>
 			<sub class="text-[#6B6B6B] text-sm"> Providers / manufacturers</sub>
 		</div>
-		<div class="filters flex items-center w-full justify-between">
+		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -184,7 +184,7 @@
 				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 			</div>
 
-			<div class="filter-buttons flex items-start gap-5">
+			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
 					on:click={() => (grid = !grid)}
@@ -200,7 +200,9 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="manufacturers-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add manufacturer</div>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Add manufacturer</span
+					>
 				</button>
 			</div>
 		</div>
@@ -237,7 +239,7 @@
 		</div>
 	{:else if grid}
 		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-3 gap-10">
+		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Manufacturers as manufacturer (manufacturer?.id)}
 				{#if manufacturer}
 					<Manufacturer
@@ -256,7 +258,7 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">manufacturers name</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 						<th class="bg-[#F9F9F9]">Date added</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
