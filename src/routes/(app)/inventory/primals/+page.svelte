@@ -1,98 +1,42 @@
 <script lang="ts">
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { enhance } from '$app/forms';
-	import Manufacturer from '$lib/components/Manufacturer.svelte';
-	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
-	import { showToast } from '$lib/utils.js';
+	import Primal from '$lib/components/Primal.svelte';
+	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
-	import { Manufacturers } from '$lib/stores.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-
-	dayjs.extend(relativeTime);
-
-	export let data;
-	const { manufacturers } = data;
-	console.log(manufacturers.results);
-
-	Manufacturers.set(manufacturers.results);
 
 	let showModal = false;
 	let loading = false;
 	let grid = false;
-	let showMediaManager = false;
 	let disabled = false;
-	let validationErrors: { name?: [string] };
-	let imageId: number;
-	let currManufacturerId: number;
-	let name: string;
 
 	function toggleModal() {
 		showModal = !showModal;
 	}
-	// function toggleMediaManager() {
-	// 	showMediaManager = !showMediaManager;
-	// }
 
-	const toggleEditModal = (manufacturer) => {
-		showModal = !showModal;
-		name = manufacturer.Name;
-		currManufacturerId = manufacturer.id;
-	};
+	let validationErrors: { primal?: [string]; description?: [string] };
 
-	// $: {
-	// 	if (previewImage) {
-	// 		disabled = false;
-	// 	}
-	// }
+	let primals: { primal: string; description: string }[] = [
+		{
+			primal: 'Apa eran',
+			description:
+				'This is a dummy description for this particular primal. It consists of the necessary information needed fo the identification of the primal itself. '
+		},
+		{ primal: 'primal 2', description: 'description 2' },
+		{ primal: 'primal 3', description: 'description 3' },
+		{ primal: 'primal 4', description: 'description 4' },
+		{ primal: 'primal 5', description: 'description 5' },
+		{ primal: 'primal 6', description: 'description 6' },
+		{ primal: 'primal 7', description: 'description 7' }
+	];
+
 	const submit: SubmitFunction = async ({ formData }) => {
-		loading = true;
-		if (currManufacturerId) formData.set('manufacturer-id', `${currManufacturerId}`);
-
-		return async ({ result, update }) => {
-			try {
-				if (result.status === 200) {
-					if (result.data.edited === true) {
-						const editedManufacturer = result.data.manufacturer;
-						Manufacturers.update((manufacturers) => {
-							return manufacturers.map((manufacturer) => {
-								if (manufacturer.id === editedManufacturer.id) {
-									manufacturer = editedManufacturer;
-								}
-								return manufacturer;
-							});
-						});
-						showToast('Manufacturer updated successfully', 'success');
-						console.log(result.data);
-						toggleModal();
-					} else {
-						Manufacturers.update((manufacturers) => {
-							const updated = [result.data.manufacturer, ...manufacturers];
-							return updated;
-						});
-
-						showToast('New manufacturer created successfully', 'success');
-						toggleModal();
-					}
-				} else if (result.status === 400) {
-					validationErrors = result.data.errors;
-					showToast(`${result.data.message}`, 'error');
-				} else if (result.status == 500) {
-					showToast('Ooops something went wrong', 'error');
-				}
-			} finally {
-				loading = false;
-				update();
-			}
-		};
+		console.log(formData);
 	};
 </script>
 
-<!-- The rest of the code is similar to the Brands code, just replace "Brand" with "Manufacturer" -->
-
 <svelte:head>
-	<title>Manufacturers - Spek-n-Boonen</title>
+	<title>Primals - Spek-n-Boonen</title>
 </svelte:head>
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
@@ -105,7 +49,7 @@
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Add manufacturer
+					Add primal
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
@@ -116,15 +60,15 @@
 				<!-- <input type="text" class="hidden" bind:value={imageId} name="manufacturer-logo" /> -->
 				<input
 					type="text"
-					name="manufacturer-name"
-					id="manufacturer-name"
-					placeholder="Manufacturer name"
+					name="primal-name"
+					id="primal-name"
+					placeholder="Primal name"
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
-				{#if validationErrors?.name}
+				{#if validationErrors?.primal}
 					<sub
 						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.primal}</sub
 					>
 				{/if}
 			</div>
@@ -140,7 +84,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">Add Manufacturer </span>
+						<span class="button-text">Add Primal </span>
 					{/if}
 				</button>
 			</div>
@@ -150,8 +94,8 @@
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem]">Manufacturers</div>
-			<sub class="text-[#6B6B6B] text-sm"> Providers / manufacturers</sub>
+			<div class="text-[2rem] tracking-[-0.04rem]">Primals</div>
+			<sub class="text-[#6B6B6B] text-sm"> Inventory / Primals / Manage</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
@@ -198,15 +142,15 @@
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
-						<img src="/icons/plus.svg" alt="manufacturers-plus" />
+						<img src="/icons/plus.svg" alt="vendor-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add manufacturer</div>
+					<div class="text-white text-sm font-bold font-['Satoshi']">Add primal</div>
 				</button>
 			</div>
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if manufacturers.length === 0}
+	{#if primals.length === 0}
 		<div class="empty h-full w-full flex justify-center items-center">
 			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
 				<div class="icon">
@@ -214,9 +158,9 @@
 				</div>
 				<div class="content">
 					<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No manufacturer added</h3>
+						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No primal added</h3>
 						<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
-							You currently don’t have any manufacturer saved, click the button below to create one
+							You currently don’t have any primal saved, click the button below to create one
 						</div>
 					</div>
 				</div>
@@ -230,7 +174,7 @@
 						<div class="w-5 h-5 relative">
 							<img src="/icons/plus.svg" alt="user-plus" />
 						</div>
-						<p class="text-white text-sm font-bold">Add manufacturer</p>
+						<p class="text-white text-sm font-bold">Add primal</p>
 					</button>
 				</div>
 			</div>
@@ -238,16 +182,8 @@
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
-			{#each $Manufacturers as manufacturer (manufacturer?.id)}
-				{#if manufacturer}
-					<Manufacturer
-						on:edit={(e) => toggleEditModal(e.detail)}
-						name={manufacturer.name}
-						id={manufacturer.id}
-						date={dayjs(manufacturer.updated_at).fromNow()}
-						{grid}
-					/>
-				{/if}
+			{#each primals as primal}
+				<Primal primal={primal.primal} description={primal.description} {grid} />
 			{/each}
 		</div>
 	{:else}
@@ -256,23 +192,15 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">manufacturers name</th>
-						<th class="bg-[#F9F9F9]">Date added</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Primal</th>
+						<th class="bg-[#F9F9F9]">Description</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
 				</thead>
 
 				<tbody>
-					{#each $Manufacturers as manufacturer (manufacturer?.id)}
-						{#if manufacturer}
-							<Manufacturer
-								on:edit={(e) => toggleEditModal(e.detail)}
-								name={manufacturer.name}
-								id={manufacturer.id}
-								date={dayjs(manufacturer.updated_at).fromNow()}
-								{grid}
-							/>
-						{/if}
+					{#each primals as primal}
+						<Primal primal={primal.primal} description={primal.description} {grid} />
 					{/each}
 				</tbody>
 			</table>

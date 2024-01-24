@@ -16,7 +16,7 @@ export type Role = {
 export type Brand = {
 	id: number;
 	name: string;
-	logo: number;
+	logo: { id: number; title: string; image: string; updated_at: Date; created_at: Date };
 	created_at: Date;
 	updated_at: Date;
 };

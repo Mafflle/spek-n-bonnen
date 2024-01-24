@@ -50,32 +50,27 @@
 
 <tr class="border-b border-[#D9D9D9] table-row">
 	<td class="table-cell">
-		<div class="  flex">
-			<span class=" text-[#6B6B6B] text-sm font-medium">
-				{id}
-			</span>
-		</div>
-	</td>
-	<td class="table-cell">
 		<!-- <div class=" px-2 py-1 bg-stone-50 rounded-[20px] flex items-center justify-center w-full"> -->
 		<span class=" text-right text-[#6B6B6B] text-[13px] font-medium">
 			{name}
 		</span>
 		<!-- </div> -->
 	</td>
-	<td class="text-[#9C9C9C] flex gap-1 items-center">
-		{#each permissions.slice(0, 2) as permission}
-			<div class="px-2 py-1 bg-stone-50 rounded-[20px] justify-start items-center text-[#6B6B6B]">
-				{permission.codename}
-			</div>
-		{/each}
-		<p
-			class="w-7 h-7 text-black-100 rounded-full bg-secondary-50 {permissions.length - 2 !== 0
-				? 'flex'
-				: 'hidden'}  justify-center items-center"
-		>
-			<span>+</span> <span>{permissions.length - 2}</span>
-		</p>
+	<td>
+		<div class="text-[#9C9C9C] flex gap-1 items-center">
+			{#each permissions.slice(0, 2) as permission}
+				<div class="px-2 py-1 bg-stone-50 rounded-[20px] justify-start items-center text-[#6B6B6B]">
+					{permission.codename}
+				</div>
+			{/each}
+			<p
+				class="w-7 h-7 text-black-100 rounded-full bg-secondary-50 {permissions.length - 2 !== 0
+					? 'flex'
+					: 'hidden'}  justify-center items-center"
+			>
+				<span>+</span> <span>{permissions.length - 2}</span>
+			</p>
+		</div>
 	</td>
 	<td class="table-cell">
 		<DropdownMenu.Root>

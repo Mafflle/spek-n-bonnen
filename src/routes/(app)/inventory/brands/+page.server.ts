@@ -5,12 +5,13 @@ import { data } from 'autoprefixer';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 
-const createBrandSchema = z.object({
+const manageSchema = z.object({
 	name: z
 		.string({ required_error: 'Brand name is required' })
 		.trim()
 		.min(3, { message: 'Brand name should be at least 3 characters ' }),
-	logo: z.number({ required_error: 'Brand logo is required' })
+	logo: z.number({ required_error: 'Brand logo is required' }),
+	brandToEdit: z.number().optional()
 });
 
 type Errors = {
@@ -32,42 +33,71 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 };
 
 export const actions: Actions = {
-	create: async ({ fetch, request, url }) => {
+	'manage-brand': async ({ fetch, request, url }) => {
 		// console.log(cookies.get('access'));
 
 		const formData = await request.formData();
 
 		const name = formData.get('brand-name');
 		const logo = formData.get('brand-logo');
+		const brandToEdit = parseInt(formData.get('brandToEdit'));
 
 		const dataToValidate = {
 			...(name && { name }),
-			...(logo && { logo })
+			...(logo && { logo }),
+			...(brandToEdit && { brandToEdit })
 		};
 		dataToValidate.logo = parseInt(logo);
 		try {
-			const validatedData = createBrandSchema.parse(dataToValidate);
+			const validatedData = manageSchema.parse(dataToValidate);
+			if (validatedData.brandToEdit) {
+				const editBrand = await fetch(
+					`${PUBLIC_API_ENDPOINT}api/inventory/brands/${validatedData.brandToEdit}`,
+					{
+						method: 'PATCH',
+						body: JSON.stringify({ name: validatedData.name, logo: validatedData.logo })
+					}
+				);
 
-			const createBrand = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`, {
-				method: 'POST',
-				body: JSON.stringify(validatedData)
-			});
-
-			if (createBrand.ok) {
-				const newBrand = await createBrand.json();
-				// console.log(newBrand);
-				return {
-					newBrand
-				};
-			} else if (createBrand.status === 400) {
-				//TODO: Handle Bad Request
-				const badBody = await createBrand.json();
-				console.log(badBody);
-			} else if (createBrand.status == 401) {
-				throw redirect(302, `/auth/login?from=${url.pathname}`);
+				if (editBrand.ok) {
+					const editedBrand = await editBrand.json();
+					// console.log(newBrand);
+					return {
+						editedBrand,
+						edited: true
+					};
+				} else if (editBrand.status === 400) {
+					//TODO: Handle Bad Request
+					const badBody = await editBrand.json();
+					console.log(badBody);
+				} else if (editBrand.status == 401) {
+					throw redirect(302, `/auth/login?from=${url.pathname}`);
+				} else {
+					//TODO: Return "Something went wrong..." message
+					console.log(editBrand);
+				}
 			} else {
-				//TODO: Return "Something went wrong..." message
-				console.log(createBrand);
+				const createBrand = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`, {
+					method: 'POST',
+					body: JSON.stringify(validatedData)
+				});
+
+				if (createBrand.ok) {
+					const newBrand = await createBrand.json();
+					// console.log(newBrand);
+					return {
+						newBrand
+					};
+				} else if (createBrand.status === 400) {
+					//TODO: Handle Bad Request
+					const badBody = await createBrand.json();
+					console.log(badBody);
+				} else if (createBrand.status == 401) {
+					throw redirect(302, `/auth/login?from=${url.pathname}`);
+				} else {
+					//TODO: Return "Something went wrong..." message
+					console.log(createBrand);
+				}
 			}
 		} catch (error) {
 			const toSend = {

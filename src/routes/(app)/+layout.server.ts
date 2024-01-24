@@ -22,7 +22,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 			Authorization: `Bearer ${access}`
 		}
 	});
-	// console.log(res);
+	console.log('user', res.status);
 
 	if (res.ok) {
 		const user = await res.json();
