@@ -198,7 +198,7 @@
 	</Menubar.Root>
 {:else}
 	<a
-		class="flex max-w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
+		class="flex max-w-full md:w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
 			' bg-primary-light text-[#DA4E45]'}
 										"
@@ -210,9 +210,7 @@
 			if ($page.url.pathname === href && active === false) active = true;
 		}}
 	>
-		<span
-			class="side-nav-button relative flex max-w-full w-full items-center justify-center lg:justify-between"
-		>
+		<span class="side-nav-button flex max-w-full w-full items-center lg:justify-between">
 			<div
 				class="button-content flex items-center justify-center lg:justify-start w-full md:gap-2.5"
 			>
@@ -226,11 +224,11 @@
 			</div>
 			{#if alert}
 				<div
-					class="button-alert absolute lg:w-8 -top-2 md:-right-6 flex py-[0.1875rem] flex-col justify-center items-center gap-[0.625rem]
-						lg:rounded-[1.875rem] lg:bg-[#FF1C0D]
+					class="button-alert absolute top-0 right-0 border-2 border-black-100 lg:static w-4 h-4 lg:w-6 lg:h-5 lg:p-0 flex p-1.5 flex-col justify-center items-center gap-[0.625rem]
+						rounded-full bg-[#FF1C0D]
 						"
 				>
-					<span class="alert-text text-primary-red lg:text-white text-xs font-bold">4</span>
+					<span class="alert-text text-white text-xs font-medium lg:font-bold">3</span>
 				</div>
 			{/if}
 		</span>

@@ -15,9 +15,9 @@
 			<sub class="text-[#6B6B6B] text-sm"> Carcass / manage</sub>
 		</div>
 	</div>
-	<Separator class="my-8" />
+	<Separator class="my-8 md:block hidden" />
 	<form action="w-full">
-		<section class="  flex items-start justify-center text-sm w-full gap-10">
+		<section class="  flex flex-col lg:flex-row items-start justify-center text-sm w-full gap-10">
 			<!-- Providers -->
 			<section class=" px-2 h-full overflow-y-scroll no-scrollbar w-full">
 				<div class="pb-3 sticky top-0 w-full bg-white px-2">
@@ -121,11 +121,11 @@
 			<!-- Providers -->
 
 			<!-- Separator -->
-			<Separator orientation="vertical" class="" />
+			<Separator orientation="vertical" class="md:block hidden" />
 			<!-- Separator -->
 
 			<!-- More Details -->
-			<section class="px-2 flex flex-col items-start w-full h-full">
+			<section class="md:px-2 flex flex-col items-start w-full h-full">
 				<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MORE DETAILS</h3>
 
 				<!-- Tabs -->
@@ -134,9 +134,11 @@
 					class=" relative w-full h-full overflow-y-scroll no-scrollbar"
 				>
 					<!-- Tabs trigger -->
-					<section class="sticky top-0 px-1 py-4 w-full bg-white">
-						<Tabs.List class="w-full bg-[#F7F7F7] py-2.5 px-1 ">
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="physical-info"
+					<section
+						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar"
+					>
+						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 ">
+							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="physical-info"
 								>Physical information</Tabs.Trigger
 							>
 							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="vendor"

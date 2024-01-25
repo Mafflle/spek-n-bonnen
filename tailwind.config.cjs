@@ -17,7 +17,8 @@ const config = {
 		extend: {
 			screens: {
 				xs: { raw: '(min-width: 200px)' },
-				xsm: { raw: '(min-width: 400px)' }
+				xsm: { raw: '(min-width: 400px)' },
+				'max-xs': { raw: '(max-width: 768px' }
 			},
 			colors: {
 				// flowbite-svelte
