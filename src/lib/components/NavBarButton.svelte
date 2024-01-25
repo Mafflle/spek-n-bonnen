@@ -29,7 +29,7 @@
 			on:mouseleave={() => {
 				if ($page.url.pathname === href && active === false) active = true;
 			}}
-			class="flex max-w-full md:w-full items-center px-3 py-1 justify-around rounded-md
+			class="flex w-full md:w-full items-center px-3 py-1 justify-around rounded-md
 		hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
 		"
 			{href}
@@ -198,7 +198,7 @@
 	</Menubar.Root>
 {:else}
 	<a
-		class="flex max-w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
+		class="flex w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
 			' bg-primary-light text-[#DA4E45]'}
 										"
