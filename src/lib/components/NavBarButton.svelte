@@ -29,7 +29,7 @@
 			on:mouseleave={() => {
 				if ($page.url.pathname === href && active === false) active = true;
 			}}
-			class="flex max-w-full md:w-full items-center px-3 py-1 justify-around rounded-md
+			class="flex w-full md:w-full items-center px-3 py-1 justify-around rounded-md
 		hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
 		"
 			{href}
