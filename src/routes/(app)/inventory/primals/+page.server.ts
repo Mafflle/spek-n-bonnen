@@ -49,14 +49,19 @@ export const actions: Actions = {
 		};
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
+			// ...
 			if (validatedData.primalToEdit) {
 				const editPrimal = await fetch(
 					`${PUBLIC_API_ENDPOINT}api/inventory/primal/${validatedData.primalToEdit}`,
 					{
-						method: 'PATCH',
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json'
+						},
 						body: JSON.stringify({ name: validatedData.name, description: validatedData.description })
 					}
 				);
+			// ...
 
 				if (editPrimal.ok) {
 					const editedPrimal = await editPrimal.json();

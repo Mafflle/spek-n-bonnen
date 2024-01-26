@@ -9,6 +9,7 @@
 	import { Primals, type Primal } from '$lib/stores.js';
 
 	import { showToast } from '$lib/utils.js';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 
 	export let data;
 
@@ -109,42 +110,45 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<div class="modal-input">
-				<input
-					type="text"
-					name="primal-name"
-					id="primal-name"
-					placeholder="Primal name"
-					bind:value={currentPrimalName}
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-				{#if validationErrors?.name}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
-					>
-				{/if}
-			</div>
-			<div class="modal-input">
-				<textarea
-					name="primal-description"
-					id="primal-description"
-					placeholder="Primal description"
-					bind:value={description}
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				></textarea>
-				{#if validationErrors?.description}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.description}</sub
-					>
-				{/if}
+			<div class="flex flex-col gap-4">
+				<div class="modal-input">
+					<input
+						type="text"
+						name="primal-name"
+						id="primal-name"
+						placeholder="Primal name"
+						bind:value={currentPrimalName}
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.name}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input">
+					<Textarea
+						name="primal-description"
+						id="primal-description"
+						placeholder="Primal description (optional)"
+						bind:value={description}
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.description}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors.description}</sub
+						>
+					{/if}
+				</div>
 				<div class="modal-submit">
 					<button
 						class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
-					hover:bg-[#C7453C] hover:rounded-[0.625rem]
-					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
-					"
+						hover:bg-[#C7453C] hover:rounded-[0.625rem]
+						focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
+						"
 						type="submit"
 						{disabled}
 					>
@@ -284,8 +288,7 @@
 							description={primal.description}
 							{grid}
 							id={primal.id}
-					slug={primal.slug}
-
+							slug={primal.slug}
 						/>
 					{/each}
 				</tbody>
