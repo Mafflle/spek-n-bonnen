@@ -27,18 +27,15 @@
 	} = {};
 
 	Users.set(users.results);
-	const submit: SubmitFunction = async () => {
+	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
+		$container.forEach((item) => formData.append('permission', `${item.value}`));
+
 		return async ({ result, update }) => {
 			try {
 				console.log(result);
 
 				if (result.status === 200) {
-					const inputsContainer = document.getElementById('rolesContainer');
-
-					while (inputsContainer?.firstChild) {
-						inputsContainer.removeChild(inputsContainer.firstChild);
-					}
 					container.update((options) => (options = []));
 					Users.update((users) => [result.data.newStaff, ...users]);
 					showToast('Staff invited successfully', 'success');
@@ -103,15 +100,15 @@
 	<title>Staffs - Spek-n-Boonen</title>
 </svelte:head>
 
-<div class="staff-page flex-col items-start">
-	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
-		<div class="headers flex flex-col items-start gap-[0.25rem]">
+<div class="staff-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
+	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
+		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">
 			<div class="text-[2rem] tracking-[-0.04rem]">Staff management</div>
 			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center md:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -143,20 +140,21 @@
 			<div class="filter-buttons flex items-start gap-5">
 				<button
 					on:click={toggleModal}
-					class="w-32 h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+					class="md:w-32 h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/user-plus.svg" alt="user-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Invite staff</div>
+					<span class="text-white text-sm font-bold font-satoshi hidden sm:block">Invite staff</span
+					>
 				</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="border rounded-xl">
+	<div class="border rounded-xl w-full max-w-full overflow-x-scroll no-scrollbar">
 		<table class="table">
 			<thead>
 				<tr class="">
@@ -187,7 +185,7 @@
 		action="?/invite_staff"
 		method="post"
 		use:enhance={submit}
-		class="max-w-2xl w-[500px] rounded-md bg-white px-5 py-10 flex flex-col gap-10 items-start justify-center"
+		class="max-w-lg w-lg px-4 md:px-8 max-xsm:py-4 py-6 flex flex-col gap-10 items-start justify-center bg-white rounded-lg"
 		slot="modal-content"
 	>
 		<section class="flex items-center justify-between w-full">
@@ -204,7 +202,7 @@
 			</button>
 		</section>
 
-		<div class="form-group flex flex-col gap-10 items-start justify-center w-full">
+		<div class="form-group flex flex-col gap-8 items-start justify-center w-full">
 			<div class="flex gap-4 justify-between items-center w-full">
 				<div class="form-item w-full flex flex-col">
 					<label for="first-name" class="text-sm hidden font-medium font-satoshi">First name</label>
@@ -273,7 +271,7 @@
 							<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 						</div>
 					{:else}
-						<PillSelector on:selected={(e) => createRolesInput(e.detail)} options={groups} />
+						<PillSelector options={groups} />
 						<div class="hidden" id="rolesContainer"></div>
 					{/if}
 				</div>

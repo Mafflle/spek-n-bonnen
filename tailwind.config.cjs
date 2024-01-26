@@ -18,6 +18,7 @@ const config = {
 			screens: {
 				xs: { raw: '(min-width: 200px)' },
 				xsm: { raw: '(min-width: 400px)' },
+				'max-xsm': { raw: '(max-width: 450px' },
 				'max-xs': { raw: '(max-width: 768px' }
 			},
 			colors: {
