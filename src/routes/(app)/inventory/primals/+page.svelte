@@ -11,31 +11,35 @@
 	import { showToast } from '$lib/utils.js';
 
 	export let data;
-	const { primals } = data;
-	Primals.set(primals.results);
 
 	console.log(Primals);
+	const { primals } = data;
+	console.log(primals.results); // Add this line to debug
+	Primals.set(primals.results);
 
 	let showModal = false;
 	let loading = false;
 	let grid = false;
 	let disabled = false;
 	let validationErrors: { name?: [string]; description?: [string] };
-	let previewImage;
-	let showMediaManager = false;
-	let imageId: number;
+	let description: string = '';
+	let slug: string = '';
 
 	function toggleModal() {
 		showModal = !showModal;
 	}
 
 	let currentPrimal: Primal;
+	let currentPrimalName: string;
 
 	const toggleEditModal = (primal: Primal) => {
+		console.log(primal);
 		currentPrimal = primal;
+		currentPrimalName = currentPrimal.name;
+		description = currentPrimal.description;
+		slug = currentPrimal.slug;
 		showModal = !showModal;
 	};
-
 	const submit: SubmitFunction = async ({ formData }) => {
 		console.log(formData);
 	};
@@ -44,7 +48,7 @@
 <svelte:head>
 	<title>Primals - Spek-n-Boonen</title>
 </svelte:head>
-<!-- add brand modal -->
+<!-- add primal modal -->
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
@@ -54,8 +58,8 @@
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={({ formData }) => {
 				loading = true;
-				if (currentPrimal.id) {
-					formData.set('primalToEdit', `${currentPrimal.id}`);
+				if (currentPrimal?.slug) {
+					formData.set('primalToEdit', `${currentPrimal.slug}`);
 				}
 				return async ({ result, update }) => {
 					try {
@@ -65,26 +69,33 @@
 
 								Primals.update((primals) => {
 									const updatedPrimals = primals.map((primal) => {
-										if (primal.id === editedPrimal.id) {
+										if (primal.slug === editedPrimal.slug) {
 											primal = editedPrimal;
 										}
 										return primal;
 									});
 									return updatedPrimals;
 								});
+								Object.keys(currentPrimal).forEach((key) => (currentPrimal[key] = false));
 								showToast('Primal edited successfully', 'success');
 								toggleModal();
 							} else {
-								console.log(result.data);
+								// console.log(result.data);
 								Primals.set([result.data.newPrimal, ...$Primals]);
 								showToast('Primal added successfully', 'success');
 								toggleModal();
 							}
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
+						} else if (result.status === 500) {
+							showToast('Ooops something went wrong', 'error');
 						}
 					} finally {
-						update();
+						if (showModal) {
+							update({ reset: true });
+						} else {
+							update();
+						}
 						loading = false;
 					}
 				};
@@ -92,20 +103,19 @@
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					brand
+					{currentPrimal ? 'Edit' : 'Add'} primal
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-
 			<div class="modal-input">
 				<input
 					type="text"
-					name="brand-name"
-					id="brand-name"
-					placeholder="Brand name"
-					bind:value={currentPrimal.name}
+					name="primal-name"
+					id="primal-name"
+					placeholder="Primal name"
+					bind:value={currentPrimalName}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.name}
@@ -115,22 +125,36 @@
 					>
 				{/if}
 			</div>
-			<div class="modal-submit">
-				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+			<div class="modal-input">
+				<textarea
+					name="primal-description"
+					id="primal-description"
+					placeholder="Primal description"
+					bind:value={description}
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				></textarea>
+				{#if validationErrors?.description}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.description}</sub
+					>
+				{/if}
+				<div class="modal-submit">
+					<button
+						class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
 					hover:bg-[#C7453C] hover:rounded-[0.625rem]
 					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
 					"
-					type="submit"
-					{disabled}
-				>
-					edit
-					{#if loading}
-						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
-					{:else}
-						<span class="button-text"> edit brand </span>
-					{/if}
-				</button>
+						type="submit"
+						{disabled}
+					>
+						{#if loading}
+							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+						{:else}
+							<span class="button-text">{currentPrimal ? 'Edit' : 'Add'} primal </span>
+						{/if}
+					</button>
+				</div>
 			</div>
 		</form>
 	</div>
@@ -230,9 +254,12 @@
 			{#each $Primals as primal}
 				<PrimalCard
 					on:edit={(e) => toggleEditModal(e.detail)}
+					{primal}
 					name={primal.name}
 					description={primal.description}
 					{grid}
+					id={primal.id}
+					slug={primal.slug}
 				/>
 			{/each}
 		</div>
@@ -252,9 +279,13 @@
 					{#each $Primals as primal}
 						<PrimalCard
 							on:edit={(e) => toggleEditModal(e.detail)}
+							{primal}
 							name={primal.name}
 							description={primal.description}
 							{grid}
+							id={primal.id}
+					slug={primal.slug}
+
 						/>
 					{/each}
 				</tbody>

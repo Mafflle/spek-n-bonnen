@@ -8,7 +8,8 @@ const manageSchema = z.object({
 		.string({ required_error: 'Brand name is required' })
 		.trim()
 		.min(3, { message: 'Brand name should be at least 3 characters ' }),
-	primalToEdit: z.number().optional()
+	description: z.string().optional(),
+	primalToEdit: z.string().optional()
 });
 
 type Errors = {
@@ -22,6 +23,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
 	if (getAllPrimals.ok) {
 		const primals = await getAllPrimals.json();
+		console.log(primals);
 		return {
 			primals
 		};
@@ -115,21 +117,27 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ fetch, request }) => {
-		const formData = await request.formData();
 
-		const id = formData.get('id');
-		if (id) {
-			const deletePrimal = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/${id}/`, {
+		const formData = await request.formData();
+		const slug = formData.get('slug');
+		console.log(slug);
+
+		if (slug) {
+			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/${slug}/`, {
 				method: 'delete'
 			});
 
-			if (deletePrimal.ok) {
+			if (deleteRole.ok) {
+				console.log('Delete successful'); // Log on successful delete
 				return {
 					success: true
 				};
-			} else if (!deletePrimal.ok) {
-				console.log(deletePrimal);
+			} else {
+				console.log('Delete failed:', deleteRole); // Log the response on failure
 			}
-		} else return fail(400);
+		} else {
+			console.log('No slug provided'); // Log when no id is provided
+			return fail(400);
+		}
 	}
 };
