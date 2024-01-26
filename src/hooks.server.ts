@@ -36,7 +36,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 		if (refreshTokens.ok) {
 			const tokens = await refreshTokens.json();
-			console.log('successfully refreshed', tokens);
+			// console.log('successfully refreshed', tokens);
 			event.cookies.set('access', tokens.access, {
 				httpOnly: true,
 				secure: true,
