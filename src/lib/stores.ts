@@ -14,6 +14,7 @@ export type Role = {
 };
 
 export type Brand = {
+	[key: string]: any;
 	id: number;
 	name: string;
 	logo: { id: number; title: string; image: string; updated_at: Date; created_at: Date };
@@ -56,7 +57,6 @@ export let Brands = writable<Brand[]>([]);
 export let Manufacturers = writable<Manufacturer[]>([]);
 export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
-
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {

@@ -45,9 +45,11 @@
 		}
 	}
 	let currentBrand: Brand;
+	let currentBrandName: string;
 
 	const toggleEditModal = (brand: Brand) => {
 		currentBrand = brand;
+		currentBrandName = currentBrand.name;
 		previewImage = brand.logo;
 		imageId = brand.logo.id;
 		showModal = !showModal;
@@ -68,7 +70,7 @@
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={({ formData }) => {
 				loading = true;
-				if (currentBrand.id) {
+				if (currentBrand?.id) {
 					formData.set('brandToEdit', `${currentBrand.id}`);
 				}
 				return async ({ result, update }) => {
@@ -86,10 +88,11 @@
 									});
 									return updatedBrands;
 								});
+								Object.keys(currentBrand).forEach((key) => (currentBrand[key] = false));
 								showToast('Brand edited successfully', 'success');
 								toggleModal();
 							} else {
-								console.log(result.data);
+								// console.log(result.data);
 								Brands.set([result.data.newBrand, ...$Brands]);
 								showToast('Brand added successfully', 'success');
 								toggleModal();
@@ -100,9 +103,15 @@
 							if (validationErrors.logo) {
 								showToast('Select an image before adding brand', 'error');
 							}
+						} else if (result.status === 500) {
+							showToast('Ooops something went wrong', 'error');
 						}
 					} finally {
-						update();
+						if (showModal) {
+							update({ reset: true });
+						} else {
+							update();
+						}
 						loading = false;
 					}
 				};
@@ -110,7 +119,7 @@
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					{currentBrand.name ? 'Edit' : 'Add'} brand
+					{currentBrand ? 'Edit' : 'Add'} brand
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
@@ -154,7 +163,7 @@
 					name="brand-name"
 					id="brand-name"
 					placeholder="Brand name"
-					bind:value={currentBrand.name}
+					bind:value={currentBrandName}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.name}
@@ -176,7 +185,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">{currentBrand.name ? 'Edit' : 'Add'} brand </span>
+						<span class="button-text">{currentBrand ? 'Edit' : 'Add'} brand </span>
 					{/if}
 				</button>
 			</div>
@@ -245,7 +254,7 @@
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>
 				<button
-					on:click={toggleModal}
+					on:click={() => (showModal = !showModal)}
 					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-sm sm:rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"

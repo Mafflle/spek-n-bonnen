@@ -224,7 +224,7 @@
 			</div>
 			{#if alert}
 				<div
-					class="button-alert absolute top-0 right-0 border-2 border-black-100 lg:static w-4 h-4 lg:w-6 lg:h-5 lg:p-0 flex p-1.5 flex-col justify-center items-center gap-[0.625rem]
+					class="button-alert absolute top-0 right-0 border-2 lg:border-none border-black-100 lg:static w-4 h-4 lg:w-6 lg:h-5 lg:p-0 flex p-1.5 flex-col justify-center items-center gap-[0.625rem]
 						rounded-full bg-[#FF1C0D]
 						"
 				>
