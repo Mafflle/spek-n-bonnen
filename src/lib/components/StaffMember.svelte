@@ -36,7 +36,7 @@
 	<td>
 		<div class="   justify-start items-center gap-3 inline-flex">
 			<div class="w-[38px] h-[38px] bg-neutral-100 rounded-full"></div>
-			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium">
+			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
 				{name}
 			</span>
 		</div>

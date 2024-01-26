@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
@@ -98,7 +99,10 @@
 	}, 700);
 
 	const createPermissionsInput = (options: Option[]) => {
-		const inputsContainer = document.getElementById('permissionsContainer');
+		const inputsContainer = document.getElementById('permissions');
+		if (browser) {
+			console.log(document.getElementById('permissions'));
+		}
 
 		while (inputsContainer?.firstChild) {
 			inputsContainer.removeChild(inputsContainer.firstChild);
@@ -122,7 +126,9 @@
 		loading = true;
 		if (currRoleId) formData.set('role-id', `${currRoleId}`);
 
-		// console.log(formData.getAll('permission'));
+		$container.map((item) => {
+			formData.append('permission', `${item.value}`);
+		});
 
 		return async ({ result, update }) => {
 			try {
@@ -182,7 +188,7 @@
 		</div>
 		<div class="filters flex items-center w-full gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center grow-1 w-full sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -208,26 +214,18 @@
 						/>
 					</svg>
 				</span>
-				<input
-					type="text"
-					placeholder="Type here"
-					class="w-full py-1 md:py-2 flex-auto outline-none"
-				/>
+				<input type="text" placeholder="Type here" class="w-full py-2 flex-auto outline-none" />
 			</div>
 
-			<div class="filter-buttons flex items-start grow-1">
+			<div class="filter-buttons flex items-start">
 				<button
 					on:click={toggleModal}
-					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md justify-center items-center gap-2.5 inline-flex
+					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md text-white justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
-					<div class="relative">
-						<img src="/icons/user-plus.svg" class="w-full h-full" alt="user-plus" />
-					</div>
-					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
-						>Create roles</span
-					>
+					<iconify-icon icon="mdi:key-add" width="23"></iconify-icon>
+					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create roles</span>
 				</button>
 			</div>
 		</div>
@@ -365,12 +363,8 @@
 				{:else if permissions.count > 0}
 					<label for="name" class="block mb-2 text-[0.875rem]">Select permissions:</label>
 
-					<PillSelector
-						on:selected={(e) => createPermissionsInput(e.detail)}
-						options={permissions.results}
-						disableOptions={loading}
-					/>
-					<div class="hidden" id="permissionsContainer"></div>
+					<PillSelector options={permissions.results} disableOptions={loading} />
+					<div class="hidden" id="permissions"></div>
 				{:else}
 					<div class="flex item-center justify-center w-full gap-2 text-primary-100 py-5">
 						<iconify-icon icon="nonicons:not-found-16" width="20"></iconify-icon>

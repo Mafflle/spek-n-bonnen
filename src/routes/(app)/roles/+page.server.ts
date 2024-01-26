@@ -61,6 +61,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const permArray = formData.getAll('permission');
+
 		const currRoleId = formData.get('role-id');
 		const name = formData.get('name');
 		const permissions = permArray.map((permId) => parseInt(permId));
@@ -91,6 +92,8 @@ export const actions: Actions = {
 						edited: true
 					};
 				} else if (!res.ok && res.status === 400) {
+					console.log(res);
+
 					const body = await res.json();
 					console.log('create role request error', body);
 					return fail(400, { message: 'Error while editing role', errors: body });
@@ -100,6 +103,7 @@ export const actions: Actions = {
 					method: 'POST',
 					body: JSON.stringify(validatedData)
 				});
+
 				// console.log('create role', res);
 
 				if (res.ok) {
@@ -123,6 +127,7 @@ export const actions: Actions = {
 			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
+				console.log(toSend.errors);
 
 				return fail(400, toSend);
 			}
