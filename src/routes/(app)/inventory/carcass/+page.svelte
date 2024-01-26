@@ -5,7 +5,7 @@
 	<title>Carcass - Spek-N-Boonen</title>
 </svelte:head>
 
-<div class="w-full">
+<div class="">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
 			<h2 class="text-[2em] tracking-[2] font-satoshi font-bold">Carcass</h2>
