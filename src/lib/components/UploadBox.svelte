@@ -62,7 +62,7 @@
 
 <div class="w-full">
 	<div
-		class="w-full relative rounded-xl flex py-8 px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
+		class="w-full relative rounded-xl flex p-6 md:py-8 md:px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
 	>
 		<input
 			bind:files={images}
