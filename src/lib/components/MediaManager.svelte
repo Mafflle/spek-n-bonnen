@@ -37,17 +37,19 @@
 	};
 </script>
 
-<div class="max-w-full w-[930px] bg-white rounded flex flex-col h-auto items-start">
+<div
+	class="max-w-full w-lg md:w-2xl lg:w-[930px] bg-white rounded flex flex-col h-auto items-start"
+>
 	<section class="flex gap-2 px-3 py-4 items-center w-full shadow">
 		<h5 class="text-lg font-satoshi font-bold">Media manager</h5>
 	</section>
 
-	<div class="flex-1 flex flex-col gap-8 py-10 px-8 w-full">
+	<div class="flex-1 flex flex-col gap-8 p-4 md:py-10 md:px-8 w-full">
 		<div class="flex flex-col gap-4 w-full">
 			<p>Gallery</p>
-			<section class=" flex justify-between w-full">
+			<section class=" flex justify-between items-center w-full">
 				<div
-					class="flex items-center w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+					class="flex items-center sm:w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 				>
 					<span>
 						<svg
@@ -87,11 +89,11 @@
 					<span>
 						<img src="/icons/plus.svg" alt="plus" />
 					</span>
-					<span>Upload media</span>
+					<span class="hidden sm:block">Upload media</span>
 				</button>
 			</section>
 		</div>
-		<div class="grid grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
+		<div class="grid grid-cols-2 md:grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
 			{#each images as image}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
