@@ -7,14 +7,13 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
-	import { Manufacturers } from '$lib/stores.js';
+	import { Manufacturers, currentProvider } from '$lib/stores.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	dayjs.extend(relativeTime);
 
 	export let data;
 	const { manufacturers } = data;
-	console.log(manufacturers.results);
 
 	Manufacturers.set(manufacturers.results);
 
@@ -25,7 +24,6 @@
 	let disabled = false;
 	let validationErrors: { name?: [string] };
 	let imageId: number;
-	let currManufacturerId: number;
 	let name: string;
 
 	function toggleModal() {
@@ -35,10 +33,15 @@
 	// 	showMediaManager = !showMediaManager;
 	// }
 
-	const toggleEditModal = (manufacturer) => {
-		showModal = !showModal;
-		name = manufacturer.Name;
-		currManufacturerId = manufacturer.id;
+	const toggleEditModal = (manufacturer?) => {
+		if (manufacturer && !$currentProvider) {
+			currentProvider.set(manufacturer);
+			name = $currentProvider?.name;
+		} else {
+			name = '';
+			currentProvider.set(null);
+		}
+		toggleModal();
 	};
 
 	// $: {
@@ -48,7 +51,7 @@
 	// }
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		if (currManufacturerId) formData.set('manufacturer-id', `${currManufacturerId}`);
+		if ($currentProvider) formData.set('manufacturer-id', `${$currentProvider.id}`);
 
 		return async ({ result, update }) => {
 			try {
@@ -94,31 +97,36 @@
 <svelte:head>
 	<title>Manufacturers - Spek-n-Boonen</title>
 </svelte:head>
-<Modal {showModal} on:close={toggleModal}>
-	<div slot="modal-content">
+
+<Modal {showModal} on:close={toggleEditModal}>
+	<div slot="modal-content" class="w-full">
 		<!-- Your modal content goes here -->
 		<form
-			action="?/create"
+			action="?/manage-manufacturer"
 			method="post"
-			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={submit}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Add manufacturer
+					{$currentProvider?.id ? 'Edit manufacturer' : 'Add manufacturer'}
 				</div>
-				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
+				<button
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={toggleEditModal}
+				>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
 
-			<div class="modal-input">
+			<div class="modal-input w-full">
 				<!-- <input type="text" class="hidden" bind:value={imageId} name="manufacturer-logo" /> -->
 				<input
 					type="text"
 					name="manufacturer-name"
 					id="manufacturer-name"
 					placeholder="Manufacturer name"
+					bind:value={name}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.name}
@@ -140,13 +148,16 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">Add Manufacturer </span>
+						<span class="button-text"
+							>{$currentProvider?.id ? 'Edit manufacturer' : 'Add manufacturer'}
+						</span>
 					{/if}
 				</button>
 			</div>
 		</form>
 	</div>
 </Modal>
+
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
@@ -242,13 +253,7 @@
 		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Manufacturers as manufacturer (manufacturer?.id)}
 				{#if manufacturer}
-					<Manufacturer
-						on:edit={(e) => toggleEditModal(e.detail)}
-						name={manufacturer.name}
-						id={manufacturer.id}
-						date={dayjs(manufacturer.updated_at).fromNow()}
-						{grid}
-					/>
+					<Manufacturer on:edit={(e) => toggleEditModal(e.detail)} {manufacturer} {grid} />
 				{/if}
 			{/each}
 		</div>
@@ -267,13 +272,7 @@
 				<tbody>
 					{#each $Manufacturers as manufacturer (manufacturer?.id)}
 						{#if manufacturer}
-							<Manufacturer
-								on:edit={(e) => toggleEditModal(e.detail)}
-								name={manufacturer.name}
-								id={manufacturer.id}
-								date={dayjs(manufacturer.updated_at).fromNow()}
-								{grid}
-							/>
+							<Manufacturer on:edit={(e) => toggleEditModal(e.detail)} {manufacturer} {grid} />
 						{/if}
 					{/each}
 				</tbody>

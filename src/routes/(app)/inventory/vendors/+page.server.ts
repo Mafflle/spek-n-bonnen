@@ -114,7 +114,9 @@ export const actions: Actions = {
 		const id = parseInt(formData.get('vendor-id'));
 
 		try {
-			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/${id}`);
+			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/${id}`, {
+				method: 'delete'
+			});
 			if (res.ok) {
 				return {
 					success: true
