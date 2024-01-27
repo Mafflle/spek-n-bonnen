@@ -3,6 +3,7 @@
 	import { Button } from './ui/button';
 	import { Input } from './ui/input';
 	import { Label } from './ui/label';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
@@ -76,7 +77,19 @@
 			>
 				<span>+</span> <span>{permissions.length - 2}</span>
 			</p> -->
-			<p>{permissions.length}</p>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					<p>{permissions.length}</p>
+				</Tooltip.Trigger>
+				<Tooltip.Content class="flex flex-col gap-4 px-6 py-4">
+					<h3 class="text-3xl font-bold">permissions</h3>
+					<p class="font-medium">
+						{#each permissions as permission}
+							<p>{permission.name}</p>
+						{/each}
+					</p>
+				</Tooltip.Content>
+			</Tooltip.Root>
 		</div>
 	</td>
 	<td class="table-cell">
