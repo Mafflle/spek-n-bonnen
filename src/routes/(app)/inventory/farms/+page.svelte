@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-	<title>Primals - Spek-n-Boonen</title>
+	<title>Farms - Spek-n-Boonen</title>
 </svelte:head>
 <!-- add primal modal -->
 <Modal {showModal} on:close={toggleModal}>

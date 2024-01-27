@@ -1,29 +1,45 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
-	import UploadBox from '$lib/components/UploadBox.svelte';
 	import Vendor from '$lib/components/Vendor.svelte';
+	import { Vendors } from '$lib/stores';
+	import { showToast } from '$lib/utils';
+	import { onDestroy, onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
+
+	export let data;
+
+	const { vendors } = data;
+
 	let showModal = false;
 	let loading = false;
 	let grid = false;
+	let validationErrors: { name?: [string]; phone_number?: [string]; address?: [string] };
+	let currVendor: Vendor;
+	let vendorToEditName: string;
+	let vendorToEditAddress: string;
+	let vendorToEditPhone: string;
+
 	function toggleModal() {
 		showModal = !showModal;
 	}
-	function monthsAgo(date: Date) {
-		const now = new Date();
-		const givenDate = new Date(date);
-		const months =
-			now.getMonth() - givenDate.getMonth() + 12 * (now.getFullYear() - givenDate.getFullYear());
-		return months;
-	}
-	let vendors: { name: string; date: Date }[] = [
-		{ name: 'vendor 1', date: new Date('2023-12-01T00:00:00.000Z') },
-		{ name: 'vendor 2', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'vendor 3', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'vendor 4', date: new Date('2020-08-01T00:00:00.000Z') },
-		{ name: 'vendor 5', date: new Date('2021-08-01T00:00:00.000Z') },
-		{ name: 'vendor 6', date: new Date('2018-08-01T00:00:00.000Z') },
-		{ name: 'vendor 7', date: new Date('2021-08-01T00:00:00.000Z') }
-	];
+	const toggleEditModal = (vendor: Vendor) => {
+		currVendor = vendor;
+		vendorToEditAddress = currVendor.address;
+		vendorToEditName = currVendor.name;
+		vendorToEditPhone = currVendor.phone_number;
+
+		toggleModal();
+	};
+
+	const unsubscribe = Vendors.subscribe((items) => items);
+
+	onMount(() => {
+		Vendors.set(vendors.results);
+	});
+	onDestroy(() => {
+		unsubscribe;
+	});
 </script>
 
 <svelte:head>
@@ -33,27 +49,111 @@
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
 		<form
-			action="?/create"
+			action="?/manage-vendor"
+			method="post"
+			use:enhance={async ({ formData }) => {
+				if (currVendor?.id) formData.append('vendor-id', currVendor.id);
+				loading = true;
+				return async ({ result, update }) => {
+					try {
+						if (result.status === 200) {
+							if (result.data.edited) {
+								const editedVendor = result.data.editedVendor;
+
+								Vendors.update((vendors) => {
+									const updatedVendors = vendors.map((vendor) => {
+										if (vendor.id === editedVendor.id) {
+											vendor = editedVendor;
+										}
+										return vendor;
+									});
+									return updatedVendors;
+								});
+								showToast('Vendor edited successfully', 'success');
+							} else {
+								// console.log(result.data);
+								Vendors.set([result.data.newVendor, ...$Vendors]);
+								showToast('New vendor added successfully', 'success');
+							}
+							toggleModal();
+						} else if (result.status === 400) {
+							// console.log(result.data);
+
+							validationErrors = result.data.errors;
+						} else {
+							showToast('Ooops something went wrong', 'error');
+						}
+					} finally {
+						await update();
+						loading = false;
+					}
+				};
+			}}
 			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Add vendor
+					{currVendor?.id ? 'Edit vendor' : 'Add vendor'}
 				</div>
 				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<UploadBox inputName="vendor-image" maximumImages={1} />
-			<div class="modal-input">
-				<input
-					type="text"
-					name="vendor-name"
-					id="vendor-name"
-					placeholder="Vendor name"
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-			</div>
+
+			<section class="flex flex-col items-start gap-4">
+				<div class="modal-input flex flex-col gap-1 items-start">
+					<label for="vendor-name">Vendor name</label>
+					<input
+						type="text"
+						name="vendor-name"
+						id="vendor-name"
+						bind:value={vendorToEditName}
+						placeholder="Vendor name"
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.name}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input flex flex-col gap-1 items-start">
+					<label for="vendor-address">Vendor's address</label>
+					<input
+						type="text"
+						name="vendor-address"
+						id="vendor-address"
+						bind:value={vendorToEditAddress}
+						placeholder="Enter vendor's address"
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.address}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.address}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input flex flex-col gap-1 items-start">
+					<label for="vendor-phone">Vendor's phone number</label>
+					<input
+						type="text"
+						name="vendor-phone"
+						id="vendor-phone"
+						bind:value={vendorToEditPhone}
+						placeholder="Enter vendor's phone number"
+						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.['phone_number']}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors['phone_number']}</sub
+						>
+					{/if}
+				</div>
+			</section>
 			<div class="modal-submit">
 				<button
 					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
@@ -65,7 +165,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">Add vendor </span>
+						<span class="button-text"> {currVendor?.id ? 'Edit vendor' : 'Add vendor'} </span>
 					{/if}
 				</button>
 			</div>
@@ -133,7 +233,7 @@
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if vendors.length === 0}
+	{#if $Vendors.length === 0}
 		<div class="empty h-full w-full flex justify-center items-center">
 			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
 				<div class="icon">
@@ -165,8 +265,8 @@
 	{:else if grid}
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-			{#each vendors as vendor}
-				<Vendor name={vendor.name} date={monthsAgo(vendor.date).toString()} {grid} />
+			{#each $Vendors as vendor}
+				<Vendor {vendor} {grid} />
 			{/each}
 		</div>
 	{:else}
@@ -182,16 +282,8 @@
 				</thead>
 
 				<tbody>
-					{#each vendors as vendor}
-						<Vendor
-							name={vendor.name}
-							date={new Date(vendor.date).toLocaleDateString('en-US', {
-								month: '2-digit',
-								day: '2-digit',
-								year: '2-digit'
-							})}
-							{grid}
-						/>
+					{#each $Vendors as vendor}
+						<Vendor {vendor} {grid} on:edit={(e) => toggleEditModal(e.detail)} />
 					{/each}
 				</tbody>
 			</table>

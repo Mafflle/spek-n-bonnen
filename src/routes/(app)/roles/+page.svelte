@@ -124,7 +124,7 @@
 	// Roles CRUD function(s)
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		if (currRoleId) formData.set('role-id', `${currRoleId}`);
+		if (currRoleId) formData.append('role-id', `${currRoleId}`);
 
 		$container.map((item) => {
 			formData.append('permission', `${item.value}`);

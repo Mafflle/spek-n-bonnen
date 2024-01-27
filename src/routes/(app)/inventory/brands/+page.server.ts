@@ -1,7 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { uploadImage } from '$lib/api';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
-import { data } from 'autoprefixer';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 

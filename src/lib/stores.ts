@@ -44,7 +44,7 @@ export type Farm = {
 	address: string;
 	created_at: Date;
 	updated_at: Date;
-}
+};
 
 export type User = {
 	id: number;
@@ -54,6 +54,14 @@ export type User = {
 	is_staff: boolean;
 	is_admin: boolean;
 	is_superuser: boolean;
+};
+export type Vendor = {
+	id: number;
+	name: string;
+	address: string;
+	phone_number: string;
+	created_at: Date;
+	updated_at: Date;
 };
 
 export let passwordModal = writable(false);
@@ -66,6 +74,7 @@ export let Manufacturers = writable<Manufacturer[]>([]);
 export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
 export let Farms = writable<Farm[]>([]);
+export let Vendors = writable<Vendor[]>([]);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {

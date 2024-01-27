@@ -71,7 +71,7 @@
 			use:enhance={({ formData }) => {
 				loading = true;
 				if (currentBrand?.id) {
-					formData.set('brandToEdit', `${currentBrand.id}`);
+					formData.append('brandToEdit', `${currentBrand.id}`);
 				}
 				return async ({ result, update }) => {
 					try {
