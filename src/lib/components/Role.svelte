@@ -8,6 +8,7 @@
 	import { enhance } from '$app/forms';
 	import { Roles } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
+	import PageLoader from './PageLoader.svelte';
 
 	export let name: string;
 	export let id: number;
@@ -17,8 +18,9 @@
 
 	let loading: boolean = false;
 
-	const deleteRole: SubmitFunction = () => {
+	const deleteRole: SubmitFunction = ({ formData }) => {
 		loading = true;
+		formData.append('id', `${id}`);
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
@@ -34,8 +36,8 @@
 		};
 	};
 
-	const edit = (roleName: string, id: number, perms) => {
-		perms = perms.map((perm) => {
+	const edit = () => {
+		let perms = permissions.map((perm) => {
 			return {
 				value: perm.id,
 				label: perm.codename
@@ -43,10 +45,14 @@
 		});
 		// console.log(perms);
 
-		const role = { id, name: roleName, permissions: perms };
+		const role = { id, name, permissions: perms };
 		dispatch('edit', role);
 	};
 </script>
+
+{#if loading}
+	<PageLoader />
+{/if}
 
 <tr class="border-b border-[#D9D9D9] table-row">
 	<td class="table-cell">
@@ -76,47 +82,44 @@
 	<td class="table-cell">
 		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">
-				<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
-			</button> -->
+					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
+				</button> -->
 
 			<DropdownMenu.Trigger asChild let:builder>
-				<Button builders={[builder]} class=" px-1.5 flex justify-center items-center">
+				<Button builders={[builder]} class=" p-0 flex justify-center items-center">
 					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"
 					></iconify-icon></Button
 				>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="py-3 px-2">
-				<div class="grid gap-5 w-full">
-					<div class="grid gap-3">
+			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
+				<DropdownMenu.Item>
+					<Button
+						on:click={edit}
+						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+					>
+						<img src="/icons/edit.svg" alt="edit icon" />
+						<span class="text-grey-100">Edit</span>
+					</Button>
+				</DropdownMenu.Item>
+				<form action="?/delete" method="post" use:enhance={deleteRole} class="">
+					<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+					<DropdownMenu.Item>
 						<Button
-							on:click={() => edit(name, id, permissions)}
-							class="text-xs flex items-center py-2 rounded h-auto gap-1"
-							variant="secondary"
+							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							type="submit"
+							>{#if loading}
+								<iconify-icon
+									class="text-primary-red"
+									width="20"
+									icon="eos-icons:three-dots-loading"
+								></iconify-icon>
+							{:else}
+								<img src="/icons/trash.svg" alt="trash icon" />
+								<span class="button-text text-primary-red">Delete </span>
+							{/if}</Button
 						>
-							<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
-							<span class="text-sm">Edit</span>
-						</Button>
-						<form
-							action="?/delete"
-							method="post"
-							use:enhance={deleteRole}
-							class="grid items-center gap-4"
-						>
-							<input type="text" class="hidden" bind:value={id} name="id" />
-							<Button
-								variant="destructive"
-								class="text-sm flex items-center gap-1 py-2 rounded h-auto w-full "
-								type="submit"
-								>{#if loading}
-									<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
-								{:else}
-									<iconify-icon icon="codicon:trash" width="15"></iconify-icon>
-									<span class="button-text text-xs">Delete </span>
-								{/if}</Button
-							>
-						</form>
-					</div>
-				</div>
+					</DropdownMenu.Item>
+				</form>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</td>

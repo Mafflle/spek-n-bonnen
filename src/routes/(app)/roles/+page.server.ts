@@ -1,20 +1,23 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { client, showToast } from '$lib/utils';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 import { getCurrentUser } from '$lib/user';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1`);
+	if (getCurrentUser()?.is_superuser === false) {
+		throw redirect(302, '/');
+	}
+	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=group`);
 	const rolesRes = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/`);
 	const access = cookies.get('access');
 	const refresh = cookies.get('refresh');
-	// console.log('curr', getCurrentUser());
 
 	if (res.ok && rolesRes.ok) {
 		const permissions = await res.json();
 		const roles = await rolesRes.json();
+		// console.log(permissions);
 
 		permissions.results = permissions.results.map((perm) => {
 			return {
@@ -136,6 +139,7 @@ export const actions: Actions = {
 			return fail(500, toSend);
 		}
 	},
+
 	delete: async ({ fetch, request, params }) => {
 		const formData = await request.formData();
 

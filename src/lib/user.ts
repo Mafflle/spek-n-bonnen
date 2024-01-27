@@ -1,4 +1,3 @@
-import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { writable } from 'svelte/store';
 
 export type User = {
@@ -6,8 +5,9 @@ export type User = {
 	email: string;
 	firstName: string;
 	lastName: string;
-	isSuperuser: boolean;
-	isActive: boolean;
+	is_superuser: boolean;
+	is_active: boolean;
+	is_staff: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 };
