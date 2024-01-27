@@ -47,6 +47,11 @@
 							title: 'Manufacturers',
 							href: '/inventory/manufacturers',
 							color: '#FF1C0D'
+						},
+						{
+							title: 'Farms',
+							href: '/inventory/farms',
+							color: '#FF1C0D'
 						}
 					]
 				},
