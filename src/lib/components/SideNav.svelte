@@ -57,6 +57,11 @@
 							title: 'Butcher shops',
 							href: '/inventory/butcher-shops',
 							color: '#FF1C0D'
+						},
+						{
+							title: 'Slaugter houses',
+							href: '/inventory/slaughter-houses',
+							color: '#FF1C0D'
 						}
 					]
 				},

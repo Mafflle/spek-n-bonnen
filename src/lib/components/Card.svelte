@@ -17,8 +17,8 @@
 		loading = true;
 		formData.append('id', `${data.id}`);
 		return async ({ result, update }) => {
-			console.log('deleting');
-			console.log(result);
+			// console.log('deleting');
+			// console.log(result);
 			try {
 				if (result.status == 200) {
 					dispatch('delete', data);

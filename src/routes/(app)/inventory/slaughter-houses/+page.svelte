@@ -2,32 +2,32 @@
 	import { enhance } from '$app/forms';
 	import Card from '$lib/components/Card.svelte';
 	import Modal from '$lib/components/Modal.svelte';
-	import { ButcherShops, currentProvider, type ButcherShop } from '$lib/stores';
+	import { SlaughterHouses, currentProvider, type SlaughterHouse } from '$lib/stores';
 	import { showToast } from '$lib/utils';
 	import { slide } from 'svelte/transition';
 
 	export let data;
 
-	const { shops } = data;
+	const { slaughterHouses } = data;
 	let showModal: boolean = false;
 	let loading = false;
 	let grid = false;
 	let disabled = false;
 	let validationErrors: { name?: [string]; address?: [string] };
-	let currentShopName: string = '';
+	let currentSlaughterHouseName: string = '';
 	let currentAddress: string = '';
 
-	ButcherShops.set(shops.results);
+	SlaughterHouses.set(slaughterHouses.results);
 	function toggleModal() {
 		showModal = !showModal;
 	}
-	const toggleEditModal = (shop?: ButcherShop) => {
-		if (shop && !$currentProvider) {
-			currentProvider.set(shop);
-			currentShopName = $currentProvider?.name;
+	const toggleEditModal = (slaughterHouse?: SlaughterHouse) => {
+		if (slaughterHouse && !$currentProvider) {
+			currentProvider.set(slaughterHouse);
+			currentSlaughterHouseName = $currentProvider?.name;
 			currentAddress = $currentProvider?.address;
 		} else {
-			currentShopName = '';
+			currentSlaughterHouseName = '';
 			currentAddress = '';
 			currentProvider.set(null);
 		}
@@ -36,15 +36,15 @@
 </script>
 
 <svelte:head>
-	<title>Butcher Shops - Spek-N-Boonen</title>
+	<title>Slaughter Houses - Spek-N-Boonen</title>
 </svelte:head>
 
-{#if shops.results.length > 0}
+{#if $SlaughterHouses.length > 0}
 	<div class="w-full">
 		<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 			<div class="headers flex flex-col items-start gap-[0.25rem]">
-				<h2 class="text-[2em] -tracking-[0.64px] font-satoshi font-bold">Butcher shop</h2>
-				<sub class="text-[#6B6B6B] text-sm"> Providers / Butcher shops</sub>
+				<h2 class="text-[2em] -tracking-[0.64px] font-satoshi font-bold">Slaughter houses</h2>
+				<sub class="text-[#6B6B6B] text-sm"> Providers / Slaughter houses</sub>
 			</div>
 			<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
 				<div
@@ -98,20 +98,21 @@
 							<img src="/icons/plus.svg" alt="brand-plus" />
 						</div>
 						<div class="text-white hidden sm:block text-sm font-bold font-['Satoshi']">
-							Add butcher shop
+							Add slaughter house
 						</div>
 					</button>
 				</div>
 			</div>
 		</div>
-
 		{#if grid}
 			<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-				{#each $ButcherShops as shop}
+				{#each $SlaughterHouses as shop}
 					<Card
 						on:delete={(e) => {
-							ButcherShops.update((shops) => shops.filter((shop) => shop.id !== e.detail.id));
-							showToast('Shop deleted successfully', 'success');
+							SlaughterHouses.update((sHouses) =>
+								sHouses.filter((slaughterHouse) => slaughterHouse.id !== e.detail.id)
+							);
+							showToast('Slaughter house deleted successfully', 'success');
 						}}
 						data={shop}
 						{grid}
@@ -131,11 +132,13 @@
 					</thead>
 
 					<tbody>
-						{#each $ButcherShops as shop}
+						{#each $SlaughterHouses as shop}
 							<Card
 								on:delete={(e) => {
-									ButcherShops.update((shops) => shops.filter((shop) => shop.id !== e.detail.id));
-									showToast('Shop deleted successfully', 'success');
+									SlaughterHouses.update((sHouses) =>
+										sHouses.filter((slaughterHouse) => slaughterHouse.id !== e.detail.id)
+									);
+									showToast('Slaughter deleted successfully', 'success');
 								}}
 								on:edit={(e) => toggleEditModal(e.detail)}
 								data={shop}
@@ -147,7 +150,7 @@
 			</div>
 		{/if}
 	</div>
-{:else}
+{:else if $SlaughterHouses.length < 1}
 	<div class="w-full h-full">
 		<section class="w-full max-h-screen h-full flex justify-center items-center">
 			<div class="empty w-full h-full flex justify-center items-center">
@@ -158,13 +161,13 @@
 					<div class="content w-full">
 						<div class="text flex flex-col gap-3 justify-center items-center text-grey-300 w-full">
 							<h3 class="title text-3xl font-medium tracking-[-0.64px] text-center w-full">
-								No butcher house added
+								No slaughter house added
 							</h3>
 							<sub
 								class="info text-center text-sm font-medium leading-5 tracking-[-0.13px] max-w-[277px]"
 							>
-								You currently don’t have any butcher house in your provider, click the button below
-								to add one
+								You currently don’t have any slaughter house in your providers, click the button
+								below to add one
 							</sub>
 						</div>
 					</div>
@@ -177,7 +180,7 @@
 						<span class="w-5 h-5 relative">
 							<img src="/icons/plus.svg" alt="user-plus" />
 						</span>
-						<p class="text-white text-sm font-bold">Add butcher</p>
+						<p class="text-white text-sm font-bold">Add slaughter house</p>
 					</button>
 				</div>
 			</div>
@@ -188,7 +191,7 @@
 <Modal {showModal} on:close={() => toggleEditModal()}>
 	<form
 		slot="modal-content"
-		action="?/manage-butcher-shop"
+		action="?/manage-slaughter-houses	"
 		method="post"
 		class="min-w-[250px] w-[340px] sm:w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 		use:enhance={async ({ formData }) => {
@@ -201,22 +204,23 @@
 				try {
 					if (result.status === 200) {
 						if (result.data.edited) {
-							const editedShop = result.data.editedShop;
+							const editedSlaughterHouse = result.data.editedSlaughterHouse;
 
-							ButcherShops.update((shops) => {
-								const updatedButcherShops = shops.map((shop) => {
-									if (shop.id === editedShop.id) {
-										shop = editedShop;
+							SlaughterHouses.update((shops) => {
+								const updatedSlaughterHouses = shops.map((shop) => {
+									if (shop.id === editedSlaughterHouse.id) {
+										shop = editedSlaughterHouse;
 									}
 									return shop;
 								});
-								return updatedButcherShops;
+								return updatedSlaughterHouses;
 							});
-							showToast('Butcher shop edited successfully', 'success');
+							showToast('Slaughter house edited successfully', 'success');
 						} else {
 							// console.log(result.data);
-							ButcherShops.set([result.data.newButcherShop, ...$ButcherShops]);
-							showToast('Butcher shop added successfully', 'success');
+							SlaughterHouses.set([result.data.newSlaugherHouse, ...$SlaughterHouses]);
+
+							showToast('Slaughter house added successfully', 'success');
 						}
 						toggleEditModal();
 					} else if (result.status === 400) {
@@ -233,7 +237,7 @@
 	>
 		<div class="modal-title flex items-center gap-3 self-stretch">
 			<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-				{$currentProvider?.id ? 'Edit' : 'Add'} butcher shop
+				{$currentProvider?.id ? 'Edit' : 'Add'} slaughter house
 			</div>
 			<button
 				on:click={() => toggleEditModal()}
@@ -250,7 +254,7 @@
 					name="name"
 					id="name"
 					placeholder="Enter name"
-					bind:value={currentShopName}
+					bind:value={currentSlaughterHouseName}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.name}
@@ -287,7 +291,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">{$currentProvider ? 'Edit' : 'Add'} butcher shop </span>
+						<span class="button-text">{$currentProvider ? 'Edit' : 'Add'} slaughter house </span>
 					{/if}
 				</button>
 			</div>
