@@ -39,7 +39,7 @@
 	<title>Butcher Shops - Spek-N-Boonen</title>
 </svelte:head>
 
-{#if shops.results.length > 0}
+{#if $ButcherShops.length > 0}
 	<div class="w-full">
 		<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 			<div class="headers flex flex-col items-start gap-[0.25rem]">

@@ -223,7 +223,7 @@
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if primals.length === 0}
+	{#if $Primals.length === 0}
 		<div class="empty h-full w-full flex justify-center items-center">
 			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
 				<div class="icon">
