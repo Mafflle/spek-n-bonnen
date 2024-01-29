@@ -64,6 +64,14 @@ export type Vendor = {
 	updated_at: Date;
 };
 
+export type ButcherShop = {
+	id: number;
+	name: string;
+	address: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
@@ -75,7 +83,8 @@ export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
 export let Farms = writable<Farm[]>([]);
 export let Vendors = writable<Vendor[]>([]);
-export let currentProvider = writable<Vendor | Manufacturer | Farm | null>(null);
+export let ButcherShops = writable<ButcherShop[]>([]);
+export let currentProvider = writable<Vendor | Manufacturer | Farm | ButcherShop | null>(null);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {

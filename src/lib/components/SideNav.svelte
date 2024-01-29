@@ -52,6 +52,11 @@
 							title: 'Farms',
 							href: '/inventory/farms',
 							color: '#FF1C0D'
+						},
+						{
+							title: 'Butcher shops',
+							href: '/inventory/butcher-shops',
+							color: '#FF1C0D'
 						}
 					]
 				},

@@ -2,7 +2,7 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import Modal from '$lib/components/Modal.svelte';
-	import FarmCard from '$lib/components/FarmCard.svelte';
+	import FarmCard from '$lib/components/Card.svelte';
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -240,7 +240,16 @@
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
 			{#each $Farms as farm}
-				<FarmCard on:edit={(e) => toggleEditModal(e.detail)} {farm} {grid} id={farm.id} />
+				<FarmCard
+					on:delete={(e) => {
+						Farms.update((farms) => farms.filter((farm) => farm.id !== e.detail.id));
+						showToast('Farm deleted successfully', 'success');
+					}}
+					on:edit={(e) => toggleEditModal(e.detail)}
+					data={farm}
+					{grid}
+					id={farm.id}
+				/>
 			{/each}
 		</div>
 	{:else}
@@ -257,7 +266,16 @@
 
 				<tbody>
 					{#each $Farms as farm}
-						<FarmCard on:edit={(e) => toggleEditModal(e.detail)} {farm} {grid} id={farm.id} />
+						<FarmCard
+							on:delete={(e) => {
+								Farms.update((farms) => farms.filter((farm) => farm.id !== e.detail.id));
+								showToast('Farm deleted successfully', 'success');
+							}}
+							on:edit={(e) => toggleEditModal(e.detail)}
+							data={farm}
+							{grid}
+							id={farm.id}
+						/>
 					{/each}
 				</tbody>
 			</table>

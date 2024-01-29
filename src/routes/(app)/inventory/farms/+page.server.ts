@@ -48,7 +48,7 @@ export const actions: Actions = {
 		};
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
-			console.log('validated', validatedData);
+			// console.log('validated', validatedData);
 
 			if (validatedData.farmToEdit) {
 				const editFarm = await fetch(
