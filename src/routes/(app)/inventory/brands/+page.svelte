@@ -71,7 +71,7 @@
 			use:enhance={({ formData }) => {
 				loading = true;
 				if (currentBrand?.id) {
-					formData.set('brandToEdit', `${currentBrand.id}`);
+					formData.append('brandToEdit', `${currentBrand.id}`);
 				}
 				return async ({ result, update }) => {
 					try {
@@ -268,7 +268,7 @@
 		</div>
 	</div>
 	<!-- render if page is empty -->
-	{#if brands.results.length === 0}
+	{#if $Brands.length === 0}
 		<div class="empty h-full w-full flex justify-center items-center">
 			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
 				<div class="icon">
@@ -301,14 +301,7 @@
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Brands as brand}
-				<BrandCard
-					on:edit={(e) => toggleEditModal(e.detail)}
-					{brand}
-					name={brand.name}
-					date={dayjs(brand.updated_at).fromNow()}
-					{grid}
-					id={0}
-				/>
+				<BrandCard on:edit={(e) => toggleEditModal(e.detail)} {brand} {grid} id={0} />
 			{/each}
 		</div>
 	{:else}
@@ -325,14 +318,7 @@
 
 				<tbody>
 					{#each $Brands as brand}
-						<BrandCard
-							on:edit={(e) => toggleEditModal(e.detail)}
-							{brand}
-							name={brand.name}
-							date={dayjs(brand.updated_at).fromNow()}
-							{grid}
-							id={brand.id}
-						/>
+						<BrandCard on:edit={(e) => toggleEditModal(e.detail)} {brand} {grid} id={brand.id} />
 					{/each}
 				</tbody>
 			</table>

@@ -1,7 +1,5 @@
-
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { showToast } from '$lib/utils.js';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 
 import { ZodError, z } from 'zod';
 
@@ -54,8 +52,7 @@ const setupSchema = z
  * @property {string[]=} server
  */
 
-
-export const actions: Actions =  {
+export const actions: Actions = {
 	setup: async ({ request, fetch }) => {
 		const formData = await request.formData();
 
@@ -84,11 +81,13 @@ export const actions: Actions =  {
 			if (setup.ok && setup.status == 201) {
 				return {
 					success: true
-				}
+				};
 			} else if (!setup.ok && setup.status === 400) {
 				const setupErrors = await setup.json();
-				return fail(400, { errors: setupErrors })
-			} else if (!setup.ok) { return fail(500, { message: 'Ooops something went wrong' }) }
+				return fail(400, { errors: setupErrors });
+			} else if (!setup.ok) {
+				return fail(500, { message: 'Ooops something went wrong' });
+			}
 		} catch (error) {
 			/**
 			 * @typedef {object} errorType

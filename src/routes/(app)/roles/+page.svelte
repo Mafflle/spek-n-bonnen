@@ -98,33 +98,10 @@
 		}
 	}, 700);
 
-	const createPermissionsInput = (options: Option[]) => {
-		const inputsContainer = document.getElementById('permissions');
-		if (browser) {
-			console.log(document.getElementById('permissions'));
-		}
-
-		while (inputsContainer?.firstChild) {
-			inputsContainer.removeChild(inputsContainer.firstChild);
-		}
-		if (options.length > 0) {
-			permissionsSelected = true;
-			options.forEach((option) => {
-				const input = document.createElement('input');
-				input.name = 'permission';
-				input.type = 'number';
-				input.value = `${option.value}`;
-				input.className = 'hidden';
-
-				inputsContainer?.appendChild(input);
-			});
-		} else permissionsSelected = false;
-	};
-
 	// Roles CRUD function(s)
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		if (currRoleId) formData.set('role-id', `${currRoleId}`);
+		if (currRoleId) formData.append('role-id', `${currRoleId}`);
 
 		$container.map((item) => {
 			formData.append('permission', `${item.value}`);

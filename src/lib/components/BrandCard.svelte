@@ -10,8 +10,6 @@
 	import { createEventDispatcher } from 'svelte';
 	dayjs.extend(relativeTime);
 
-	export let name: string;
-	export let date: string;
 	export let grid: boolean;
 	export let id: number;
 	export let brand: Brand;

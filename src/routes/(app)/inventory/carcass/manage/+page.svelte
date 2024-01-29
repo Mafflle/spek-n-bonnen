@@ -349,6 +349,22 @@
 								</div>
 
 								<div class="w-full">
+									<label for="carcass_number" class="block mb-2 text-sm">Carcass number</label>
+									<input
+										type="text"
+										name="carcass_number"
+										id="carcass_number"
+										placeholder="Enter carcass number"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									<!-- {#if validationErrors?.password}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
+								>
+							{/if} -->
+								</div>
+								<div class="w-full">
 									<label for="abhd-number" class="block mb-2 text-sm">ABHD number</label>
 									<input
 										type="text"
@@ -369,8 +385,8 @@
 									<label for="ear-tag" class="block mb-2 text-sm">Ear tag</label>
 									<input
 										type="text"
-										name="ear-tag "
-										id="ear-tag "
+										name="ear-tag"
+										id="ear-tag"
 										placeholder="Enter ear tag"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
@@ -381,6 +397,45 @@
 								>
 							{/if} -->
 								</div>
+
+								<div>
+									<label for="date_of_slaughter" class="block mb-2 text-sm"
+										>Date of slaughter <span class="text-destructive">*</span></label
+									>
+									<input
+										type="text"
+										name="date_of_slaughter"
+										id="date_of_slaughter"
+										placeholder="Enter slaughter date"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									<!-- {#if validationErrors?.email}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+								>
+							{/if} -->
+								</div>
+
+								<div>
+									<label for="date_received" class="block mb-2 text-sm"
+										>Date received <span class="text-destructive text-base">*</span></label
+									>
+									<input
+										type="text"
+										name="date_received"
+										id="date_received"
+										placeholder="Enter date received"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									<!-- {#if validationErrors?.email}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+								>
+							{/if} -->
+								</div>
+
 								<div>
 									<label for="lairage-number" class="block mb-2 text-sm">Lairage number</label>
 									<input
@@ -440,6 +495,22 @@
 							{/if} -->
 								</div>
 
+								<div>
+									<label for="farm" class="block mb-2 text-sm">Farm</label>
+									<input
+										type="text"
+										name="farm "
+										id="farm "
+										placeholder="Enter farm name"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									<!-- {#if validationErrors?.email}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+								>
+							{/if} -->
+								</div>
 								<div>
 									<label for="farm" class="block mb-2 text-sm">Farm</label>
 									<input

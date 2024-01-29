@@ -38,6 +38,14 @@ export type Primal = {
 	updated_at: Date;
 };
 
+export type Farm = {
+	id: number;
+	name: string;
+	address: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export type User = {
 	id: number;
 	first_name: string;
@@ -46,6 +54,29 @@ export type User = {
 	is_staff: boolean;
 	is_admin: boolean;
 	is_superuser: boolean;
+};
+export type Vendor = {
+	id: number;
+	name: string;
+	address: string;
+	phone_number: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
+export type ButcherShop = {
+	id: number;
+	name: string;
+	address: string;
+	created_at: Date;
+	updated_at: Date;
+};
+export type SlaughterHouse = {
+	id: number;
+	name: string;
+	address: string;
+	created_at: Date;
+	updated_at: Date;
 };
 
 export let passwordModal = writable(false);
@@ -57,6 +88,13 @@ export let Brands = writable<Brand[]>([]);
 export let Manufacturers = writable<Manufacturer[]>([]);
 export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
+export let Farms = writable<Farm[]>([]);
+export let Vendors = writable<Vendor[]>([]);
+export let ButcherShops = writable<ButcherShop[]>([]);
+export let SlaughterHouses = writable<SlaughterHouse[]>([]);
+export let currentProvider = writable<
+	Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
+>(null);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {
