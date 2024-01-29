@@ -6,16 +6,17 @@
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Farms, type Farm } from '$lib/stores.js';
+	import { Farms, type Farm, currentProvider } from '$lib/stores.js';
 
 	import { showToast } from '$lib/utils.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
 	console.log(Farms);
 	const { farms } = data;
-	console.log(farms.results); // Add this line to debug
+	// Add this line to debug
 	Farms.set(farms.results);
 
 	let showModal = false;
@@ -23,44 +24,51 @@
 	let grid = false;
 	let disabled = false;
 	let validationErrors: { name?: [string]; address?: [string] };
-	let address: string = '';
-	let id: number = 0;
 
 	function toggleModal() {
 		showModal = !showModal;
 	}
 
-	let currentFarm: Farm;
-	let currentFarmName: string;
+	let address: string = '';
+	let currentFarmName: string = '';
 
-	const toggleEditModal = (farm: Farm) => {
-		console.log(farm);
-		currentFarm = farm;
-		currentFarmName = currentFarm.name;
-		address = currentFarm.address;
-		id = currentFarm.id;
-		showModal = !showModal;
+	const toggleEditModal = (farm?: Farm) => {
+		if (farm && !$currentProvider) {
+			currentProvider.set(farm);
+			currentFarmName = $currentProvider?.name;
+			address = $currentProvider?.address;
+		} else {
+			currentFarmName = '';
+			address = '';
+			currentProvider.set(null);
+		}
+		toggleModal();
 	};
 	const submit: SubmitFunction = async ({ formData }) => {
 		console.log(formData);
 	};
+	const unsubscribe = currentProvider.subscribe((provider) => provider);
+	onDestroy(() => {
+		unsubscribe;
+	});
 </script>
 
 <svelte:head>
 	<title>Farms - Spek-n-Boonen</title>
 </svelte:head>
+
 <!-- add primal modal -->
-<Modal {showModal} on:close={toggleModal}>
+<Modal {showModal} on:close={() => toggleEditModal()}>
 	<div slot="modal-content">
 		<!-- Your modal content goes here -->
 		<form
 			action="?/manage-farm"
 			method="post"
-			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			class="min-w-[250px] w-[320px] sm:w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={({ formData }) => {
 				loading = true;
-				if (currentFarm?.id) {
-					formData.set('farmToEdit', `${currentFarm.id}`);
+				if ($currentProvider?.id) {
+					formData.set('farmToEdit', `${$currentProvider?.id}`);
 				}
 				return async ({ result, update }) => {
 					try {
@@ -77,16 +85,13 @@
 									});
 									return updatedFarms;
 								});
-								Object.keys(currentFarm).forEach((key) => (currentFarm[key] = false));
 								showToast('Farm edited successfully', 'success');
-
-								toggleModal();
 							} else {
 								// console.log(result.data);
 								Farms.set([result.data.newFarm, ...$Farms]);
 								showToast('Farm added successfully', 'success');
-								toggleModal();
 							}
+							toggleEditModal();
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
 						} else if (result.status === 500) {
@@ -105,13 +110,16 @@
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					{currentFarm ? 'Edit' : 'Add'} farm
+					{$currentProvider?.id ? 'Edit' : 'Add'} farm
 				</div>
-				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
+				<button
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={() => toggleEditModal()}
+				>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-4 w-full">
 				<div class="modal-input">
 					<input
 						type="text"
@@ -155,7 +163,7 @@
 						{#if loading}
 							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 						{:else}
-							<span class="button-text">{currentFarm ? 'Edit' : 'Add'} farm </span>
+							<span class="button-text">{$currentProvider ? 'Edit' : 'Add'} farm </span>
 						{/if}
 					</button>
 				</div>
@@ -163,6 +171,7 @@
 		</form>
 	</div>
 </Modal>
+
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
@@ -171,7 +180,7 @@
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 			</div>
@@ -192,7 +201,7 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="vendor-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add farm</div>
+					<div class="text-white hidden sm:block text-sm font-bold font-['Satoshi']">Add farm</div>
 				</button>
 			</div>
 		</div>
@@ -231,14 +240,7 @@
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
 			{#each $Farms as farm}
-				<FarmCard
-					on:edit={(e) => toggleEditModal(e.detail)}
-					{farm}
-					name={farm.name}
-					address={farm.address}
-					{grid}
-					id={farm.id}
-				/>
+				<FarmCard on:edit={(e) => toggleEditModal(e.detail)} {farm} {grid} id={farm.id} />
 			{/each}
 		</div>
 	{:else}
@@ -255,14 +257,7 @@
 
 				<tbody>
 					{#each $Farms as farm}
-						<FarmCard
-							on:edit={(e) => toggleEditModal(e.detail)}
-							{farm}
-							name={farm.name}
-							address={farm.address}
-							{grid}
-							id={farm.id}
-						/>
+						<FarmCard on:edit={(e) => toggleEditModal(e.detail)} {farm} {grid} id={farm.id} />
 					{/each}
 				</tbody>
 			</table>

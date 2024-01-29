@@ -1,19 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 
 import type { LayoutServerLoad } from './$types';
-import { currentUser, getCurrentUser } from '$lib/user';
+import { currentUser } from '$lib/user';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 
 export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 	const access = cookies.get('access');
-	// const refresh = cookies.get('refresh');
-	// // console.log(access, refresh);
-
-	// if (access) {
-	// 	await initCurrentUser(access, cookies, refresh);
-	// 	// console.log('works');
-	// } else {
-	// }
 
 	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 		headers: {

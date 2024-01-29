@@ -92,7 +92,6 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 };
 
 export const handle = async ({ event, resolve }) => {
-	const access = event.cookies.get('access');
 	const refresh = event.cookies.get('refresh');
 
 	return await resolve(event);

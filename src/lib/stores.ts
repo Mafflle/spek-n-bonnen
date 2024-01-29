@@ -75,7 +75,7 @@ export let Primals = writable<Primal[]>([]);
 export let Users = writable<User[]>([]);
 export let Farms = writable<Farm[]>([]);
 export let Vendors = writable<Vendor[]>([]);
-export let currentProvider = writable<Vendor | Manufacturer | null>(null);
+export let currentProvider = writable<Vendor | Manufacturer | Farm | null>(null);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {
