@@ -9,6 +9,7 @@
 	import { slide } from 'svelte/transition';
 	import { Manufacturers, currentProvider } from '$lib/stores.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { browser } from '$app/environment';
 
 	dayjs.extend(relativeTime);
 
@@ -90,6 +91,18 @@
 			}
 		};
 	};
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
 </script>
 
 <!-- The rest of the code is similar to the Brands code, just replace "Brand" with "Manufacturer" -->
@@ -198,7 +211,7 @@
 			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={() => (grid = !grid)}
+					on:click={toggleGrid}
 				>
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>

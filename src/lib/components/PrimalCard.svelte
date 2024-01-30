@@ -5,7 +5,7 @@
 	import { Primals, type Primal } from '$lib/stores';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let name: string;
 	export let description: string;
@@ -41,6 +41,10 @@
 	const editPrimal = (primal: Primal) => {
 		dispatch('edit', primal);
 	};
+	onMount(() => {
+		const storedGridPreference = localStorage.getItem('gridPreference');
+		grid = storedGridPreference ? JSON.parse(storedGridPreference) : false;
+	});
 </script>
 
 {#if grid}
