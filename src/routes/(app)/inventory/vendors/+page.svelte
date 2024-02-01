@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import Vendor from '$lib/components/Vendor.svelte';
@@ -44,6 +45,20 @@
 	onMount(() => {
 		Vendors.set(vendors.results);
 	});
+
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
+
 	onDestroy(() => {
 		unsubscribe;
 	});
@@ -222,7 +237,7 @@
 			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={() => (grid = !grid)}
+					on:click={toggleGrid}
 				>
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>

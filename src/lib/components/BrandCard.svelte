@@ -7,8 +7,11 @@
 	import { enhance } from '$app/forms';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import {browser} from '$app/environment'
 	dayjs.extend(relativeTime);
+
+	
 
 	export let grid: boolean;
 	export let id: number;
@@ -36,6 +39,12 @@
 	const editBrand = (brand: Brand) => {
 		dispatch('edit', brand);
 	};
+
+	  
+	  onMount(() => {
+        const storedGridPreference = localStorage.getItem('gridPreference');
+        grid = storedGridPreference ? JSON.parse(storedGridPreference) : false;
+    });
 </script>
 
 {#if grid}

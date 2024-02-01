@@ -10,6 +10,7 @@
 
 	import { showToast } from '$lib/utils.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { browser } from '$app/environment';
 
 	export let data;
 
@@ -44,6 +45,19 @@
 	const submit: SubmitFunction = async ({ formData }) => {
 		console.log(formData);
 	};
+
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -204,7 +218,7 @@
 			<div class="filter-buttons flex items-start gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={() => (grid = !grid)}
+					on:click={toggleGrid}
 				>
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>
