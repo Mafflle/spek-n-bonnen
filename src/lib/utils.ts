@@ -4,11 +4,43 @@ import axios from 'axios';
 import toast from 'svelte-french-toast';
 import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
 
+// types
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
 export type Option = {
 	value: number;
 	label: string;
 };
+export type CarcassErrors = {
+	purchase_price?: [string];
+	cold_weight?: [string];
+	weight?: [string];
+	lot_number?: [string];
+	ahdb_code?: [string];
+	vendor_code?: [string];
+	vendor_item_name?: [string];
+	vendor_moq?: [string];
+	vendor_moq_unit?: [string];
+	origin_and_terroir?: [string];
+	certifications?: [string];
+	country_of_origin?: [string];
+	ear_tag?: [string];
+	lairage_number?: [string];
+	carcass_number?: [string];
+	sex_category?: [string];
+	conformation?: [string];
+	fat_score?: [string];
+	date_of_slaughter?: [string];
+	date_received?: [string];
+	farm_id?: [string];
+	slaughter_house_id?: [string];
+	butcher_shop_id?: [string];
+	manufacturer_id?: [string];
+	brand_id?: [string];
+	vendor_id?: [string];
+	server?: [string];
+};
+
+// utility functions
 export const showToast = (message: string, type: ToastType) => {
 	if (message) {
 		if (type === 'success') {

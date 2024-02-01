@@ -81,13 +81,10 @@
 				<Tooltip.Trigger>
 					<p>{permissions.length}</p>
 				</Tooltip.Trigger>
-				<Tooltip.Content class="flex flex-col gap-4 px-6 py-4">
-					<h3 class="text-3xl font-bold">permissions</h3>
-					<p class="font-medium">
-						{#each permissions as permission}
-							<p>{permission.name}</p>
-						{/each}
-					</p>
+				<Tooltip.Content class="flex flex-col gap-4 px-3 py-2">
+					{#each permissions as permission}
+						<p class="text-xs text-grey-100">{permission.name}</p>
+					{/each}
 				</Tooltip.Content>
 			</Tooltip.Root>
 		</div>

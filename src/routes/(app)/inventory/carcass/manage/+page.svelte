@@ -1,11 +1,34 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Selector from '$lib/components/Selector.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { showToast, type CarcassErrors } from '$lib/utils.js';
 
+	import { slide } from 'svelte/transition';
+
+	export let data;
+
+	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers } = data;
+
+	let validationErrors: CarcassErrors;
 	const allTabs = ['physical-info', 'vendor', 'traceability', 'origin'];
 	let currentTab: string = 'physical-info';
+	let loading: boolean = false;
+	let today = new Date();
+	let dd = today.getDate();
+	let mm = today.getMonth() + 1;
+	let year = today.getFullYear();
+
+	if (dd < 10) {
+		dd = '0' + dd;
+	}
+
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+	let maxDate = year + '-' + mm + '-' + dd;
 
 	const switchTabs = (direction: string) => {
 		const currTab = allTabs.findIndex((item) => item === currentTab);
@@ -29,7 +52,43 @@
 		</div>
 	</div>
 	<Separator class="my-8 md:block hidden" />
-	<form action="w-full">
+	<form
+		action="?/manage-carcass"
+		method="post"
+		use:enhance={async () => {
+			loading = true;
+			return async ({ result, update }) => {
+				try {
+					if (result.status === 200) {
+						console.log(result.data);
+						showToast('Carcass added successfully', 'success');
+					} else if (result.status === 400) {
+						validationErrors = result.data.errors;
+
+						console.log(validationErrors);
+					}
+				} finally {
+					await update();
+					loading = false;
+				}
+			};
+		}}
+		class="w-full"
+	>
+		<section class="w-full my-5 flex items-center justify-end">
+			<button
+				disabled={loading}
+				type="submit"
+				class=" px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1 max-xsm:hidden"
+			>
+				{#if loading}
+					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
+				{:else}
+					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
+					<span> Add carcass</span>
+				{/if}
+			</button>
+		</section>
 		<section
 			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[450px] justify-center text-sm w-full lg:gap-10"
 		>
@@ -41,80 +100,86 @@
 				<div class="mb-8 flex flex-col gap-[1.28rem]">
 					<div class="manufacturer">
 						<label for="manufacturer" class="block mb-2 text-sm">Manufacturer</label>
-						<input
-							type="text"
-							name="manufacturers"
-							id="email"
-							placeholder="Enter manufacturer's name"
-							class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						<Selector
+							name="manufacturer"
+							placeholder="Select manufacturer "
+							options={manufacturers.results}
+							token={data.access}
+							endpoint="manage"
+							searchEndpoint="api/inventory/manufacturers"
 						/>
-						<!-- {#if validationErrors?.email}
-            <sub
-              transition:slide={{ delay: 250, duration: 300 }}
-              class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-            >
-          {/if} -->
+						{#if validationErrors?.manufacturer_id}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.manufacturer_id}</sub
+							>
+						{/if}
 					</div>
 
 					<div>
 						<label for="brand" class="block mb-2 text-sm">Brand</label>
-						<input
-							type="text"
+						<Selector
+							token={data.access}
+							endpoint="manage"
+							searchEndpoint="api/inventory/brands"
 							name="brand"
-							id="brand"
-							placeholder="Enter brand's name"
-							class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							placeholder="Select brand "
+							options={brands.results}
 						/>
-						<!-- {#if validationErrors?.password}
-            <sub
-              transition:slide={{ delay: 250, duration: 300 }}
-              class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-            >
-          {/if} -->
+						{#if validationErrors?.brand_id}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.brand_id}</sub
+							>
+						{/if}
 					</div>
 
-					<div class="vendor">
-						<label for="vendor" class="block mb-2 text-sm">Vendor</label>
-						<input
-							type="text"
-							name="vendor"
-							id="vendor"
-							placeholder="Enter vendor's name"
-							class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					<div class="butcher-shop">
+						<label for="butcher_shop" class="block mb-2 text-sm">Butcher shop</label>
+						<Selector
+							token={data.access}
+							endpoint="manage"
+							searchEndpoint="api/inventory/butcher_shops"
+							name="butcher_shop"
+							placeholder="Select butcher shop "
+							options={butcherShops.results}
 						/>
-						<!-- {#if validationErrors?.email}
-            <sub
-              transition:slide={{ delay: 250, duration: 300 }}
-              class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-            >
-          {/if} -->
+						{#if validationErrors?.butcher_shop_id}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.butcher_shop_id}</sub
+							>
+						{/if}
 					</div>
 				</div>
 				<div class="mb-8">
 					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">CERTIFICATIONS</h3>
 					<div class=" flex flex-col gap-[1.28rem] w-full">
-						<div class="purchase">
-							<label for="purchase-price" class="block mb-2 text-sm">Purchase price</label>
+						<div class="purchase flex flex-col gap-2 items-start">
+							<label for="certifications" class="block mb-2 text-sm">Certifications</label>
 							<input
-								type="text"
-								name="purchase-price"
-								id="purchase-price"
-								placeholder="Enter purchase price eg - ($100)"
+								type="number"
+								name="certifications"
+								id="certifications"
+								placeholder="Enter certification (optional)"
 								class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 							/>
-							<!-- {#if validationErrors?.email}
-              <sub
-                transition:slide={{ delay: 250, duration: 300 }}
-                class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-              >
-            {/if} -->
+							{#if validationErrors?.purchase_price}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]"
+									>{validationErrors.purchase_price}</sub
+								>
+							{/if}
 						</div>
 					</div>
 				</div>
 				<div class="mb-8">
 					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">FINANCE</h3>
 					<div class=" flex flex-col gap-[1.28rem] w-full">
-						<div class="purchase">
+						<div class="purchase flex flex-col gap-2 items-start">
 							<label for="purchase-price" class="block mb-2 text-sm">Purchase price</label>
 							<input
 								type="text"
@@ -123,12 +188,13 @@
 								placeholder="Enter purchase price eg - ($100)"
 								class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 							/>
-							<!-- {#if validationErrors?.email}
-              <sub
-                transition:slide={{ delay: 250, duration: 300 }}
-                class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-              >
-            {/if} -->
+							{#if validationErrors?.purchase_price}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]"
+									>{validationErrors.purchase_price}</sub
+								>
+							{/if}
 						</div>
 					</div>
 				</div>
@@ -145,12 +211,12 @@
 
 				<!-- Tabs -->
 				<Tabs.Root
-					value={currentTab}
+					bind:value={currentTab}
 					class=" relative w-full h-full overflow-y-scroll no-scrollbar"
 				>
 					<!-- Tabs trigger -->
 					<section
-						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar"
+						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
 					>
 						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 ">
 							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="physical-info"
@@ -173,83 +239,107 @@
 						<!-- Physical info -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="physical-info">
 							<div class=" flex flex-col gap-[1.28rem] w-full">
-								<div class="weight">
+								<div class="weight flex flex-col gap-2 items-start">
 									<label for="weight" class="block mb-2 text-sm">Weight</label>
 									<input
-										type="text"
+										type="number"
 										name="weight"
 										id="weight"
 										placeholder="Enter weight eg - (99kg)"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.weight}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.weight}</sub
+										>
+									{/if}
 								</div>
 
-								<div class="w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="cold-weight" class="block mb-2 text-sm">Cold weight</label>
 									<input
-										type="text"
+										type="number"
 										name="cold-weight"
 										id="cold-weight"
 										placeholder="Enter cold weight eg - (99kg)"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.cold_weight}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.cold_weight}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="sex-category" class="block mb-2 text-sm">Sex category</label>
 									<Selector
 										name="sex-category"
 										placeholder="Select sex category"
 										options={[
-											{ value: 'young-bull', label: 'Young bull' },
-											{ value: 'Bull', label: 'Bull' },
-											{ value: 'Steer', label: 'Steer' },
-											{ value: 'Heifer', label: 'Heifer' }
+											{ value: 'A', label: 'Young bull' },
+											{ value: 'B', label: 'Bull' },
+											{ value: 'C', label: 'Steer' },
+											{ value: 'E', label: 'Heifer' }
 										]}
 									/>
+									{#if validationErrors?.sex_category}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.sex_category}</sub
+										>
+									{/if}
 								</div>
-								<div>
+								<div class="flex flex-col gap-2 items-start w-full">
 									<label for="fat-score" class="block mb-2 text-sm">Fat score</label>
 									<Selector
-										name="sex-category"
+										name="fat-score"
 										placeholder="Select fat score"
 										options={[
-											{ value: '10', label: '10%' },
-											{ value: '20', label: '20%' },
-											{ value: '30', label: '30%' },
-											{ value: '40', label: '40%' },
-											{ value: '50', label: '50%' }
+											{ value: '1', label: '10%' },
+											{ value: '2', label: '20%' },
+											{ value: '3', label: '30%' },
+											{ value: '4', label: '40%' },
+											{ value: '5', label: '50%' },
+											{ value: '6', label: '60%' }
 										]}
 									/>
+									{#if validationErrors?.fat_score}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.fat_score}</sub
+										>
+									{/if}
 								</div>
 
-								<div class="conformation">
+								<div class="conformation flex flex-col gap-2 items-start">
 									<label for="conformation" class="block mb-2 text-sm">Conformation</label>
-									<input
-										type="text"
+									<Selector
 										name="conformation"
-										id="conformation"
-										placeholder="Enter vendor's moq"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										placeholder="Select conformation"
+										options={[
+											{ value: 'S', label: 'CONF-S' },
+											{ value: 'E', label: 'CONF-E' },
+											{ value: 'U', label: 'CONF-U' },
+											{ value: 'R', label: 'CONF-R' },
+											{ value: 'O', label: 'CONF-O' },
+											{ value: 'P', label: 'CONF-P' }
+										]}
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+
+									{#if validationErrors?.conformation}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.conformation}</sub
+										>
+									{/if}
 								</div>
 							</div>
 						</Tabs.Content>
@@ -258,7 +348,25 @@
 						<!-- Vendor info -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="vendor">
 							<div class=" flex flex-col gap-[1.28rem] w-full">
-								<div class="vendor-code">
+								<div class="flex flex-col gap-2 items-start">
+									<label for="vendor" class="block mb-2 text-sm">Vendor</label>
+									<Selector
+										token={data.access}
+										endpoint="manage"
+										searchEndpoint="api/inventory/vendors"
+										name="vendor"
+										placeholder="Select vendor "
+										options={vendors.results}
+									/>
+									{#if validationErrors?.vendor_id}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_id}</sub
+										>
+									{/if}
+								</div>
+								<div class="vendor-code flex flex-col gap-2 items-start">
 									<label for="vendor-code" class="block mb-2 text-sm">Vendor code</label>
 									<input
 										type="text"
@@ -267,48 +375,51 @@
 										placeholder="Enter vendor code"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.vendor_code}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_code}</sub
+										>
+									{/if}
 								</div>
 
-								<div class="w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="vendor-moq" class="block mb-2 text-sm">Vendor MOQ</label>
 									<input
-										type="text"
+										type="number"
 										name="vendor-moq"
 										id="vendor-moq"
 										placeholder="Enter moq"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.vendor_moq}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_moq}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="vendor-moq-unit" class="block mb-2 text-sm">Vendor MOQ unit</label>
 									<input
 										type="text"
-										name="vendor-moq-unit "
+										name="vendor-moq-unit"
 										id="vendor-moq-unit "
 										placeholder="Enter vendor's moq"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.vendor_moq_unit}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_moq_unit}</sub
+										>
+									{/if}
 								</div>
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="vendor-item-name" class="block mb-2 text-sm">Vendor item name</label>
 									<input
 										type="text"
@@ -317,12 +428,13 @@
 										placeholder="Enter vendor item name"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.vendor_item_name}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_item_name}</sub
+										>
+									{/if}
 								</div>
 							</div>
 						</Tabs.Content>
@@ -331,7 +443,7 @@
 						<!-- Traceability -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">
 							<div class=" flex flex-col gap-[1.28rem] w-full">
-								<div class="lot-number">
+								<div class="lot-number flex flex-col gap-2 items-start">
 									<label for="lot-number" class="block mb-2 text-sm">Lot number</label>
 									<input
 										type="text"
@@ -340,31 +452,33 @@
 										placeholder="Enter lot number"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.lot_number}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.lot_number}</sub
+										>
+									{/if}
 								</div>
 
-								<div class="w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="carcass_number" class="block mb-2 text-sm">Carcass number</label>
 									<input
-										type="text"
+										type="number"
 										name="carcass_number"
 										id="carcass_number"
 										placeholder="Enter carcass number"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.carcass_number}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.carcass_number}</sub
+										>
+									{/if}
 								</div>
-								<div class="w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="abhd-number" class="block mb-2 text-sm">ABHD number</label>
 									<input
 										type="text"
@@ -373,15 +487,16 @@
 										placeholder="Enter abhd number"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.ahdb_code}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.ahdb_code}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="ear-tag" class="block mb-2 text-sm">Ear tag</label>
 									<input
 										type="text"
@@ -390,67 +505,88 @@
 										placeholder="Enter ear tag"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.ear_tag}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.ear_tag}</sub
+										>
+									{/if}
 								</div>
-
-								<div>
+								<div class="flex flex-col gap-2 items-start">
+									<label for="slaughter_house" class="block mb-2 text-sm">Slaughter house</label>
+									<Selector
+										token={data.access}
+										endpoint="manage"
+										searchEndpoint="api/inventory/slaughter_houses"
+										name="slaughter_house"
+										placeholder="Select slaughter house "
+										options={slaughterHouses.results}
+									/>
+									{#if validationErrors?.slaughter_house_id}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.slaughter_house_id}</sub
+										>
+									{/if}
+								</div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="date_of_slaughter" class="block mb-2 text-sm"
-										>Date of slaughter <span class="text-destructive">*</span></label
-									>
+										>Date of slaughter
+									</label>
 									<input
-										type="text"
+										type="date"
+										max={maxDate}
 										name="date_of_slaughter"
 										id="date_of_slaughter"
 										placeholder="Enter slaughter date"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.date_of_slaughter}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.date_of_slaughter}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
-									<label for="date_received" class="block mb-2 text-sm"
-										>Date received <span class="text-destructive text-base">*</span></label
-									>
+								<div class="flex flex-col gap-2 items-start">
+									<label for="date_received" class="block mb-2 text-sm">Date received </label>
 									<input
-										type="text"
+										type="date"
 										name="date_received"
 										id="date_received"
+										max={maxDate}
 										placeholder="Enter date received"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.date_received}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.date_received}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="lairage-number" class="block mb-2 text-sm">Lairage number</label>
 									<input
-										type="text"
+										type="number"
 										name="lairage-number"
 										id="lairage-number"
-										placeholder="Enter lairage number"
+										placeholder="Enter lairage number (optional)"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.lairage_number}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.lairage_number}</sub
+										>
+									{/if}
 								</div>
 							</div>
 						</Tabs.Content>
@@ -459,7 +595,7 @@
 						<!-- Origin -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="origin">
 							<div class=" flex flex-col gap-[1.28rem] w-full">
-								<div>
+								<div class="flex flex-col gap-2 items-start">
 									<label for="origin-and-terrior" class="block mb-2 text-sm"
 										>Origin and terrior</label
 									>
@@ -470,15 +606,16 @@
 										placeholder="Enter origin and terrior"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.origin_and_terroir}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.origin_and_terroir}</sub
+										>
+									{/if}
 								</div>
 
-								<div class="w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="country" class="block mb-2 text-sm">Country of origin</label>
 									<input
 										type="text"
@@ -487,46 +624,57 @@
 										placeholder="Enter country of origin"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
-									<!-- {#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
-								>
-							{/if} -->
+									{#if validationErrors?.country_of_origin}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.country_of_origin}</sub
+										>
+									{/if}
 								</div>
 
-								<div>
+								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="farm" class="block mb-2 text-sm">Farm</label>
-									<input
+									<Selector
+										token={data.access}
+										endpoint="manage"
+										searchEndpoint="api/inventory/farms"
+										name="farm"
+										placeholder="Select farm "
+										options={farms.results}
+									/>
+									<!-- <input
 										type="text"
 										name="farm "
 										id="farm "
 										placeholder="Enter farm name"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/> -->
+									{#if validationErrors?.farm_id}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.farm_id}</sub
+										>
+									{/if}
+								</div>
+								<!-- <div>
+									<label for="slaughter_house" class="block mb-2 text-sm">Slaughter house</label>
+									<Selector
+										token={data.access}
+										endpoint="manage"
+										searchEndpoint="api/inventory/slaughter_houses"
+										name="slaughter_house"
+										placeholder="Select slaughter house "
+										options={slaughterHouses.results}
 									/>
-									<!-- {#if validationErrors?.email}
+									{#if validationErrors?.slaughter_house_id}
 								<sub
 									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
+									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.slaughter_house_id}</sub
 								>
-							{/if} -->
-								</div>
-								<div>
-									<label for="farm" class="block mb-2 text-sm">Farm</label>
-									<input
-										type="text"
-										name="farm "
-										id="farm "
-										placeholder="Enter farm name"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-									<!-- {#if validationErrors?.email}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email}</sub
-								>
-							{/if} -->
-								</div>
+							{/if}
+								</div> -->
 							</div>
 						</Tabs.Content>
 						<!-- Origin -->
