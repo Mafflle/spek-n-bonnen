@@ -38,7 +38,7 @@
 </script>
 
 <div
-	class="max-w-full w-lg md:w-2xl lg:w-[930px] bg-white rounded flex flex-col h-auto items-start"
+	class="max-w-full w-xl md:w-2xl lg:w-[930px] bg-white rounded flex flex-col h-auto items-start"
 >
 	<section class="flex gap-2 px-3 py-4 items-center w-full shadow">
 		<h5 class="text-lg font-satoshi font-bold">Media manager</h5>
