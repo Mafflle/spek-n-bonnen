@@ -126,6 +126,7 @@
 					{$currentProvider?.slug ? 'Edit' : 'Add'} primal
 				</div>
 				<button
+					type="button"
 					class="close-button flex justify-center items-center w-1/12"
 					on:click={() => toggleEditModal()}
 				>

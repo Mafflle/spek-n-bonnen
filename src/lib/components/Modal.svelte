@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+
 	export let showModal: boolean = false;
 	const dispatch = createEventDispatcher();
 </script>
 
 {#if showModal}
-	<div
+	<!-- <div
 		role="dialog"
 		class="w-screen h-screen fixed flex top-0 left-0 items-center justify-center z-50"
 	>
@@ -15,5 +17,11 @@
 		>
 			<slot name="modal-content" />
 		</section>
-	</div>
+	</div> -->
 {/if}
+
+<Dialog.Root bind:open={showModal} onOpenChange={() => dispatch('close')}>
+	<Dialog.Content class="md:p-0 ">
+		<slot name="modal-content" />
+	</Dialog.Content>
+</Dialog.Root>
