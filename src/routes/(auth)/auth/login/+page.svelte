@@ -22,7 +22,15 @@
 	 */
 	let validationErrors: { email?: string; password?: string };
 	// console.log($page.url.searchParams.get('previous'));
+	let currInputType = 'password';
 
+	const toggleInputType = () => {
+		if (currInputType === 'password') {
+			currInputType = 'text';
+		} else {
+			currInputType = 'password';
+		}
+	};
 	const submit: SubmitFunction = async () => {
 		const previous = $page.url.searchParams.get('from');
 		loading = true;
@@ -93,13 +101,26 @@
 
 				<div class="password">
 					<label for="password" class="block mb-2 text-[0.875rem]">Password</label>
-					<input
-						type="password"
-						name="password"
-						id="password"
-						placeholder="Enter your password"
-						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-					/>
+					<div class="w-full relative flex items-center px-0">
+						<input
+							type={currInputType}
+							name="password"
+							id="password"
+							placeholder="Enter your password"
+							class=" input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-fit p-2"
+						>
+							{#if currInputType === 'password'}
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							{:else}
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							{/if}
+						</button>
+					</div>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
