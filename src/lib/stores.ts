@@ -93,7 +93,7 @@ export let Vendors = writable<Vendor[]>([]);
 export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let currentProvider = writable<
-	Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
+	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);
 
 export const updateSelectedOptions = (option: Option) => {
