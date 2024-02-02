@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { Toaster } from 'svelte-french-toast';
+	import { Toaster } from 'svelte-sonner';
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
@@ -16,5 +16,5 @@
 	<PageLoader />
 {/if}
 
-<Toaster />
+<Toaster richColors />
 <slot />

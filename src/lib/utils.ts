@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
-import toast from 'svelte-french-toast';
+import { toast } from 'svelte-sonner';
 import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
 
 // types
@@ -44,29 +44,24 @@ export type CarcassErrors = {
 export const showToast = (message: string, type: ToastType) => {
 	if (message) {
 		if (type === 'success') {
-			toast(message, {
-				style: 'background: #8fef98; color: #06111F;',
+			toast.success(message, {
 				position: 'bottom-right'
 			});
 		} else if (type === 'error') {
-			toast(message, {
-				style: 'background: #ef8f8f; color: #ed3434;',
+			toast.error(message, {
 				position: 'bottom-right'
 			});
 		} else if (type === 'warning') {
-			toast(message, {
-				style: 'background: #fff3cd; color: #fbbf24;',
+			toast.warning(message, {
 				position: 'bottom-right'
 			});
 		} else if (type === 'info') {
 			// Blue background with white text
-			toast(message, {
-				style: 'background: #bab6b6; color: #111111;',
+			toast.info(message, {
 				position: 'bottom-right'
 			});
 		} else {
 			toast(message, {
-				style: 'background: #bab6b6; color: #111111;',
 				position: 'bottom-right'
 			});
 		}
