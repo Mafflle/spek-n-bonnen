@@ -5,7 +5,9 @@
 	export let loading: boolean;
 	export let token: string;
 	export let endpoint: string;
+	export let searchEndpoint: string;
 	export let placeholder: string = 'Search...';
+	export let className: string = '';
 
 	let searching = false;
 	const dispatch = createEventDispatcher();
@@ -15,7 +17,7 @@
 		dispatch('searching', searching);
 		try {
 			const res = await fetch(`${endpoint}?search=${search}`, {
-				headers: { access: `${token}` }
+				headers: { access: `${token}`, to: searchEndpoint }
 			});
 
 			if (res.ok) {
@@ -33,7 +35,7 @@
 	let validationErrors: { search: string };
 </script>
 
-<div class=" w-full mb-5">
+<div class=" w-full {!className && 'mb-5'}">
 	<input
 		type="text"
 		name="search"
@@ -41,7 +43,9 @@
 		{placeholder}
 		on:input={(e) => search(e?.target?.value)}
 		disabled={loading}
-		class="w-full px-2 focus:border-primary-100 focus:outline-none border-[#D9D9D9] border-b"
+		class={!className
+			? 'w-full px-2 focus:border-primary-100 focus:outline-none border-[#D9D9D9] border-b'
+			: className}
 	/>
 	{#if validationErrors?.search}
 		<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"

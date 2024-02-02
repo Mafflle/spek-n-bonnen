@@ -5,7 +5,7 @@
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import PageLoader from './PageLoader.svelte';
@@ -38,6 +38,10 @@
 			}
 		};
 	};
+	onMount(() => {
+		const storedGridPreference = localStorage.getItem('gridPreference');
+		grid = storedGridPreference ? JSON.parse(storedGridPreference) : false;
+	});
 </script>
 
 {#if loading}

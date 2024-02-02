@@ -111,7 +111,7 @@ export const actions: Actions = {
 	delete: async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const id = parseInt(formData.get('vendor-id'));
+		const id = parseInt(formData.get('vendor-id') as string);
 
 		try {
 			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/${id}`, {

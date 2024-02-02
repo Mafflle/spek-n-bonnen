@@ -1,4 +1,11 @@
 <script lang="ts">
+	import { Carcasses } from '$lib/stores/carcass.stores';
+
+	export let data;
+	console.log(data);
+
+	Carcasses.set(data.carcasses);
+	$: console.log($Carcasses);
 </script>
 
 <svelte:head>

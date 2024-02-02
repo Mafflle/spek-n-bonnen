@@ -6,16 +6,19 @@
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Primals, type Primal } from '$lib/stores.js';
+	import { Primals, type Primal, currentProvider } from '$lib/stores.js';
 
 	import { showToast } from '$lib/utils.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { browser } from '$app/environment';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
-	console.log(Primals);
+	currentProvider.set(null);
+	// console.log(Primals);
 	const { primals } = data;
-	console.log(primals.results); // Add this line to debug
+	// console.log(primals.results); // Add this line to debug
 	Primals.set(primals.results);
 
 	let showModal = false;
@@ -30,88 +33,108 @@
 		showModal = !showModal;
 	}
 
-	let currentPrimal: Primal;
 	let currentPrimalName: string;
 
-	const toggleEditModal = (primal: Primal) => {
-		console.log(primal);
-		currentPrimal = primal;
-		currentPrimalName = currentPrimal.name;
-		description = currentPrimal.description;
-		slug = currentPrimal.slug;
-		showModal = !showModal;
+	const toggleEditModal = (primal?: Primal) => {
+		if (primal && !$currentProvider) {
+			currentProvider.set(primal);
+			currentPrimalName = $currentProvider.name;
+			description = $currentProvider.description;
+			slug = $currentProvider.slug;
+		} else {
+			currentPrimalName = '';
+			description = '';
+			slug = '';
+			currentProvider.set(null);
+		}
+		toggleModal();
 	};
 	const submit: SubmitFunction = async ({ formData }) => {
-		console.log(formData);
+		loading = true;
+		if ($currentProvider?.slug) {
+			formData.append('primalToEdit', `${$currentProvider?.slug}`);
+		}
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					if (result.data.edited) {
+						const editedPrimal = result.data.editedPrimal;
+
+						Primals.update((primals) => {
+							const updatedPrimals = primals.map((primal) => {
+								if (primal.slug === editedPrimal.slug) {
+									primal = editedPrimal;
+								}
+								return primal;
+							});
+							return updatedPrimals;
+						});
+						showToast('Primal edited successfully', 'success');
+					} else {
+						// console.log(result.data);
+						Primals.set([result.data.newPrimal, ...$Primals]);
+						showToast('Primal added successfully', 'success');
+					}
+					toggleEditModal();
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status === 500) {
+					showToast('Ooops something went wrong', 'error');
+				}
+			} finally {
+				update();
+				loading = false;
+			}
+		};
 	};
+
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
+
+	const unsubscribe = currentProvider.subscribe((curr) => curr);
+	onDestroy(() => {
+		currentProvider.set(null);
+		unsubscribe;
+	});
 </script>
 
 <svelte:head>
 	<title>Primals - Spek-n-Boonen</title>
 </svelte:head>
 <!-- add primal modal -->
-<Modal {showModal} on:close={toggleModal}>
-	<div slot="modal-content">
+<Modal {showModal} on:close={() => toggleEditModal()}>
+	<div slot="modal-content" class="w-full">
 		<!-- Your modal content goes here -->
 		<form
 			action="?/manage-primal"
 			method="post"
-			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			use:enhance={({ formData }) => {
-				loading = true;
-				if (currentPrimal?.slug) {
-					formData.set('primalToEdit', `${currentPrimal.slug}`);
-				}
-				return async ({ result, update }) => {
-					try {
-						if (result.status === 200) {
-							if (result.data.edited) {
-								const editedPrimal = result.data.editedPrimal;
-
-								Primals.update((primals) => {
-									const updatedPrimals = primals.map((primal) => {
-										if (primal.slug === editedPrimal.slug) {
-											primal = editedPrimal;
-										}
-										return primal;
-									});
-									return updatedPrimals;
-								});
-								Object.keys(currentPrimal).forEach((key) => (currentPrimal[key] = false));
-								showToast('Primal edited successfully', 'success');
-								toggleModal();
-							} else {
-								// console.log(result.data);
-								Primals.set([result.data.newPrimal, ...$Primals]);
-								showToast('Primal added successfully', 'success');
-								toggleModal();
-							}
-						} else if (result.status === 400) {
-							validationErrors = result.data.errors;
-						} else if (result.status === 500) {
-							showToast('Ooops something went wrong', 'error');
-						}
-					} finally {
-						if (showModal) {
-							update({ reset: true });
-						} else {
-							update();
-						}
-						loading = false;
-					}
-				};
-			}}
+			class="w-full flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			use:enhance={submit}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					{currentPrimal ? 'Edit' : 'Add'} primal
+					{$currentProvider?.slug ? 'Edit' : 'Add'} primal
 				</div>
-				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
+				<button
+					type="button"
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={() => toggleEditModal()}
+				>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<div class="flex flex-col gap-4">
-				<div class="modal-input">
+			<div class="flex flex-col gap-4 w-full">
+				<div class="modal-input w-full">
 					<input
 						type="text"
 						name="primal-name"
@@ -127,7 +150,7 @@
 						>
 					{/if}
 				</div>
-				<div class="modal-input">
+				<div class="modal-input w-full">
 					<Textarea
 						name="primal-description"
 						id="primal-description"
@@ -155,7 +178,7 @@
 						{#if loading}
 							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 						{:else}
-							<span class="button-text">{currentPrimal ? 'Edit' : 'Add'} primal </span>
+							<span class="button-text">{$currentProvider?.slug ? 'Edit' : 'Add'} primal </span>
 						{/if}
 					</button>
 				</div>
@@ -172,7 +195,7 @@
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center md:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -201,10 +224,10 @@
 				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 			</div>
 
-			<div class="filter-buttons flex items-start gap-5">
+			<div class="filter-buttons flex items-start gap-1.5 md:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={() => (grid = !grid)}
+					on:click={toggleGrid}
 				>
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>
@@ -217,7 +240,9 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="vendor-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add primal</div>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Add primal</span
+					>
 				</button>
 			</div>
 		</div>
@@ -256,15 +281,7 @@
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-3 gap-10">
 			{#each $Primals as primal}
-				<PrimalCard
-					on:edit={(e) => toggleEditModal(e.detail)}
-					{primal}
-					name={primal.name}
-					description={primal.description}
-					{grid}
-					id={primal.id}
-					slug={primal.slug}
-				/>
+				<PrimalCard on:edit={(e) => toggleEditModal(e.detail)} {primal} {grid} slug={primal.slug} />
 			{/each}
 		</div>
 	{:else}
@@ -284,10 +301,7 @@
 						<PrimalCard
 							on:edit={(e) => toggleEditModal(e.detail)}
 							{primal}
-							name={primal.name}
-							description={primal.description}
 							{grid}
-							id={primal.id}
 							slug={primal.slug}
 						/>
 					{/each}

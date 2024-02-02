@@ -37,15 +37,14 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const name = formData.get('brand-name');
-		const logo = formData.get('brand-logo');
-		const brandToEdit = parseInt(formData.get('brandToEdit'));
+		const logo = parseInt(formData.get('brand-logo') as string);
+		const brandToEdit = parseInt(formData.get('brandToEdit') as string);
 
 		const dataToValidate = {
 			...(name && { name }),
 			...(logo && { logo }),
 			...(brandToEdit && { brandToEdit })
 		};
-		dataToValidate.logo = parseInt(logo);
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
 			if (validatedData.brandToEdit) {
@@ -118,7 +117,7 @@ export const actions: Actions = {
 	delete: async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const id = formData.get('id');
+		const id = parseInt(formData.get('id') as string);
 		if (id) {
 			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/${id}/`, {
 				method: 'delete'

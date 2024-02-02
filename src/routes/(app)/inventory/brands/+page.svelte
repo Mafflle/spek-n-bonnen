@@ -7,7 +7,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
-	import { Brands, type Brand } from '$lib/stores.js';
+	import { Brands, type Brand, currentProvider } from '$lib/stores.js';
+	import { browser } from '$app/environment';
+	import { onDestroy } from 'svelte';
 
 	dayjs.extend(relativeTime);
 
@@ -20,13 +22,6 @@
 	let showMediaManager = false;
 	let disabled = true;
 	let validationErrors: { name?: [string]; logo?: [string] };
-	let imageId: number;
-
-	$: {
-		if (previewImage) {
-			imageId = previewImage.id;
-		}
-	}
 
 	function toggleModal() {
 		showModal = !showModal;
@@ -40,20 +35,44 @@
 	Brands.set(brands.results);
 
 	$: {
-		if (previewImage) {
+		if (previewImage?.id) {
 			disabled = false;
 		}
 	}
-	let currentBrand: Brand;
-	let currentBrandName: string;
 
-	const toggleEditModal = (brand: Brand) => {
-		currentBrand = brand;
-		currentBrandName = currentBrand.name;
-		previewImage = brand.logo;
-		imageId = brand.logo.id;
-		showModal = !showModal;
+	let currentBrandName: string = '';
+
+	const toggleEditModal = (brand?: Brand) => {
+		if (brand && !$currentProvider) {
+			currentProvider.set(brand);
+			currentBrandName = $currentProvider?.name;
+			previewImage = $currentProvider?.logo;
+		} else {
+			currentBrandName = '';
+			previewImage = null;
+			currentProvider.set(null);
+		}
+		toggleModal();
 	};
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
+
+	const unsubscribe = currentProvider.subscribe((curr) => curr);
+
+	onDestroy(() => {
+		currentProvider.set(null);
+		unsubscribe;
+	});
 </script>
 
 <svelte:head>
@@ -61,17 +80,18 @@
 </svelte:head>
 
 <!-- add brand modal -->
-<Modal {showModal} on:close={toggleModal}>
-	<div slot="modal-content">
+<Modal {showModal} on:close={() => toggleEditModal()}>
+	<div slot="modal-content" class="w-full">
 		<!-- Your modal content goes here -->
 		<form
 			action="?/manage-brand"
 			method="post"
-			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			use:enhance={({ formData }) => {
+			class="w-full md:w-2xl flex flex-col items-center p-4 md:p-6 gap-8 bg-white rounded-md"
+			use:enhance={async ({ formData }) => {
 				loading = true;
-				if (currentBrand?.id) {
-					formData.append('brandToEdit', `${currentBrand.id}`);
+				formData.append('brand-logo', previewImage.id);
+				if ($currentProvider?.id) {
+					formData.append('brandToEdit', `${$currentProvider.id}`);
 				}
 				return async ({ result, update }) => {
 					try {
@@ -88,15 +108,13 @@
 									});
 									return updatedBrands;
 								});
-								Object.keys(currentBrand).forEach((key) => (currentBrand[key] = false));
 								showToast('Brand edited successfully', 'success');
-								toggleModal();
 							} else {
 								// console.log(result.data);
 								Brands.set([result.data.newBrand, ...$Brands]);
 								showToast('Brand added successfully', 'success');
-								toggleModal();
 							}
+							toggleEditModal();
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
 
@@ -107,27 +125,27 @@
 							showToast('Ooops something went wrong', 'error');
 						}
 					} finally {
-						if (showModal) {
-							update({ reset: true });
-						} else {
-							update();
-						}
+						update();
 						loading = false;
 					}
 				};
 			}}
 		>
-			<div class="modal-title flex items-center gap-3 self-stretch">
+			<div class="modal-title w-full flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					{currentBrand ? 'Edit' : 'Add'} brand
+					{$currentProvider?.id ? 'Edit' : 'Add'} brand
 				</div>
-				<button class="close-button flex justify-center items-center w-1/12" on:click={toggleModal}>
+				<button
+					type="button"
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={() => toggleEditModal()}
+				>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
 			<div class="w-full">
 				<div
-					class="w-full relative rounded-xl flex py-8 px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
+					class="w-full relative rounded-xl flex py-8 px-5 md:px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
 				>
 					<div
 						class="upload-box-info relative w-full flex flex-col justify-center items-center gap-8"
@@ -150,14 +168,13 @@
 						<button
 							on:click={toggleMediaManager}
 							type="button"
-							class="bg-primary-red py-2.5 px-4 text-sm font-medium text-white rounded-[30px]"
+							class="bg-primary-red py-2.5 px-4 w-full text-sm font-medium text-white rounded-[30px]"
 							>Import from Media Manager</button
 						>
 					</div>
 				</div>
 			</div>
-			<div class="modal-input">
-				<input type="text" class="hidden" bind:value={imageId} name="brand-logo" />
+			<div class="modal-input w-full">
 				<input
 					type="text"
 					name="brand-name"
@@ -173,7 +190,7 @@
 					>
 				{/if}
 			</div>
-			<div class="modal-submit">
+			<div class="modal-submit w-full">
 				<button
 					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
 					hover:bg-[#C7453C] hover:rounded-[0.625rem]
@@ -185,7 +202,7 @@
 					{#if loading}
 						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else}
-						<span class="button-text">{currentBrand ? 'Edit' : 'Add'} brand </span>
+						<span class="button-text">{$currentProvider?.id ? 'Edit' : 'Add'} brand </span>
 					{/if}
 				</button>
 			</div>
@@ -249,7 +266,7 @@
 			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={() => (grid = !grid)}
+					on:click={toggleGrid}
 				>
 					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
 				</button>

@@ -651,10 +651,10 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bits-ui@^0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-0.15.1.tgz#5ccad6273091fcb1f60f00d392d1fc10ec1761b7"
-  integrity sha512-1Np8bT6W6SC2tKESfm0CySW+7+xU5S0GuUZqIxC41atZE3WIRiRlzXEYHxW88w6UaLFzZ51ns4E7pchkdV5XCQ==
+bits-ui@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-0.16.0.tgz#263ceb70926f9cf9c1d3b7c5945c74f2ed7d629a"
+  integrity sha512-HEkuVDyUG9dTWtKujKpdDsGOe9GRmuYOEF9yGbjVwNazxMQDQa9deUX8vM3ofGBWaJgr1cEu88p38kP5Z5gQ8w==
   dependencies:
     "@internationalized/date" "^3.5.1"
     "@melt-ui/svelte" "0.68.0"
@@ -1698,6 +1698,11 @@ mlly@^1.2.0, mlly@^1.4.0:
     pkg-types "^1.0.3"
     ufo "^1.3.2"
 
+mode-watcher@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/mode-watcher/-/mode-watcher-0.2.0.tgz#076dbd1d1b6fabfd7e4ed8a41e0c165c53d4651d"
+  integrity sha512-NCo72EColWhNjMWXr+U9hjJS6ixCFEADfvj44XFLUWEkR/dsbJxnOX6bkxM+i1DWmP/nRhKI+rr2Z2nt+TZSGA==
+
 mri@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mri/-/mri-1.2.0.tgz#6721480fec2a11a4889861115a48b6cbe7cc8f0b"
@@ -2279,13 +2284,6 @@ svelte-file-dropzone@^2.0.2:
   dependencies:
     file-selector "^0.6.0"
 
-svelte-french-toast@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/svelte-french-toast/-/svelte-french-toast-1.2.0.tgz#bfe3696ee1e3cbdee2a300e0153dede7d6d802eb"
-  integrity sha512-5PW+6RFX3xQPbR44CngYAP1Sd9oCq9P2FOox4FZffzJuZI2mHOB7q5gJBVnOiLF5y3moVGZ7u2bYt7+yPAgcEQ==
-  dependencies:
-    svelte-writable-derived "^3.1.0"
-
 svelte-headless-table@^0.18.1:
   version "0.18.1"
   resolved "https://registry.yarnpkg.com/svelte-headless-table/-/svelte-headless-table-0.18.1.tgz#20f865bceffcf13be541dd2aaf8fa3a4bb2a1bb2"
@@ -2323,15 +2321,15 @@ svelte-render@^2.0.0:
   dependencies:
     svelte-subscribe "^2.0.0"
 
+svelte-sonner@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/svelte-sonner/-/svelte-sonner-0.3.11.tgz#28c4d7a9364835031b7816a55219f534b646b97b"
+  integrity sha512-TkjgDC7zr0waky81Z9CShXMD+4NQ7UASuRx0BhgQo8ZTDQQYk8X8MzJa3zVtZVa6RYJEiahHBXx8Zt/Ie9G5hg==
+
 svelte-subscribe@^2.0.0, svelte-subscribe@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/svelte-subscribe/-/svelte-subscribe-2.0.1.tgz#4464991235f85bed347c7423998c38426b123af3"
   integrity sha512-eKXIjLxB4C7eQWPqKEdxcGfNXm2g/qJ67zmEZK/GigCZMfrTR3m7DPY93R6MX+5uoqM1FRYxl8LZ1oy4URWi2A==
-
-svelte-writable-derived@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/svelte-writable-derived/-/svelte-writable-derived-3.1.0.tgz#ea114125805a9d18398577f2431d1e8cdd4d8d69"
-  integrity sha512-cTvaVFNIJ036vSDIyPxJYivKC7ZLtcFOPm1Iq6qWBDo1fOHzfk6ZSbwaKrxhjgy52Rbl5IHzRcWgos6Zqn9/rg==
 
 svelte@^4.0.5:
   version "4.2.9"

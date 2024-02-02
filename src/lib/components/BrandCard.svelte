@@ -7,7 +7,9 @@
 	import { enhance } from '$app/forms';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import PageLoader from './PageLoader.svelte';
 	dayjs.extend(relativeTime);
 
 	export let grid: boolean;
@@ -15,19 +17,20 @@
 	export let brand: Brand;
 	let loading: boolean = false;
 
-	const deleteBrand: SubmitFunction = () => {
+	const deleteBrand: SubmitFunction = async ({ formData }) => {
 		loading = true;
+		formData.append('id', `${id}`);
 		return async ({ result, update }) => {
 			try {
-				if (result.status == 200) {
+				if (result.status === 200) {
 					Brands.update((brands) => brands.filter((brand) => brand.id !== id));
 					showToast('Brand deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
 			} finally {
-				loading = false;
 				update();
+				loading = false;
 			}
 		};
 	};
@@ -36,7 +39,16 @@
 	const editBrand = (brand: Brand) => {
 		dispatch('edit', brand);
 	};
+
+	onMount(() => {
+		const storedGridPreference = localStorage.getItem('gridPreference');
+		grid = storedGridPreference ? JSON.parse(storedGridPreference) : false;
+	});
 </script>
+
+{#if loading}
+	<PageLoader />
+{/if}
 
 {#if grid}
 	<div
@@ -50,7 +62,7 @@
 			/>
 		</div>
 		<div class="brand-info flex w-full py-2 px-3 flex-col items-start gap-2 flex-[1 0 0]">
-			<div class="brand-name text-base font-medium">
+			<div class="brand-name text-base font-medium line-clamp-1">
 				{brand.name}
 			</div>
 			<section class="flex w-full items-center justify-between">
@@ -73,38 +85,35 @@
 							></iconify-icon></Button
 						>
 					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="py-3 px-2">
-						<div class="grid gap-5 w-full">
-							<div class="grid gap-3">
+					<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
+						<DropdownMenu.Item>
+							<Button
+								on:click={() => editBrand(brand)}
+								class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							>
+								<img src="/icons/edit.svg" alt="edit icon" />
+								<span class="text-grey-100">Edit</span>
+							</Button>
+						</DropdownMenu.Item>
+						<form action="?/delete" method="post" use:enhance={deleteBrand} class="">
+							<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+							<DropdownMenu.Item>
 								<Button
-									on:click={() => editBrand(brand)}
-									class="text-xs flex items-center py-2 rounded h-auto gap-1"
-									variant="secondary"
+									class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+									type="submit"
+									>{#if loading}
+										<iconify-icon
+											class="text-primary-red"
+											width="20"
+											icon="eos-icons:three-dots-loading"
+										></iconify-icon>
+									{:else}
+										<img src="/icons/trash.svg" alt="trash icon" />
+										<span class="button-text text-primary-red">Delete </span>
+									{/if}</Button
 								>
-									<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
-									<span class="text-sm">Edit</span>
-								</Button>
-								<form
-									action="?/delete"
-									method="post"
-									use:enhance={deleteBrand}
-									class="grid items-center gap-4"
-								>
-									<input type="text" class="hidden" bind:value={id} name="id" />
-									<Button
-										variant="destructive"
-										class="text-sm flex items-center gap-1 py-2 rounded h-auto w-full "
-										type="submit"
-										>{#if loading}
-											<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
-										{:else}
-											<iconify-icon icon="codicon:trash" width="15"></iconify-icon>
-											<span class="button-text text-xs">Delete </span>
-										{/if}</Button
-									>
-								</form>
-							</div>
-						</div>
+							</DropdownMenu.Item>
+						</form>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</section>
@@ -121,12 +130,14 @@
 						alt={brand.logo.title}
 					/>
 				</div>
-				<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium">
+				<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
 					{brand.name}
 				</span>
 			</div>
 		</td>
-		<td class="text-[#9C9C9C]">{dayjs(brand.updated_at).fromNow()}</td>
+		<td class="text-[#9C9C9C]"
+			><span class="line-clamp-1">{dayjs(brand.updated_at).fromNow()}</span></td
+		>
 		<td class="table-cell">
 			<DropdownMenu.Root>
 				<!-- <button class=" px-1.5 flex justify-center items-center">
@@ -134,43 +145,40 @@
 				</button> -->
 
 				<DropdownMenu.Trigger asChild let:builder>
-					<Button builders={[builder]} class=" px-1.5 flex justify-center items-center">
+					<Button builders={[builder]} class=" p-0 flex justify-center items-center">
 						<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"
 						></iconify-icon></Button
 					>
 				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="py-3 px-2">
-					<div class="grid gap-5 w-full">
-						<div class="grid gap-3">
+				<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
+					<DropdownMenu.Item>
+						<Button
+							on:click={() => editBrand(brand)}
+							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+						>
+							<img src="/icons/edit.svg" alt="edit icon" />
+							<span class="text-grey-100">Edit</span>
+						</Button>
+					</DropdownMenu.Item>
+					<form action="?/delete" method="post" use:enhance={deleteBrand} class="">
+						<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+						<DropdownMenu.Item>
 							<Button
-								on:click={() => editBrand(brand)}
-								class="text-xs flex items-center py-2 rounded h-auto gap-1"
-								variant="secondary"
+								class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+								type="submit"
+								>{#if loading}
+									<iconify-icon
+										class="text-primary-red"
+										width="20"
+										icon="eos-icons:three-dots-loading"
+									></iconify-icon>
+								{:else}
+									<img src="/icons/trash.svg" alt="trash icon" />
+									<span class="button-text text-primary-red">Delete </span>
+								{/if}</Button
 							>
-								<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
-								<span class="text-sm">Edit</span>
-							</Button>
-							<form
-								action="?/delete"
-								method="post"
-								use:enhance={deleteBrand}
-								class="grid items-center gap-4"
-							>
-								<input type="text" class="hidden" bind:value={id} name="id" />
-								<Button
-									variant="destructive"
-									class="text-sm flex items-center gap-1 py-2 rounded h-auto w-full "
-									type="submit"
-									>{#if loading}
-										<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
-									{:else}
-										<iconify-icon icon="codicon:trash" width="15"></iconify-icon>
-										<span class="button-text text-xs">Delete </span>
-									{/if}</Button
-								>
-							</form>
-						</div>
-					</div>
+						</DropdownMenu.Item>
+					</form>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</td>

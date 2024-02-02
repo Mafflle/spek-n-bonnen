@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
 	if (getAllPrimals.ok) {
 		const primals = await getAllPrimals.json();
-		console.log(primals);
+		// console.log(primals);
 		return {
 			primals
 		};
@@ -40,7 +40,7 @@ export const actions: Actions = {
 
 		const name = formData.get('primal-name');
 		const description = formData.get('primal-description');
-		const primalToEdit = parseInt(formData.get('primalToEdit'));
+		const primalToEdit = formData.get('primalToEdit');
 
 		const dataToValidate = {
 			...(name && { name }),
@@ -52,16 +52,19 @@ export const actions: Actions = {
 			// ...
 			if (validatedData.primalToEdit) {
 				const editPrimal = await fetch(
-					`${PUBLIC_API_ENDPOINT}api/inventory/primal/${validatedData.primalToEdit}`,
+					`${PUBLIC_API_ENDPOINT}api/inventory/primals/${validatedData.primalToEdit}`,
 					{
 						method: 'PUT',
 						headers: {
 							'Content-Type': 'application/json'
 						},
-						body: JSON.stringify({ name: validatedData.name, description: validatedData.description })
+						body: JSON.stringify({
+							name: validatedData.name,
+							description: validatedData.description
+						})
 					}
 				);
-			// ...
+				// ...
 
 				if (editPrimal.ok) {
 					const editedPrimal = await editPrimal.json();
@@ -122,10 +125,8 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ fetch, request }) => {
-
 		const formData = await request.formData();
 		const slug = formData.get('slug');
-		console.log(slug);
 
 		if (slug) {
 			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/${slug}/`, {
@@ -138,7 +139,7 @@ export const actions: Actions = {
 					success: true
 				};
 			} else {
-				console.log('Delete failed:', deleteRole); // Log the response on failure
+				console.log('Delete failed:', deleteRole.status, deleteRole.statusText); // Log the response on failure
 			}
 		} else {
 			console.log('No slug provided'); // Log when no id is provided
