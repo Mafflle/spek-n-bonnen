@@ -1,0 +1,35 @@
+import type { Brand, ButcherShop, Farm, Manufacturer, SlaughterHouse, Vendor } from '$lib/stores';
+import { writable } from 'svelte/store';
+
+export type Carcass = {
+	id: number;
+	purchase_price: string;
+	cold_weight: string;
+	weight: string;
+	lot_number: string;
+	ahdb_code: string;
+	vendor_code: string;
+	vendor_item_name: string;
+	vendor_moq: number;
+	vendor_moq_unit: string;
+	origin_and_terroir: string;
+	certifications: string | null;
+	country_of_origin: string;
+	ear_tag: string;
+	lairage_number: string | null;
+	carcass_number: string;
+	sex_category: string;
+	conformation: string;
+	fat_score: number;
+	date_of_slaughter: Date;
+	date_received: Date;
+	farm: Farm;
+	slaughter_house: SlaughterHouse;
+	butcher_shop: ButcherShop;
+	manufacturer: Manufacturer;
+	brand: Brand;
+	vendor: Vendor;
+	updated_at: Date;
+	created_at: Date;
+};
+export let Carcasses = writable<Carcass[]>([]);

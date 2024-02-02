@@ -63,14 +63,18 @@ const manageSchema = z.object({
 	}),
 	conformation: z.string({ required_error: 'Conformation is required' }),
 	fat_score: z.number({ required_error: 'Fat score is required' }),
-	date_of_slaughter: z
-		.string({ required_error: 'The date this carcass was slaughtered is required' })
-		.transform((val) => new Date(val))
-		.refine((val) => !isNaN(val), 'Date of slaughter must be a valid date'),
-	date_received: z
-		.string({ required_error: 'The date this carcass was received is required' })
-		.transform((val) => new Date(val))
-		.refine((val) => !isNaN(val), 'Date received must be a valid date'),
+	date_of_slaughter: z.coerce
+		.date({
+			required_error: 'The date this carcass was slaughtered is required',
+			invalid_type_error: 'Date slaughtered must be a valid date'
+		})
+		.transform((val) => dayjs(val).format('YYYY-MM-DD')),
+	date_received: z.coerce
+		.date({
+			required_error: 'The date this carcass was received is required',
+			invalid_type_error: 'Date received must be a valid date'
+		})
+		.transform((val) => dayjs(val).format('YYYY-MM-DD')),
 	farm_id: z.number({ required_error: 'Please select the farm where this carcass was reared' }),
 	slaughter_house_id: z.number({
 		required_error: 'Please select the slaughter house this carcass is from'
@@ -187,12 +191,10 @@ export const actions: Actions = {
 		const sex_category = formData.get('sex-category');
 		const conformation = formData.get('conformation');
 		const fat_score = parseInt(formData.get('fat-score') as string);
-		const date_of_slaughter = new Date(formData.get('date_of_slaughter') as string)
-			.toISOString()
-			.slice(0, 10);
-		const date_received = new Date(formData.get('date_received') as string)
-			.toISOString()
-			.slice(0, 10);
+		const date_of_slaughter = dayjs(formData.get('date_of_slaughter') as string).format(
+			'YYYY-MM-DD'
+		);
+		const date_received = dayjs(formData.get('date_received') as string).format('YYYY-MM-DD');
 
 		// Providers
 		const farm_id = parseInt(formData.get('farm') as string);
@@ -230,10 +232,12 @@ export const actions: Actions = {
 			...(brand_id && { brand_id }),
 			...(vendor_id && { vendor_id })
 		};
-		console.log(dataToValidate);
+		// console.log(dataToValidate);
 
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
+			console.log('validation successfull', validatedData);
+
 			const addNewCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/`, {
 				method: 'post',
 				body: JSON.stringify(validatedData)
@@ -247,6 +251,8 @@ export const actions: Actions = {
 				};
 			} else if (!addNewCarcass.ok && addNewCarcass.status === 400) {
 				const badBody = await addNewCarcass.json();
+				console.log(dataToValidate);
+
 				console.log('bad request body', badBody);
 			} else {
 				console.log(addNewCarcass.status, addNewCarcass.statusText);

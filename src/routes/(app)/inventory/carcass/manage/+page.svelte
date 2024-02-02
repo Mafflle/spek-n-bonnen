@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import PageLoader from '$lib/components/PageLoader.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { Carcasses } from '$lib/stores/carcass.stores';
 	import { showToast, type CarcassErrors } from '$lib/utils.js';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	import { slide } from 'svelte/transition';
 
@@ -38,12 +42,36 @@
 			return (currentTab = allTabs[currTab + 1]);
 		}
 	};
+
+	const manageCarcass: SubmitFunction = async () => {
+		loading = true;
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					const newCarcass = result.data.newCarcass;
+					showToast('Carcass added successfully', 'success');
+					Carcasses.update((items) => [newCarcass, ...items]);
+					await goto('/inventory/carcass');
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+
+					console.log(validationErrors);
+				}
+			} finally {
+				await update({ reset: false });
+				loading = false;
+			}
+		};
+	};
 </script>
 
 <svelte:head>
 	<title>Manage carcass - Spek-N-Boonen</title>
 </svelte:head>
 
+{#if loading}
+	<PageLoader />
+{/if}
 <div class="">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
@@ -52,29 +80,7 @@
 		</div>
 	</div>
 	<Separator class="my-8 md:block hidden" />
-	<form
-		action="?/manage-carcass"
-		method="post"
-		use:enhance={async () => {
-			loading = true;
-			return async ({ result, update }) => {
-				try {
-					if (result.status === 200) {
-						console.log(result.data);
-						showToast('Carcass added successfully', 'success');
-					} else if (result.status === 400) {
-						validationErrors = result.data.errors;
-
-						console.log(validationErrors);
-					}
-				} finally {
-					await update();
-					loading = false;
-				}
-			};
-		}}
-		class="w-full"
-	>
+	<form action="?/manage-carcass" method="post" use:enhance={manageCarcass} class="w-full">
 		<section class="w-full my-5 flex items-center justify-end">
 			<button
 				disabled={loading}
