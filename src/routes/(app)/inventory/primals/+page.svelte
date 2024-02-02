@@ -65,12 +65,12 @@
 </svelte:head>
 <!-- add primal modal -->
 <Modal {showModal} on:close={toggleModal}>
-	<div slot="modal-content">
+	<div slot="modal-content" class="w-full">
 		<!-- Your modal content goes here -->
 		<form
 			action="?/manage-primal"
 			method="post"
-			class="w-[460px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			class="w-full flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={({ formData }) => {
 				loading = true;
 				if (currentPrimal?.slug) {
@@ -124,8 +124,8 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<div class="flex flex-col gap-4">
-				<div class="modal-input">
+			<div class="flex flex-col gap-4 w-full">
+				<div class="modal-input w-full">
 					<input
 						type="text"
 						name="primal-name"
@@ -141,7 +141,7 @@
 						>
 					{/if}
 				</div>
-				<div class="modal-input">
+				<div class="modal-input w-full">
 					<Textarea
 						name="primal-description"
 						id="primal-description"
@@ -186,7 +186,7 @@
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
-				class="flex items-center w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center md:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -215,7 +215,7 @@
 				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 			</div>
 
-			<div class="filter-buttons flex items-start gap-5">
+			<div class="filter-buttons flex items-start gap-1.5 md:gap-5">
 				<button
 					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
 					on:click={toggleGrid}
@@ -231,7 +231,9 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="vendor-plus" />
 					</div>
-					<div class="text-white text-sm font-bold font-['Satoshi']">Add primal</div>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Add primal</span
+					>
 				</button>
 			</div>
 		</div>
