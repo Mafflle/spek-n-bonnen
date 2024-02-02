@@ -79,6 +79,18 @@ export type SlaughterHouse = {
 	updated_at: Date;
 };
 
+export type Batch = {
+	id: number;
+	primal: number;
+	carcass: number;
+	ean_barcode: string;
+	quantity: number;
+	remaining_quantity: number;
+	expiry_date: Date;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
@@ -92,6 +104,7 @@ export let Farms = writable<Farm[]>([]);
 export let Vendors = writable<Vendor[]>([]);
 export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
+export let Batches = writable<Batch[]>([]);
 export let currentProvider = writable<
 	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);
