@@ -279,7 +279,7 @@
 		</div>
 	{:else if grid}
 		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-3 gap-10">
+		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Primals as primal}
 				<PrimalCard on:edit={(e) => toggleEditModal(e.detail)} {primal} {grid} slug={primal.slug} />
 			{/each}
