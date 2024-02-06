@@ -91,6 +91,44 @@ export type Batch = {
 	updated_at: Date;
 };
 
+export type Carcass = {
+	id: string;
+	purchase_price: string;
+	cold_weight: string;
+	weight: string;
+	lot_number: string;
+	ahdb_code: string;
+	vendor_code: string;
+	vendor_item_name: string;
+	vendor_moq: string;
+	vendor_moq_unit: string;
+	origin_and_terroir?: string;
+	certifications?: string;
+	country_of_origin?: string;
+	ear_tag?: string;
+	lairage_number?: string;
+	carcass_number?: string;
+	sex_category: string;
+	conformation: string;
+	fat_score: string;
+	date_of_slaughter: string;
+	date_received: string;
+	farm: Farm;
+	slaughter_house: SlaughterHouse;
+	butcher_shop: ButcherShop;
+	manufacturer: Manufacturer;
+	brand: Brand;
+	vendor: Vendor;
+	farm_id: string;
+	slaughter_house_id: string;
+	butcher_shop_id: string;
+	manufacturer_id: string;
+	brand_id: string;
+	vendor_id: string;
+	created_at: string;
+	updated_at: string;
+};
+
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
@@ -105,6 +143,7 @@ export let Vendors = writable<Vendor[]>([]);
 export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let Batches = writable<Batch[]>([]);
+export let Carcasses = writable<Carcass[]>([]);
 export let currentProvider = writable<
 	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);
