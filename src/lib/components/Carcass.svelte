@@ -9,25 +9,27 @@
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import PageLoader from './PageLoader.svelte';
+	import Modal from './Modal.svelte';
+	import { InfoIcon } from 'lucide-svelte';
+
 	dayjs.extend(relativeTime);
 
 	export let carcass: Carcass;
 
 	let loading: boolean = false;
+	const id = carcass.id;
 	const dispatch = createEventDispatcher();
-
-	const editVendor = (carcass: Vendor) => {
-		dispatch('edit', carcass);
-	};
-
-	const deleteVendor: SubmitFunction = ({ formData }) => {
+	const deleteCarcass: SubmitFunction = ({ formData }) => {
 		loading = true;
 		formData.append('carcass-id', `${carcass.id}`);
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
-					Vendors.update((carcasss) => carcasss.filter((item) => item.id !== carcass.id));
-					showToast('Brand deleted successfully', 'success');
+					const currCarcassId = carcass.id;
+					Carcasses.update((carcasses) =>
+						carcasses.filter((carcass) => carcass.id !== currCarcassId)
+					);
+					showToast('Carcass deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -36,6 +38,10 @@
 				update();
 			}
 		};
+	};
+
+	const remove = () => {
+		dispatch('delete', carcass);
 	};
 </script>
 
@@ -88,12 +94,12 @@
 						on:click={() => editVendor(carcass)}
 						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
-						<img src="/icons/edit.svg" alt="edit icon" />
+						<InfoIcon class="text-grey-100" size="20" />
 						<span class="text-grey-100">More information</span>
 					</Button>
 				</DropdownMenu.Item>
-				<form action="?/delete" method="post" use:enhance={deleteVendor} class="">
-					<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+				<form action="?/delete" method="post" use:enhance={deleteCarcass}>
+					<input type="text" class="hidden" bind:value={carcass.id} name="id" />
 					<DropdownMenu.Item>
 						<Button
 							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"

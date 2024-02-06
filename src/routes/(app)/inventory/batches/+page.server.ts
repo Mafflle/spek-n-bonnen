@@ -20,14 +20,17 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
 	if (getAllBatches.ok) {
 		const batches = await getAllBatches.json();
+		console.log(batches);
 		return {
 			batches
 		};
-	} else if (!getAllBatches.ok) {
-		throw redirect(302, `/auth/login?from=${url.pathname}`);
+	} else {
+		return {
+			status: getAllBatches.status,
+			error: 'Failed to fetch batches'
+		};
 	}
 };
-
 export const actions: Actions = {
 	'manage-batch': async ({ fetch, request }) => {
 		const formData = await request.formData();

@@ -74,6 +74,11 @@
 					title: 'Primals',
 					href: '/inventory/primals',
 					color: '#FF1C0D'
+				},
+				{
+					title: 'Batces',
+					href: '/inventory/batches',
+					color: '#FF1C0D'
 				}
 			]
 		},
