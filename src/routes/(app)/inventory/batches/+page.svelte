@@ -16,7 +16,9 @@
 	export let data;
 	const { batches } = data;
 
-	Batches.set(batches.results);
+	console.log(batches);
+
+	// Batches.set(batches.results);
 
 	let showModal = false;
 	let loading = false;
@@ -122,7 +124,7 @@
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					{$currentProvider?.id ? 'Edit batch' : 'Add batch'}
+					Fill the form below to create batch
 				</div>
 				<button
 					class="close-button flex justify-center items-center w-1/12"
@@ -275,8 +277,13 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-						<th class="bg-[#F9F9F9]">Date added</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Batch id</th>
+						<th class="bg-[#F9F9F9]">Primal</th>
+						<th class="bg-[#F9F9F9]">Carcass</th>
+						<th class="bg-[#F9F9F9]">EAN barcode</th>
+						<th class="bg-[#F9F9F9]">Quantity</th>
+						<th class="bg-[#F9F9F9]">Remaining quantity</th>
+						<th class="bg-[#F9F9F9]">Expiring date</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
 				</thead>

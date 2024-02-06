@@ -6,6 +6,10 @@
 	let grid = false;
 	Carcasses.set(data.carcasses.results);
 	$: console.log($Carcasses);
+	const handleDelete = ({ detail: carcass }) => {
+		// Perform deletion here
+		Carcasses.update((carcasses) => carcasses.filter((c) => c.id !== carcass.id));
+	};
 </script>
 
 <svelte:head>
@@ -96,7 +100,7 @@
 	<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 		{#each $Carcasses as carcass (carcass?.id)}
 			{#if carcass}
-				<Carcass {carcass} {grid} />
+				<Carcass {carcass} />
 			{/if}
 		{/each}
 	</div>
@@ -120,7 +124,7 @@
 			<tbody>
 				{#each $Carcasses as carcass (carcass?.id)}
 					{#if carcass}
-						<Carcass {carcass} {grid} />
+						<Carcass {carcass} on:delete={handleDelete} />
 					{/if}
 				{/each}
 			</tbody>
