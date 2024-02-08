@@ -1,0 +1,117 @@
+<script lang="ts">
+	import type { Carcass } from '$lib/stores/carcass.stores';
+	import Separator from './ui/separator/separator.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import PhysicalInfo from './carcass-info/PhysicalInfo.svelte';
+	import VendorInfo from './carcass-info/VendorInfo.svelte';
+	import TraceabilityInfo from './carcass-info/TraceabilityInfo.svelte';
+	import DestinationInfo from './carcass-info/DestinationInfo.svelte';
+	import OriginInfo from './carcass-info/OriginInfo.svelte';
+
+	export let carcass: Carcass;
+
+	$: carcassInfo = carcass ? JSON.stringify(carcass) : 'Carcass is undefined';
+</script>
+
+<div class="w-full">
+	<h1 class="title text-2xl px-4 py-4">More information</h1>
+	<div class="h-full info flex border-t border-t-grey-300">
+		<div class="providers w-1/2 px-6">
+			<h2 class="providers-title uppercase text-1xl text-grey-200 py-4">Providers</h2>
+			<div class="py-4 flex flex-col gap-4">
+				<div class="flex justify-between">
+					<div class="info text-grey-100">Manufacturer:</div>
+					<div class="value text-left">{carcass.manufacturer.name}</div>
+				</div>
+				<div class="flex justify-between">
+					<div class="info text-grey-100">Vendor:</div>
+					<div class="value text-left flex justify-start">
+						<p>{carcass.vendor.name}</p>
+					</div>
+				</div>
+				<div class="flex justify-between">
+					<div class="info text-grey-100">Brand:</div>
+					<div class="value text-left flex justify-start">
+						<p>{carcass.brand.name}</p>
+					</div>
+				</div>
+			</div>
+			<Separator data-separator-root />
+			{#if carcass.certifications}
+				<h2 class="certifications-title uppercase text-1xl text-grey-200 py-4 uppercase">
+					certifications
+				</h2>
+				<div class="py-4 flex flex-col gap-4">
+					<div class="flex justify-between">
+						<div class="info text-grey-100">Certificate:</div>
+						<div class="value text-left">Certificate of {carcass.certifications}</div>
+					</div>
+				</div>
+				<Separator data-separator-root />
+			{/if}
+
+			<h2 class="finance-title uppercase text-1xl text-grey-200 py-4 uppercase">Finance</h2>
+			<div class="py-4 flex flex-col gap-4">
+				<div class="flex justify-between">
+					<div class="info text-grey-100">Purchase Price:</div>
+					<div class="value text-left">&#8364; {carcass.purchase_price}</div>
+				</div>
+			</div>
+		</div>
+		<div class="carcass-info w-1/2 px-6">
+			<div class="tabs">
+				<Tabs.Root value="physical" class="w-full">
+					<Tabs.List class="bg-white">
+						<Tabs.Trigger value="physical">Physical information</Tabs.Trigger>
+						<Tabs.Trigger value="vendor">Vendor</Tabs.Trigger>
+						<Tabs.Trigger value="traceability">Traceability</Tabs.Trigger>
+						<Tabs.Trigger value="origin">Origin</Tabs.Trigger>
+						<Tabs.Trigger value="destination">Destination</Tabs.Trigger>
+					</Tabs.List>
+					<Separator data-separator-root />
+					<Tabs.Content value="physical">
+						<PhysicalInfo
+							weight={carcass.weight}
+							coldWeight={carcass.cold_weight}
+							fatScore={carcass.fat_score}
+							sexCategory={carcass.sex_category}
+							conformation={carcass.conformation}
+						/>
+					</Tabs.Content>
+					<Tabs.Content value="vendor">
+						<VendorInfo
+							vendorCode={carcass.vendor_code}
+							vendorItemName={carcass.vendor_item_name}
+							vendorMoq={carcass.vendor_moq}
+							vendorMoqUnit={carcass.vendor_moq_unit}
+						/>
+					</Tabs.Content>
+					<Tabs.Content value="traceability">
+						<TraceabilityInfo
+							lotNumber={carcass.lot_number}
+							abhdCode={carcass.lot_number}
+							earTag={carcass.ear_tag}
+							lairageNumber={carcass.lairage_number}
+						/>
+					</Tabs.Content>
+					<Tabs.Content value="origin">
+						<OriginInfo
+							originAndTerrior={carcass.origin_and_terroir}
+							countryOfOrigin={carcass.country_of_origin}
+							farm={carcass.farm.name}
+						/>
+					</Tabs.Content>
+					<Tabs.Content value="destination">
+						<DestinationInfo
+							slaughterHouse={carcass.slaughter_house.name}
+							butcherShop={carcass.butcher_shop.name}
+							conformation={carcass.conformation}
+							fatScore={carcass.fat_score}
+							vendorMoqUnit={carcass.vendor_moq_unit}
+						/>
+					</Tabs.Content>
+				</Tabs.Root>
+			</div>
+		</div>
+	</div>
+</div>

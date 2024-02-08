@@ -2,6 +2,9 @@
 	import { Carcasses } from '$lib/stores/carcass.stores';
 	import Carcass from '$lib/components/Carcass.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	import { currentUser, getCurrentUser } from '$lib/user.js';
+	import CarcassInfo from '$lib/components/CarcassInfo.svelte';
+
 	export let data;
 	console.log('paged', data.carcasses);
 	let grid = false;
@@ -12,8 +15,13 @@
 		Carcasses.update((carcasses) => carcasses.filter((c) => c.id !== carcass.id));
 	};
 
+	let selectedCarcass: any;
+
 	let showModal = false;
-	const toggleModal = () => {
+	const toggleModal = ({ detail: carcass }) => {
+		console.log('selected', carcass);
+		// Add parameter here
+		selectedCarcass = carcass; // Add this line
 		showModal = !showModal;
 	};
 </script>
@@ -23,7 +31,10 @@
 </svelte:head>
 
 <Modal {showModal}>
-	<div class="w-[60%]">eerr</div>
+	<div slot="modal-content" class="w-[90vw]">
+		<CarcassInfo carcass={selectedCarcass} />
+		<!-- Update this line -->
+	</div>
 </Modal>
 
 <div class="">

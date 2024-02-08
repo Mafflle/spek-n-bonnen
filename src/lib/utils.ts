@@ -180,3 +180,23 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+
+export const getSexCategory = (code)=>{
+	let response;
+	switch (code) {
+		case "A":
+				response =  "Young Bull"
+			break;
+		case "B":
+			response =  "Bull"
+			break;
+		case "C":
+			response =  "Steer"
+			break;
+		case "E":
+			response =  "Heifer"
+	}
+
+	return response;
+}
