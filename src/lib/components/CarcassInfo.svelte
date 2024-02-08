@@ -15,8 +15,8 @@
 
 <div class="w-full">
 	<h1 class="title text-2xl px-4 py-4">More information</h1>
-	<div class="h-full info flex border-t border-t-grey-300">
-		<div class="providers w-1/2 px-6">
+	<div class="h-full info flex flex-col md:flex-row border-t border-t-grey-300">
+		<div class="providers w-full md:w-1/2 px-6">
 			<h2 class="providers-title uppercase text-1xl text-grey-200 py-4">Providers</h2>
 			<div class="py-4 flex flex-col gap-4">
 				<div class="flex justify-between">
@@ -58,10 +58,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="carcass-info w-1/2 px-6">
-			<div class="tabs">
+		<div class="carcass-info w-full md:w-1/2 px-6">
+			<div class="tabs w-full">
 				<Tabs.Root value="physical" class="w-full">
-					<Tabs.List class="bg-white">
+					<Tabs.List class="bg-white oveflow-x-scroll">
 						<Tabs.Trigger value="physical">Physical information</Tabs.Trigger>
 						<Tabs.Trigger value="vendor">Vendor</Tabs.Trigger>
 						<Tabs.Trigger value="traceability">Traceability</Tabs.Trigger>
@@ -69,7 +69,7 @@
 						<Tabs.Trigger value="destination">Destination</Tabs.Trigger>
 					</Tabs.List>
 					<Separator data-separator-root />
-					<Tabs.Content value="physical">
+					<Tabs.Content value="physical" class="w-full">
 						<PhysicalInfo
 							weight={carcass.weight}
 							coldWeight={carcass.cold_weight}
