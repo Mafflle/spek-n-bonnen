@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Carcasses } from '$lib/stores/carcass.stores';
 	import Carcass from '$lib/components/Carcass.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	export let data;
 	console.log('paged', data.carcasses);
 	let grid = false;
@@ -10,11 +11,20 @@
 		// Perform deletion here
 		Carcasses.update((carcasses) => carcasses.filter((c) => c.id !== carcass.id));
 	};
+
+	let showModal = false;
+	const toggleModal = () => {
+		showModal = !showModal;
+	};
 </script>
 
 <svelte:head>
 	<title>Carcass - Spek-N-Boonen</title>
 </svelte:head>
+
+<Modal {showModal}>
+	<div class="w-[60%]">eerr</div>
+</Modal>
 
 <div class="">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
@@ -69,7 +79,7 @@
 </div>
 <!-- render if page is empty -->
 {#if $Carcasses.length === 0}
-	<div class="empty h-full w-full flex justify-center items-center">
+	<div class="empty h-screen w-full flex justify-center items-center">
 		<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
 			<div class="icon">
 				<img src="/icons/empty-Illustration.svg" alt="empty illustration " />
@@ -94,8 +104,7 @@
 			</div>
 		</div>
 	</div>
-{/if}
-{#if grid}
+{:else if grid}
 	<!-- Check if grid is false -->
 	<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 		{#each $Carcasses as carcass (carcass?.id)}
@@ -124,7 +133,7 @@
 			<tbody>
 				{#each $Carcasses as carcass (carcass?.id)}
 					{#if carcass}
-						<Carcass {carcass} on:delete={handleDelete} />
+						<Carcass {carcass} on:delete={handleDelete} on:moreinfo={toggleModal} />
 					{/if}
 				{/each}
 			</tbody>

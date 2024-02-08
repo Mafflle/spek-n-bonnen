@@ -91,7 +91,9 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
 				<DropdownMenu.Item>
 					<Button
-						on:click={() => editVendor(carcass)}
+						on:click={() => {
+							dispatch('moreinfo', carcass);
+						}}
 						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
 						<InfoIcon class="text-grey-100" size="20" />
