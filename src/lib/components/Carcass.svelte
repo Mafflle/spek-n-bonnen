@@ -67,17 +67,22 @@
 	</td>
 	<td class="text-[#9C9C9C]">
 		<p class="flex items-center">
+			<span class="line-clamp-1"> &#65284;{carcass.purchase_price}</span>
+		</p>
+	</td>
+	<td class="text-[#9C9C9C]">
+		<p class="flex items-center">
 			<span class="line-clamp-1"> {carcass.ahdb_code}</span>
 		</p>
 	</td>
 	<td class="text-[#9C9C9C]">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> {carcass.fat_score}</span>
+			<span class="line-clamp-1"> {dayjs(carcass.date_received).fromNow()}</span>
 		</p>
 	</td>
 	<td class="text-[#9C9C9C]">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> {dayjs(carcass.date_received).fromNow()}</span>
+			<span class="line-clamp-1"> {carcass.fat_score}</span>
 		</p>
 	</td>
 	<td>
