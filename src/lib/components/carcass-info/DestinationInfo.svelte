@@ -9,9 +9,6 @@
 		name: string;
 		address?: string;
 	};
-	export let vendorMoqUnit: string;
-	export let fatScore: number;
-	export let conformation: string;
 </script>
 
 <div class="py-4 flex flex-col gap-4 w-full">
