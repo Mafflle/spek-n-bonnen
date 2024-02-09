@@ -11,8 +11,8 @@
 	Carcasses.set(data.carcasses.results);
 	$: console.log($Carcasses);
 	const handleDelete = ({ detail: carcass }) => {
-		// Perform deletion here
-		Carcasses.update((carcasses) => carcasses.filter((c) => c.id !== carcass.id));
+		console.log('delete', carcass);
+		Carcasses.set($Carcasses.filter((c) => c.id !== carcass.id));
 	};
 
 	let selectedCarcass: any;
@@ -71,11 +71,15 @@
 							/>
 						</svg>
 					</span>
-					<input
-						type="text"
-						placeholder="Search for carcass..."
-						class=" py-2 flex-auto outline-none"
-					/>
+					<form method="GET" action="?/search">
+						<input type="submit" class="" value="submit" />
+						<input
+							type="text"
+							placeholder="Search for carcass..."
+							class="py-2 flex-auto outline-none"
+							name="search"
+						/>
+					</form>
 				</div>
 
 				<a
