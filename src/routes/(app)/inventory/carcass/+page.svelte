@@ -30,7 +30,7 @@
 	<title>Carcass - Spek-N-Boonen</title>
 </svelte:head>
 
-<Modal {showModal}>
+<Modal {showModal} on:close={() => (showModal = false)}>
 	<div slot="modal-content" class="w-[90vw]">
 		<CarcassInfo carcass={selectedCarcass} />
 		<!-- Update this line -->
@@ -126,7 +126,7 @@
 		</div>
 	{:else}
 		<!-- If grid is true, render the table -->
-		<div class="border rounded-xl overflow-x-scroll">
+		<div class="border rounded-xl overflow-x-scroll md:overflow-auto">
 			<table class="table">
 				<thead>
 					<tr class="">

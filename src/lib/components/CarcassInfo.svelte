@@ -13,7 +13,7 @@
 	$: carcassInfo = carcass ? JSON.stringify(carcass) : 'Carcass is undefined';
 </script>
 
-<div class="w-full">
+<div class="w-full py-4">
 	<h1 class="title text-2xl px-4 py-4">More information</h1>
 	<div class="h-full info flex flex-col md:flex-row border-t border-t-grey-300">
 		<div class="providers w-full md:w-1/2 px-6">
@@ -61,14 +61,16 @@
 		<div class="carcass-info w-full md:w-1/2 px-6">
 			<div class="tabs w-full">
 				<Tabs.Root value="physical" class="w-full">
-					<Tabs.List class="bg-white oveflow-x-scroll">
+					<Tabs.List
+						class="bg-white oveflow-x-scroll flex flex-wrap md:flex-wrap-none pb-16 md:pb-1"
+					>
 						<Tabs.Trigger value="physical">Physical information</Tabs.Trigger>
 						<Tabs.Trigger value="vendor">Vendor</Tabs.Trigger>
 						<Tabs.Trigger value="traceability">Traceability</Tabs.Trigger>
 						<Tabs.Trigger value="origin">Origin</Tabs.Trigger>
 						<Tabs.Trigger value="destination">Destination</Tabs.Trigger>
 					</Tabs.List>
-					<Separator data-separator-root />
+					<Separator data-separator-root class="hidden md:block" />
 					<Tabs.Content value="physical" class="w-full">
 						<PhysicalInfo
 							weight={carcass.weight}
