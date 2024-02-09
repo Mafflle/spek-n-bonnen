@@ -130,7 +130,7 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Id</th>
 						<th class="bg-[#F9F9F9]">Vendor</th>
 						<th class="bg-[#F9F9F9]">Weight</th>
 						<th class="bg-[#F9F9F9]">Purchase price</th>

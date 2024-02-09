@@ -52,7 +52,7 @@
 <tr class="border-b border-[#D9D9D9]">
 	<td class="text-[#9C9C9C]">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> {carcass.name}</span>
+			<span class="line-clamp-1"> {carcass.id}</span>
 		</p>
 	</td>
 	<td class="text-[#9C9C9C]">
