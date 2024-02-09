@@ -23,7 +23,7 @@ export const actions = {
 		const search = data.get('search');
 	
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/?search=${search}`, {
-			method: 'DELETE',
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${cookies.get('access')}`

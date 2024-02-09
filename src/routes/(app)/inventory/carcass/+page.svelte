@@ -4,7 +4,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { currentUser, getCurrentUser } from '$lib/user.js';
 	import CarcassInfo from '$lib/components/CarcassInfo.svelte';
-
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { enhance } from '$app/forms';
+	let carcasses = [];
 	export let data;
 	console.log('paged', data.carcasses);
 	let grid = false;
@@ -23,6 +25,32 @@
 		// Add parameter here
 		selectedCarcass = carcass; // Add this line
 		showModal = !showModal;
+	};
+
+	let searching = false;
+
+	const searchCarcass: SubmitFunction = ({ formData }) => {
+		console.log('searching', formData);
+		searching = true;
+		return async ({ result, update, error }) => {
+			if (error) {
+				console.error('Error occurred during search:', error);
+				searching = false;
+				return;
+			}
+
+			console.log('search', result);
+			console.log('search result', result.data.carcasses.results);
+			carcasses = result.data.carcasses.results; // Update carcasses array
+			Carcasses.set(carcasses);
+			searching = false;
+		};
+	};
+
+	let form: HTMLFormElement;
+
+	const submitSearch = () => {
+		form.requestSubmit();
 	};
 </script>
 
@@ -71,13 +99,16 @@
 							/>
 						</svg>
 					</span>
-					<form method="GET" action="?/search">
-						<input type="submit" class="" value="submit" />
+					<form method="post" action="?/search" use:enhance={searchCarcass} bind:this={form}>
+						<input type="submit" class="hidden" value="submit" />
 						<input
 							type="text"
 							placeholder="Search for carcass..."
 							class="py-2 flex-auto outline-none"
 							name="search"
+							on:input={() => {
+								submitSearch();
+							}}
 						/>
 					</form>
 				</div>
@@ -119,15 +150,12 @@
 				</div>
 			</div>
 		</div>
-	{:else if grid}
-		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-			{#each $Carcasses as carcass (carcass?.id)}
-				{#if carcass}
-					<Carcass {carcass} />
-				{/if}
-			{/each}
+	{:else if searching}
+		<div class="w-full h-24">
+			<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 		</div>
+	{:else if searching == false && carcasses.length == 0}
+		<p>No items found.</p>
 	{:else}
 		<!-- If grid is true, render the table -->
 		<div class="border rounded-xl overflow-x-scroll md:overflow-auto">
