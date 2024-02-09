@@ -107,9 +107,6 @@
 						<DestinationInfo
 							slaughterHouse={carcass.slaughter_house}
 							butcherShop={carcass.butcher_shop}
-							conformation={carcass.conformation}
-							fatScore={carcass.fat_score}
-							vendorMoqUnit={carcass.vendor_moq_unit}
 						/>
 					</Tabs.Content>
 				</Tabs.Root>

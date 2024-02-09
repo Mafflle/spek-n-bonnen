@@ -53,16 +53,4 @@
 			</Tooltip.Content>
 		</Tooltip.Root>
 	</div>
-	<div class="flex justify-between">
-		<div class="info text-grey-100">Vendor MOQ Unit:</div>
-		<div class="value text-left">{vendorMoqUnit}</div>
-	</div>
-	<div class="flex justify-between">
-		<div class="info text-grey-100">Fat score:</div>
-		<div class="value text-left">{fatScore}</div>
-	</div>
-	<div class="flex justify-between">
-		<div class="info text-grey-100">Conformation:</div>
-		<div class="value text-left">{conformation}</div>
-	</div>
 </div>
