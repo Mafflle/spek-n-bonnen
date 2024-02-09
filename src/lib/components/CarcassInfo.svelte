@@ -100,13 +100,13 @@
 						<OriginInfo
 							originAndTerrior={carcass.origin_and_terroir}
 							countryOfOrigin={carcass.country_of_origin}
-							farm={carcass.farm.name}
+							farm={carcass.farm}
 						/>
 					</Tabs.Content>
 					<Tabs.Content value="destination">
 						<DestinationInfo
-							slaughterHouse={carcass.slaughter_house.name}
-							butcherShop={carcass.butcher_shop.name}
+							slaughterHouse={carcass.slaughter_house}
+							butcherShop={carcass.butcher_shop}
 							conformation={carcass.conformation}
 							fatScore={carcass.fat_score}
 							vendorMoqUnit={carcass.vendor_moq_unit}
