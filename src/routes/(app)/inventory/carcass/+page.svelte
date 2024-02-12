@@ -136,7 +136,7 @@
 							{carcass}
 							on:delete={handleDelete}
 							on:view={(e) => showInfo(e.detail.carcass)}
-							on:edit={(e) => goto(`carcass/manage?${e.detail.id}`)}
+							on:edit={(e) => goto(`carcass/manage?editing=${e.detail.id}`)}
 						/>
 					{/if}
 				{/each}

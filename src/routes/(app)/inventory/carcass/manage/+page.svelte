@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -15,8 +16,12 @@
 
 	export let data;
 
-	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers } = data;
+	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers, carcassToEdit } =
+		data;
 
+	console.log(carcassToEdit);
+
+	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
 	const allTabs = ['physical-info', 'vendor', 'traceability', 'origin'];
 	let currentTab: string = 'physical-info';
@@ -93,7 +98,9 @@
 <div class="">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h2 class="text-3xl font-semibold">Add carcass</h2>
+			<h2 class="text-3xl font-semibold">
+				{currCarcassId ? `Edit carcass #${currCarcassId}` : 'Add carcass'}
+			</h2>
 			<sub class="text-[#6B6B6B] text-sm"> Carcass / manage</sub>
 		</div>
 	</div>
