@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import Selector from '$lib/components/Selector.svelte';
+	import { goto } from '$app/navigation';
 	export let data;
 
 	console.log('paged', data.carcasses);
@@ -15,7 +16,7 @@
 		{ label: 'Traceability', value: 'traceability' }
 	];
 	let showCarcassInfo: boolean = false;
-	let currCarcass: CarcassType;
+	let currCarcass: CarcassType | null;
 
 	Carcasses.set(data.carcasses.results);
 
@@ -113,198 +114,198 @@
 		</div>
 	</div>
 
-	{#if grid}
-		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-			{#each $Carcasses as carcass (carcass?.id)}
-				{#if carcass}
-					<Carcass {carcass} />
-				{/if}
-			{/each}
-		</div>
-	{:else}
-		<!-- If grid is true, render the table -->
-		<div class="border rounded-xl">
-			<table class="table">
-				<thead>
-					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">ID</th>
-						<th class="bg-[#F9F9F9]">Vendor</th>
-						<th class="bg-[#F9F9F9]">Weight(kg)</th>
-						<th class="bg-[#F9F9F9]">Purchase price($)</th>
-						<th class="bg-[#F9F9F9]">Fat Score</th>
-						<th class="bg-[#F9F9F9]">Date Recieved</th>
-						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-					</tr>
-				</thead>
+	<!-- If grid is true, render the table -->
+	<div class="border rounded-xl">
+		<table class="table">
+			<thead>
+				<tr class="">
+					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">ID</th>
+					<th class="bg-[#F9F9F9]">Vendor</th>
+					<th class="bg-[#F9F9F9]">Weight(kg)</th>
+					<th class="bg-[#F9F9F9]">Purchase price($)</th>
+					<th class="bg-[#F9F9F9]">Fat Score</th>
+					<th class="bg-[#F9F9F9]">Date Recieved</th>
+					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+				</tr>
+			</thead>
 
-				<tbody>
-					{#each $Carcasses as carcass (carcass?.id)}
-						{#if carcass}
-							<Carcass
-								{carcass}
-								on:delete={handleDelete}
-								on:view={(e) => showInfo(e.detail.carcass)}
-							/>
-						{/if}
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
+			<tbody>
+				{#each $Carcasses as carcass (carcass?.id)}
+					{#if carcass}
+						<Carcass
+							{carcass}
+							on:delete={handleDelete}
+							on:view={(e) => showInfo(e.detail.carcass)}
+							on:edit={(e) => goto(`carcass/manage?${e.detail.id}`)}
+						/>
+					{/if}
+				{/each}
+			</tbody>
+		</table>
+	</div>
 {/if}
 
-<Modal showModal={showCarcassInfo}>
-	<div slot="modal-content" class="flex flex-col w-full max-w-4xl">
-		<section class="w-full border-b px-4 py-3">
-			<h3 class="font-satoshi font-medium text-lg">More information</h3>
-		</section>
-		<section
-			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[450px] justify-center text-sm w-full"
-		>
-			<!-- Providers -->
-			<section class="flex-auto py-5 h-full overflow-y-scroll no-scrollbar w-full min-w-[360px]">
-				<div class=" sticky px-5 top-0 w-full bg-white">
-					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">PROVIDERS</h3>
-				</div>
-				<div class="mb-8 md:pl-5 pr-20 flex justify-between font-satoshi text-sm">
-					<div class="labels">
-						<p class="block text-grey-200">Manufacturer:</p>
-
-						<p class="block text-grey-200 text-sm">Vendor:</p>
-
-						<p class="text-grey-200">Butcher shop:</p>
-					</div>
-					<div class="labels">
-						<p>{currCarcass.manufacturer.name}</p>
-						<p>{currCarcass.vendor.name}</p>
-						<p>{currCarcass.brand.name}</p>
-					</div>
-				</div>
-				<Separator orientation="horizontal" class="" />
-				<div class="md:pl-5 pr-20 py-4">
-					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">CERTIFICATION</h3>
-					<div class=" flex justify-between font-satoshi text-sm">
-						<div class="labels">
-							<p class="block text-grey-200">Certificate:</p>
-						</div>
-						<div class="labels">
-							<p>{currCarcass.certifications ?? 'Certificate of ABCD'}</p>
-						</div>
-					</div>
-				</div>
-				<Separator orientation="horizontal" class="" />
-				<div class="py-4 pl-5 pr-20">
-					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">FINANCE</h3>
-
-					<div class=" flex justify-between font-satoshi text-sm">
-						<div class="labels">
-							<p class="block text-grey-200">Purchase price:</p>
-						</div>
-						<div class="labels">
-							<p>${currCarcass.purchase_price ?? '999.99'}</p>
-						</div>
-					</div>
-				</div>
+{#if currCarcass}
+	<Modal
+		on:close={() => {
+			showCarcassInfo = false;
+			currCarcass = null;
+		}}
+		showModal={showCarcassInfo}
+	>
+		<div slot="modal-content" class="flex flex-col w-full max-w-4xl">
+			<section class="w-full border-b px-4 py-3">
+				<h3 class="font-satoshi font-medium text-lg">More information</h3>
 			</section>
-			<!-- Providers -->
+			<section
+				class="  flex flex-col md:flex-row md:justify-between items-start md:h-[450px] justify-center text-sm w-full"
+			>
+				<!-- Providers -->
+				<section class="flex-auto py-5 h-full overflow-y-scroll no-scrollbar w-full min-w-[360px]">
+					<div class=" sticky px-5 top-0 w-full bg-white">
+						<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">PROVIDERS</h3>
+					</div>
+					<div class="mb-8 md:pl-5 pr-20 flex justify-between font-satoshi text-sm">
+						<div class="labels">
+							<p class="block text-grey-200">Manufacturer:</p>
 
-			<!-- Separator -->
-			<Separator orientation="vertical" class="" />
-			<!-- Separator -->
+							<p class="block text-grey-200 text-sm">Vendor:</p>
 
-			<!-- More Details -->
-			<section class=" flex-auto flex flex-col items-start h-full w-full min-w-[450px] py-5">
-				<!-- Tabs -->
-				<Tabs.Root
-					value="physical-info"
-					class="relative w-full h-full px-4 overflow-y-scroll no-scrollbar"
-				>
-					<!-- Tabs trigger -->
-					<section class="md:sticky top-0 w-full bg-white overflow-x-scroll no-scrollbar z-10">
-						<Tabs.List class=" bg-white border-b rounded-none px-1  w-full ">
-							{#each allTabs as tab}
-								<Tabs.Trigger
-									class="w-full px-1 data-[state=active]:font-bold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary-red data-[state=active]:rounded-none "
-									value={tab.value}>{tab.label}</Tabs.Trigger
-								>
-							{/each}
-						</Tabs.List>
-					</section>
-					<!-- Tabs trigger -->
+							<p class="text-grey-200">Butcher shop:</p>
+						</div>
+						<div class="labels">
+							<p>{currCarcass.manufacturer.name}</p>
+							<p>{currCarcass.vendor.name}</p>
+							<p>{currCarcass.brand.name}</p>
+						</div>
+					</div>
+					<Separator orientation="horizontal" class="" />
+					<div class="md:pl-5 pr-20 py-4">
+						<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">CERTIFICATION</h3>
+						<div class=" flex justify-between font-satoshi text-sm">
+							<div class="labels">
+								<p class="block text-grey-200">Certificate:</p>
+							</div>
+							<div class="labels">
+								<p>{currCarcass.certifications ?? 'Certificate of ABCD'}</p>
+							</div>
+						</div>
+					</div>
+					<Separator orientation="horizontal" class="" />
+					<div class="py-4 pl-5 pr-20">
+						<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">FINANCE</h3>
 
-					<section>
-						<!-- Physical info -->
-						<Tabs.Content class=" h-full mb-8  md:pl-5 pr-16 py-5 w-full" value="physical-info">
-							<div class="flex flex-col gap-[1.28rem]">
-								<div class="mb-8 flex justify-between font-satoshi text-sm">
-									<div class="labels">
-										<p class="block text-grey-200">Weight:</p>
+						<div class=" flex justify-between font-satoshi text-sm">
+							<div class="labels">
+								<p class="block text-grey-200">Purchase price:</p>
+							</div>
+							<div class="labels">
+								<p>${currCarcass.purchase_price ?? '999.99'}</p>
+							</div>
+						</div>
+					</div>
+				</section>
+				<!-- Providers -->
 
-										<p class="block text-grey-200 text-sm">Cold weight:</p>
+				<!-- Separator -->
+				<Separator orientation="vertical" class="" />
+				<!-- Separator -->
 
-										<p class="text-grey-200">Sex category:</p>
-										<p class="text-grey-200">Fat score:</p>
-										<p class="text-grey-200">Conformation:</p>
-									</div>
-									<div class="labels">
-										<p>{currCarcass.weight} kg</p>
-										<p>{currCarcass.cold_weight} kg</p>
-										<p>{currCarcass.sex_category}</p>
-										<p>{currCarcass.fat_score}</p>
-										<p>{currCarcass.conformation ?? '_________'}</p>
+				<!-- More Details -->
+				<section class=" flex-auto flex flex-col items-start h-full w-full min-w-[450px] py-5">
+					<!-- Tabs -->
+					<Tabs.Root
+						value="physical-info"
+						class="relative w-full h-full px-4 overflow-y-scroll no-scrollbar"
+					>
+						<!-- Tabs trigger -->
+						<section class="md:sticky top-0 w-full bg-white overflow-x-scroll no-scrollbar z-10">
+							<Tabs.List class=" bg-white border-b rounded-none px-1  w-full ">
+								{#each allTabs as tab}
+									<Tabs.Trigger
+										class="w-full px-1 data-[state=active]:font-bold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary-red data-[state=active]:rounded-none "
+										value={tab.value}>{tab.label}</Tabs.Trigger
+									>
+								{/each}
+							</Tabs.List>
+						</section>
+						<!-- Tabs trigger -->
+
+						<section>
+							<!-- Physical info -->
+							<Tabs.Content class=" h-full mb-8  md:pl-5 pr-16 py-5 w-full" value="physical-info">
+								<div class="flex flex-col gap-[1.28rem]">
+									<div class="mb-8 flex justify-between font-satoshi text-sm">
+										<div class="labels">
+											<p class="block text-grey-200">Weight:</p>
+
+											<p class="block text-grey-200 text-sm">Cold weight:</p>
+
+											<p class="text-grey-200">Sex category:</p>
+											<p class="text-grey-200">Fat score:</p>
+											<p class="text-grey-200">Conformation:</p>
+										</div>
+										<div class="labels">
+											<p>{currCarcass.weight} kg</p>
+											<p>{currCarcass.cold_weight} kg</p>
+											<p>{currCarcass.sex_category}</p>
+											<p>{currCarcass.fat_score}</p>
+											<p>{currCarcass.conformation ?? '_________'}</p>
+										</div>
 									</div>
 								</div>
-							</div>
-						</Tabs.Content>
-						<!-- Physical info -->
+							</Tabs.Content>
+							<!-- Physical info -->
 
-						<!-- Vendor info -->
+							<!-- Vendor info -->
 
-						<!-- Vendor info -->
+							<!-- Vendor info -->
 
-						<!-- Traceability -->
-						<Tabs.Content class="px-4 h-full mb-8 md:pl-5 pr-16 py-5 w-full " value="traceability">
-							<div class="flex flex-col gap-[1.28rem]">
-								<div class="mb-8 flex justify-between font-satoshi text-sm">
-									<div class="labels">
-										<p class="block text-grey-200">Lot number :</p>
+							<!-- Traceability -->
+							<Tabs.Content
+								class="px-4 h-full mb-8 md:pl-5 pr-16 py-5 w-full "
+								value="traceability"
+							>
+								<div class="flex flex-col gap-[1.28rem]">
+									<div class="mb-8 flex justify-between font-satoshi text-sm">
+										<div class="labels">
+											<p class="block text-grey-200">Lot number :</p>
 
-										<p class="block text-grey-200 text-sm">ABHD number :</p>
+											<p class="block text-grey-200 text-sm">ABHD number :</p>
 
-										<p class="text-grey-200">Ear tag :</p>
-										<p class="text-grey-200">Lairage number :</p>
-										<p class="text-grey-200">Vendor :</p>
-										<p class="text-grey-200">Vendor code :</p>
-										<p class="text-grey-200">Vendor MOQ :</p>
-										<p class="text-grey-200">Vendor MOQ unit :</p>
-										<p class="text-grey-200">Vendor item name :</p>
-										<p class="text-grey-200">Slaughter house :</p>
-										<p class="text-grey-200">Origin and terrior :</p>
-										<p class="text-grey-200">Country of origin :</p>
-										<p class="text-grey-200">Farm :</p>
-									</div>
-									<div class="labels">
-										<p>{currCarcass.lot_number}</p>
-										<p>{currCarcass.ahdb_code}</p>
-										<p>{currCarcass.ear_tag}</p>
-										<p>{currCarcass.lairage_number ?? '_______'}</p>
-										<p>{currCarcass.vendor.name ?? '_______'}</p>
-										<p>{currCarcass.vendor_code ?? '_________'}</p>
-										<p>{currCarcass.vendor_moq ?? '_________'}</p>
-										<p>{currCarcass.vendor_moq_unit ?? '_________'}</p>
-										<p>{currCarcass.vendor_item_name ?? '_________'}</p>
-										<p>{currCarcass.slaughter_house.name ?? '_________'}</p>
-										<p>{currCarcass.origin_and_terroir ?? '_________'}</p>
-										<p>{currCarcass.country_of_origin ?? '_________'}</p>
-										<p>{currCarcass.farm.name ?? '_________'}</p>
+											<p class="text-grey-200">Ear tag :</p>
+											<p class="text-grey-200">Lairage number :</p>
+											<p class="text-grey-200">Vendor :</p>
+											<p class="text-grey-200">Vendor code :</p>
+											<p class="text-grey-200">Vendor MOQ :</p>
+											<p class="text-grey-200">Vendor MOQ unit :</p>
+											<p class="text-grey-200">Vendor item name :</p>
+											<p class="text-grey-200">Slaughter house :</p>
+											<p class="text-grey-200">Origin and terrior :</p>
+											<p class="text-grey-200">Country of origin :</p>
+											<p class="text-grey-200">Farm :</p>
+										</div>
+										<div class="labels">
+											<p>{currCarcass.lot_number}</p>
+											<p>{currCarcass.ahdb_code}</p>
+											<p>{currCarcass.ear_tag}</p>
+											<p>{currCarcass.lairage_number ?? '_______'}</p>
+											<p>{currCarcass.vendor.name ?? '_______'}</p>
+											<p>{currCarcass.vendor_code ?? '_________'}</p>
+											<p>{currCarcass.vendor_moq ?? '_________'}</p>
+											<p>{currCarcass.vendor_moq_unit ?? '_________'}</p>
+											<p>{currCarcass.vendor_item_name ?? '_________'}</p>
+											<p>{currCarcass.slaughter_house.name ?? '_________'}</p>
+											<p>{currCarcass.origin_and_terroir ?? '_________'}</p>
+											<p>{currCarcass.country_of_origin ?? '_________'}</p>
+											<p>{currCarcass.farm.name ?? '_________'}</p>
+										</div>
 									</div>
 								</div>
-							</div>
-						</Tabs.Content>
-						<!-- Traceability -->
+							</Tabs.Content>
+							<!-- Traceability -->
 
-						<!-- <div class="w-full self flex items-center justify-between mt-4 px-4">
+							<!-- <div class="w-full self flex items-center justify-between mt-4 px-4">
 							{#if allTabs.indexOf(currentTab) > 0}
 								<Button
 									on:click={() => switchTabs('previous')}
@@ -325,11 +326,12 @@
 								>
 							{/if}
 						</div> -->
-					</section>
-				</Tabs.Root>
-				<!-- Tabs -->
+						</section>
+					</Tabs.Root>
+					<!-- Tabs -->
+				</section>
+				<!-- More Details -->
 			</section>
-			<!-- More Details -->
-		</section>
-	</div>
-</Modal>
+		</div>
+	</Modal>
+{/if}
