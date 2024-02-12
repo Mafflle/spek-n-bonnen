@@ -76,7 +76,7 @@
 					color: '#FF1C0D'
 				},
 				{
-					title: 'Batces',
+					title: 'Batches',
 					href: '/inventory/batches',
 					color: '#FF1C0D'
 				}

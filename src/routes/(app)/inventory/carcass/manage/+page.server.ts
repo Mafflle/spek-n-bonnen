@@ -56,8 +56,8 @@ const manageSchema = z.object({
 		.max(150, 'Lairage number must be at most 150 characters long')
 		.optional(),
 	carcass_number: z
-		.string({ required_error: 'Carcass number is required' })
-		.max(150, 'Carcass number must be at most 150 characters long'),
+		.string({ required_error: 'CarcassType number is required' })
+		.max(150, 'CarcassType number must be at most 150 characters long'),
 	sex_category: z.enum(['A', 'B', 'C', 'E'], {
 		required_error: 'Sex category is required'
 	}),
@@ -89,13 +89,26 @@ const manageSchema = z.object({
 	vendor_id: z.number({ required_error: 'Please select the vendor this carcass is from' })
 });
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 	const getFarms = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/`);
 	const getSlaughterHouses = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/slaughter_houses/`);
 	const getShops = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/butcher_shops/`);
 	const getBrands = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`);
 	const getVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/`);
 	const getManufacturers = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`);
+
+	let carcassToEditId = url.searchParams.get('editing');
+	let carcassToEdit;
+
+	if (carcassToEditId) {
+		const getCarcassById = await fetch(
+			`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${carcassToEditId}/`
+		);
+		if (getCarcassById.ok) {
+			carcassToEdit = await getCarcassById.json();
+		}
+	}
+
 	if (
 		getFarms.ok &&
 		getSlaughterHouses.ok &&
@@ -148,6 +161,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 			};
 		});
 		const access = cookies.get('access');
+		let carcass = carcassToEdit && carcassToEdit;
+
 		return {
 			farms,
 			slaughterHouses,
@@ -155,7 +170,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 			brands,
 			vendors,
 			manufacturers,
-			access
+			access,
+			carcassToEdit: carcass
 		};
 	} else {
 		console.log('farms', getFarms.status, getFarms.statusText);

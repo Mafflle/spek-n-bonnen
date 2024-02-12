@@ -33,8 +33,8 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const currUrl = formData.get('currUrl');
-		cookies.delete('access');
-		cookies.delete('refresh ');
+		cookies.delete('access', { path: '/' });
+		cookies.delete('refresh', { path: '/' });
 		currentUser.set(null);
 
 		throw redirect(302, `auth/login?from=${currUrl}`);

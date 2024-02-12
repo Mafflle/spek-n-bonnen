@@ -78,7 +78,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 	const res = await fetch(request.clone());
 
-	if (!res.ok && res.status === 401) {
+	if (!res.ok && res.status === 401 && res.url.includes('login') === false) {
 		const body = await res.json();
 		console.log('response', body);
 

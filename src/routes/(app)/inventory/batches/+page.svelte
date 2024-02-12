@@ -16,9 +16,8 @@
 	export let data;
 	const { batches } = data;
 
-	console.log(batches);
-
 	// Batches.set(batches.results);
+	// $: console.log($Batches);
 
 	let showModal = false;
 	let loading = false;
@@ -171,131 +170,134 @@
 	</div>
 </Modal>
 
-<div class="page h-full w-full">
-	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
-		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Batches</div>
-			<sub class="text-[#6B6B6B] text-sm"> Providers / batches</sub>
-		</div>
-		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
-			<div
-				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
-			>
-				<span>
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-							stroke="#A9A9A9"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-						<path
-							d="M21 20.9999L16.65 16.6499"
-							stroke="#A9A9A9"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</span>
-				<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
+{#if $Batches.length === 0}
+	<div class="empty w-full h-full flex justify-center items-center">
+		<div class="empty-indicator h-full flex flex-col justify-center items-center gap-5 w-[277px]">
+			<div class="icon">
+				<img src="/icons/empty-Illustration.svg" alt="empty illustration " />
 			</div>
-
-			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
+			<div class="content">
+				<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
+					<h3 class="title text-3xl font-medium tracking-[-0.64px]">No batch added</h3>
+					<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
+						You currently don’t have any batch stored in your inventory, click the button below to
+						add one
+					</div>
+				</div>
+			</div>
+			<div class="button">
 				<button
-					class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-					on:click={toggleGrid}
-				>
-					<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
-				</button>
-				<button
+					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+			hover:bg-[#C7453C]
+			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 					on:click={toggleModal}
-					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
-                    hover:bg-[#C7453C]
-                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<div class="w-5 h-5 relative">
-						<img src="/icons/plus.svg" alt="batches-plus" />
+						<img src="/icons/plus.svg" alt="user-plus" />
 					</div>
-					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
-						>Add batch</span
-					>
+					<p class="text-white text-sm font-bold">Add batch</p>
 				</button>
 			</div>
 		</div>
 	</div>
-	<!-- render if page is empty -->
-	{#if $Batches.length === 0}
-		<div class="empty h-full w-full flex justify-center items-center">
-			<div class="empty-indicator flex flex-col justify-center items-center gap-5 w-[277px]">
-				<div class="icon">
-					<img src="/icons/empty-Illustration.svg" alt="empty illustration " />
+{:else}
+	<div class="page h-full w-full">
+		<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
+			<div class="headers flex flex-col items-start gap-[0.25rem]">
+				<div class="text-[2rem] tracking-[-0.04rem] font-bold">Batches</div>
+				<sub class="text-[#6B6B6B] text-sm"> Providers / batches</sub>
+			</div>
+			<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
+				<div
+					class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				>
+					<span>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+								stroke="#A9A9A9"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+							<path
+								d="M21 20.9999L16.65 16.6499"
+								stroke="#A9A9A9"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</span>
+					<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
 				</div>
-				<div class="content">
-					<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-						<h3 class="title text-3xl font-medium tracking-[-0.64px]">No batch added</h3>
-						<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
-							You currently don’t have any batch stored in your inventory, click the button below to
-							add one
-						</div>
-					</div>
-				</div>
-				<div class="button">
+
+				<div class="filter-buttons flex items-start gap-2 sm:gap-5">
 					<button
-						class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
-			hover:bg-[#C7453C]
-			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+						class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
+						on:click={toggleGrid}
+					>
+						<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
+					</button>
+					<button
 						on:click={toggleModal}
+						class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+                    hover:bg-[#C7453C]
+                    focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 					>
 						<div class="w-5 h-5 relative">
-							<img src="/icons/plus.svg" alt="user-plus" />
+							<img src="/icons/plus.svg" alt="batches-plus" />
 						</div>
-						<p class="text-white text-sm font-bold">Add batch</p>
+						<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+							>Add batch</span
+						>
 					</button>
 				</div>
 			</div>
 		</div>
-	{:else if grid}
-		<!-- Check if grid is false -->
-		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-			{#each $Batches as batch (batch?.id)}
-				{#if batch}
-					<Batch on:edit={(e) => toggleEditModal(e.detail)} {batch} {grid} />
-				{/if}
-			{/each}
-		</div>
-	{:else}
-		<!-- If grid is true, render the table -->
-		<div class="border rounded-xl">
-			<table class="table">
-				<thead>
-					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Batch id</th>
-						<th class="bg-[#F9F9F9]">Primal</th>
-						<th class="bg-[#F9F9F9]">Carcass</th>
-						<th class="bg-[#F9F9F9]">EAN barcode</th>
-						<th class="bg-[#F9F9F9]">Quantity</th>
-						<th class="bg-[#F9F9F9]">Remaining quantity</th>
-						<th class="bg-[#F9F9F9]">Expiring date</th>
-						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-					</tr>
-				</thead>
+		<!-- render if page is empty -->
 
-				<tbody>
-					{#each $Batches as batch (batch?.id)}
-						{#if batch}
-							<Batch on:edit={(e) => toggleEditModal(e.detail)} {batch} {grid} />
-						{/if}
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
-</div>
+		{#if grid}
+			<!-- Check if grid is false -->
+			<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+				{#each $Batches as batch (batch?.id)}
+					{#if batch}
+						<Batch on:edit={(e) => toggleEditModal(e.detail)} {batch} {grid} />
+					{/if}
+				{/each}
+			</div>
+		{:else}
+			<!-- If grid is true, render the table -->
+			<div class="border rounded-xl">
+				<table class="table">
+					<thead>
+						<tr class="">
+							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Batch id</th>
+							<th class="bg-[#F9F9F9]">Primal</th>
+							<th class="bg-[#F9F9F9]">CarcassType</th>
+							<th class="bg-[#F9F9F9]">EAN barcode</th>
+							<th class="bg-[#F9F9F9]">Quantity</th>
+							<th class="bg-[#F9F9F9]">Remaining quantity</th>
+							<th class="bg-[#F9F9F9]">Expiring date</th>
+							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{#each $Batches as batch (batch?.id)}
+							{#if batch}
+								<Batch on:edit={(e) => toggleEditModal(e.detail)} {batch} {grid} />
+							{/if}
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+{/if}

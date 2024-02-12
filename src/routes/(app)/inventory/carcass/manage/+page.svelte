@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -14,11 +16,17 @@
 
 	export let data;
 
-	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers } = data;
+	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers, carcassToEdit } =
+		data;
 
+	console.log(carcassToEdit);
+
+	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
 	const allTabs = ['physical-info', 'vendor', 'traceability', 'origin'];
 	let currentTab: string = 'physical-info';
+	let currentTabInfo;
+
 	let loading: boolean = false;
 	let today = new Date();
 	let dd = today.getDate();
@@ -63,6 +71,21 @@
 			}
 		};
 	};
+	$: {
+		if (browser) {
+			let tabs = currentTabInfo?.children[1].children;
+			console.log(tabs);
+
+			if (tabs) {
+				for (let i = 0; i < tabs.length; i++) {
+					if (tabs[i].attributes[1]?.value === currentTab) {
+						const requiredInputs = tabs[i].querySelectorAll('input[required]');
+						console.log(requiredInputs);
+					}
+				}
+			}
+		}
+	}
 </script>
 
 <svelte:head>
@@ -75,7 +98,9 @@
 <div class="">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<h2 class="text-3xl font-semibold">Add carcass</h2>
+			<h2 class="text-3xl font-semibold">
+				{currCarcassId ? `Edit carcass #${currCarcassId}` : 'Add carcass'}
+			</h2>
 			<sub class="text-[#6B6B6B] text-sm"> Carcass / manage</sub>
 		</div>
 	</div>
@@ -218,7 +243,8 @@
 				<!-- Tabs -->
 				<Tabs.Root
 					bind:value={currentTab}
-					class=" relative w-full h-full overflow-y-scroll no-scrollbar"
+					bind:el={currentTabInfo}
+					class="relative w-full h-full overflow-y-scroll no-scrollbar"
 				>
 					<!-- Tabs trigger -->
 					<section
@@ -243,11 +269,12 @@
 
 					<section>
 						<!-- Physical info -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="physical-info">
-							<div class=" flex flex-col gap-[1.28rem] w-full">
+						<Tabs.Content class="px-4 h-full mb-8  w-full" value="physical-info">
+							<div class="flex flex-col gap-[1.28rem]">
 								<div class="weight flex flex-col gap-2 items-start">
 									<label for="weight" class="block mb-2 text-sm">Weight</label>
 									<input
+										required
 										type="number"
 										name="weight"
 										id="weight"
@@ -266,6 +293,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="cold-weight" class="block mb-2 text-sm">Cold weight</label>
 									<input
+										required
 										type="number"
 										name="cold-weight"
 										id="cold-weight"
@@ -284,6 +312,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="sex-category" class="block mb-2 text-sm">Sex category</label>
 									<Selector
+										required={true}
 										name="sex-category"
 										placeholder="Select sex category"
 										options={[
@@ -304,6 +333,7 @@
 								<div class="flex flex-col gap-2 items-start w-full">
 									<label for="fat-score" class="block mb-2 text-sm">Fat score</label>
 									<Selector
+										required={true}
 										name="fat-score"
 										placeholder="Select fat score"
 										options={[
@@ -327,6 +357,7 @@
 								<div class="conformation flex flex-col gap-2 items-start">
 									<label for="conformation" class="block mb-2 text-sm">Conformation</label>
 									<Selector
+										required={true}
 										name="conformation"
 										placeholder="Select conformation"
 										options={[
@@ -352,11 +383,12 @@
 						<!-- Physical info -->
 
 						<!-- Vendor info -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="vendor">
-							<div class=" flex flex-col gap-[1.28rem] w-full">
+						<Tabs.Content class="px-4 h-full mb-8 w-full " value="vendor">
+							<div class="flex flex-col gap-[1.28rem]">
 								<div class="flex flex-col gap-2 items-start">
 									<label for="vendor" class="block mb-2 text-sm">Vendor</label>
 									<Selector
+										required={true}
 										token={data.access}
 										endpoint="manage"
 										searchEndpoint="api/inventory/vendors"
@@ -375,6 +407,7 @@
 								<div class="vendor-code flex flex-col gap-2 items-start">
 									<label for="vendor-code" class="block mb-2 text-sm">Vendor code</label>
 									<input
+										required
 										type="text"
 										name="vendor-code"
 										id="vendor-code"
@@ -393,6 +426,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="vendor-moq" class="block mb-2 text-sm">Vendor MOQ</label>
 									<input
+										required
 										type="number"
 										name="vendor-moq"
 										id="vendor-moq"
@@ -411,6 +445,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="vendor-moq-unit" class="block mb-2 text-sm">Vendor MOQ unit</label>
 									<input
+										required
 										type="text"
 										name="vendor-moq-unit"
 										id="vendor-moq-unit "
@@ -428,6 +463,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="vendor-item-name" class="block mb-2 text-sm">Vendor item name</label>
 									<input
+										required
 										type="text"
 										name="vendor-item-name"
 										id="vendor-item-name"
@@ -448,10 +484,11 @@
 
 						<!-- Traceability -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">
-							<div class=" flex flex-col gap-[1.28rem] w-full">
+							<div class="flex flex-col gap-[1.28rem]">
 								<div class="lot-number flex flex-col gap-2 items-start">
 									<label for="lot-number" class="block mb-2 text-sm">Lot number</label>
 									<input
+										required
 										type="text"
 										name="lot-number"
 										id="lot-number"
@@ -470,6 +507,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="carcass_number" class="block mb-2 text-sm">Carcass number</label>
 									<input
+										required
 										type="number"
 										name="carcass_number"
 										id="carcass_number"
@@ -487,6 +525,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="abhd-number" class="block mb-2 text-sm">ABHD number</label>
 									<input
+										required
 										type="text"
 										name="abhd-number"
 										id="abhd-number"
@@ -505,6 +544,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="ear-tag" class="block mb-2 text-sm">Ear tag</label>
 									<input
+										required
 										type="text"
 										name="ear-tag"
 										id="ear-tag"
@@ -522,6 +562,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="slaughter_house" class="block mb-2 text-sm">Slaughter house</label>
 									<Selector
+										required={true}
 										token={data.access}
 										endpoint="manage"
 										searchEndpoint="api/inventory/slaughter_houses"
@@ -542,6 +583,7 @@
 										>Date of slaughter
 									</label>
 									<input
+										required
 										type="date"
 										max={maxDate}
 										name="date_of_slaughter"
@@ -561,6 +603,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="date_received" class="block mb-2 text-sm">Date received </label>
 									<input
+										required
 										type="date"
 										name="date_received"
 										id="date_received"
@@ -580,6 +623,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="lairage-number" class="block mb-2 text-sm">Lairage number</label>
 									<input
+										required
 										type="number"
 										name="lairage-number"
 										id="lairage-number"
@@ -606,6 +650,7 @@
 										>Origin and terrior</label
 									>
 									<input
+										required
 										type="text"
 										name="origin-and-terrior"
 										id="origin-and-terrior"
@@ -624,6 +669,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="country" class="block mb-2 text-sm">Country of origin</label>
 									<input
+										required
 										type="text"
 										name="country"
 										id="country"
@@ -642,6 +688,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="farm" class="block mb-2 text-sm">Farm</label>
 									<Selector
+										required
 										token={data.access}
 										endpoint="manage"
 										searchEndpoint="api/inventory/farms"

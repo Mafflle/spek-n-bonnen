@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Carcasses, type Carcass } from '$lib/stores';
+	import { Carcasses } from '$lib/stores';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import Button from './ui/button/button.svelte';
 	import * as DropdownMenu from './ui/dropdown-menu';
@@ -11,10 +11,11 @@
 	import PageLoader from './PageLoader.svelte';
 	import Modal from './Modal.svelte';
 	import { InfoIcon } from 'lucide-svelte';
+	import type { CarcassType } from '$lib/stores/carcass.stores';
 
 	dayjs.extend(relativeTime);
 
-	export let carcass: Carcass;
+	export let carcass: CarcassType;
 
 	let loading: boolean = false;
 	const id = carcass.id;
@@ -29,7 +30,7 @@
 					Carcasses.update((carcasses) =>
 						carcasses.filter((carcass) => carcass.id !== currCarcassId)
 					);
-					showToast('Carcass deleted successfully', 'success');
+					showToast('CarcassType deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -40,8 +41,8 @@
 		};
 	};
 
-	const remove = () => {
-		dispatch('delete', carcass);
+	const viewCarcassInfo = (carcass: CarcassType) => {
+		dispatch('view', { carcass });
 	};
 </script>
 
@@ -49,40 +50,35 @@
 	<PageLoader />
 {/if}
 
-<tr class="border-b border-[#D9D9D9]">
-	<td class="text-[#9C9C9C]">
+<tr class="border-b border-[#D9D9D9] font-medium font-satoshi text-grey-100">
+	<td class="">
 		<p class="flex items-center">
 			<span class="line-clamp-1"> {carcass.id}</span>
 		</p>
 	</td>
-	<td class="text-[#9C9C9C]">
+	<td class="">
 		<p class="flex items-center">
 			<span class="line-clamp-1"> {carcass.vendor.name}</span>
 		</p>
 	</td>
-	<td class="text-[#9C9C9C]">
+	<td class="">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> {carcass.weight}</span>
+			<span class="line-clamp-1"> {carcass.weight} Kg</span>
 		</p>
 	</td>
-	<td class="text-[#9C9C9C]">
+	<td class="">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> &#65284;{carcass.purchase_price}</span>
+			<span class="line-clamp-1"> ${carcass.purchase_price}</span>
 		</p>
 	</td>
-	<td class="text-[#9C9C9C]">
+	<td class="">
 		<p class="flex items-center">
-			<span class="line-clamp-1"> {carcass.ahdb_code}</span>
+			<span class="line-clamp-1"> {carcass.fat_score}</span>
 		</p>
 	</td>
 	<td class="text-[#9C9C9C]">
 		<p class="flex items-center">
 			<span class="line-clamp-1"> {dayjs(carcass.date_received).fromNow()}</span>
-		</p>
-	</td>
-	<td class="text-[#9C9C9C]">
-		<p class="flex items-center">
-			<span class="line-clamp-1"> {carcass.fat_score}</span>
 		</p>
 	</td>
 	<td>
@@ -96,12 +92,19 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
 				<DropdownMenu.Item>
 					<Button
-						on:click={() => {
-							dispatch('moreinfo', carcass);
-						}}
+						on:click={() => dispatch('edit', { id: carcass.id })}
 						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
-						<InfoIcon class="text-grey-100" size="20" />
+						<img src="/icons/edit.svg" alt="edit icon" />
+						<span class="text-grey-100">Edit</span>
+					</Button>
+				</DropdownMenu.Item>
+				<DropdownMenu.Item>
+					<Button
+						on:click={() => viewCarcassInfo(carcass)}
+						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+					>
+						<InfoIcon class="text-grey-100" size="15" />
 						<span class="text-grey-100">More information</span>
 					</Button>
 				</DropdownMenu.Item>
