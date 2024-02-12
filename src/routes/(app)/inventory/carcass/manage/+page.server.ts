@@ -56,8 +56,8 @@ const manageSchema = z.object({
 		.max(150, 'Lairage number must be at most 150 characters long')
 		.optional(),
 	carcass_number: z
-		.string({ required_error: 'Carcass number is required' })
-		.max(150, 'Carcass number must be at most 150 characters long'),
+		.string({ required_error: 'CarcassType number is required' })
+		.max(150, 'CarcassType number must be at most 150 characters long'),
 	sex_category: z.enum(['A', 'B', 'C', 'E'], {
 		required_error: 'Sex category is required'
 	}),

@@ -12,9 +12,10 @@
 	<link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
 </svelte:head>
 
+<Toaster richColors />
+
 {#if $navigating}
 	<PageLoader />
 {/if}
 
-<Toaster richColors />
 <slot />

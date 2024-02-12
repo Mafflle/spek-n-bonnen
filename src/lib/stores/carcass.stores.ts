@@ -1,7 +1,7 @@
 import type { Brand, ButcherShop, Farm, Manufacturer, SlaughterHouse, Vendor } from '$lib/stores';
 import { writable } from 'svelte/store';
 
-export type Carcass = {
+export type CarcassType = {
 	id: number;
 	purchase_price: string;
 	cold_weight: string;
@@ -32,4 +32,4 @@ export type Carcass = {
 	updated_at: Date;
 	created_at: Date;
 };
-export let Carcasses = writable<Carcass[]>([]);
+export let Carcasses = writable<CarcassType[]>([]);

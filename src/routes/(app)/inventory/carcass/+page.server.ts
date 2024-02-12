@@ -19,11 +19,11 @@ export const actions = {
 		const data = await request.formData();
 		const id = data.get('carcass-id');
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${id}`, {
-			method: 'DELETE',
+			method: 'DELETE'
 		});
 
 		if (response.ok) {
-			showToast('Carcass deleted successfully', 'success');
+			showToast('CarcassType deleted successfully', 'success');
 			return { status: 200 };
 		} else {
 			// handle error
@@ -32,4 +32,4 @@ export const actions = {
 			return { status: response.status, error };
 		}
 	}
-}
+};

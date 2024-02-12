@@ -21,6 +21,7 @@
 	export let endpoint: string = '';
 	export let token: string = '';
 	export let searching: boolean = false;
+	export let required: boolean = false;
 
 	let loading: boolean = false;
 
@@ -163,7 +164,7 @@
 			{/if}
 		</Select.Group>
 	</Select.Content>
-	<Select.Input {name} />
+	<Select.Input {required} {name} />
 </Select.Root>
 
 <!-- <style>
