@@ -136,5 +136,30 @@ export const actions: Actions = {
 			console.log('No id provided');
 			return fail(400);
 		}
-	}
+	},
+	search: async ({ cookies, request }) => {
+		console.log('searching');
+		const data = await request.formData();
+		console.log(data);
+		const search = data.get('search');
+	
+		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/?search=${search}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${cookies.get('access')}`
+			}
+		});
+
+		if (response.ok) {
+			const farms = await response.json();
+			console.log("carcassss search", farms);
+			return { farms };
+		} else {
+			// handle error
+			const error = await response.json();
+			console.log(error);
+			return { status: response.status, error };
+		}
+	},
 };
