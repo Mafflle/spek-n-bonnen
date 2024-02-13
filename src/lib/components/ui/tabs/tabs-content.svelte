@@ -3,7 +3,6 @@
 	import { cn } from '$lib/utils';
 
 	type $$Props = TabsPrimitive.ContentProps;
-	console.log($$restProps);
 
 	let className: $$Props['class'] = undefined;
 	export let value: $$Props['value'];
