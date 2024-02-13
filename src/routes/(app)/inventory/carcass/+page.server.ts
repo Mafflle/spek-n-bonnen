@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 };
 
 export const actions = {
-	delete: async ({ cookies, request }) => {
+	delete: async ({ fetch, request }) => {
 		const data = await request.formData();
 		const id = data.get('carcass-id');
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${id}`, {
@@ -23,7 +23,8 @@ export const actions = {
 		});
 
 		if (response.ok) {
-			showToast('CarcassType deleted successfully', 'success');
+			console.log(response);
+
 			return { status: 200 };
 		} else {
 			// handle error
@@ -37,18 +38,21 @@ export const actions = {
 		const data = await request.formData();
 		console.log(data);
 		const search = data.get('search');
-	
-		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/?search=${search}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${cookies.get('access')}`
+
+		const response = await fetch(
+			`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/?search=${search}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${cookies.get('access')}`
+				}
 			}
-		});
+		);
 
 		if (response.ok) {
 			const carcasses = await response.json();
-			console.log("carcassss search", carcasses);
+			console.log('carcassss search', carcasses);
 			return { carcasses };
 		} else {
 			// handle error
@@ -56,5 +60,5 @@ export const actions = {
 			console.log(error);
 			return { status: response.status, error };
 		}
-	},
+	}
 };

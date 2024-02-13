@@ -3,16 +3,12 @@
 	import Carcass from '$lib/components/Carcass.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import Modal from '$lib/components/Modal.svelte';
-	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import Selector from '$lib/components/Selector.svelte';
 	import { goto } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
 	export let data;
 	let carcasses = [];
-	console.log('paged', data.carcasses);
-	let grid = false;
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
@@ -22,10 +18,6 @@
 
 	Carcasses.set(data.carcasses.results);
 
-	const handleDelete = ({ detail: carcass }) => {
-		// Perform deletion here
-		Carcasses.update((carcasses) => carcasses.filter((c) => c.id !== carcass.id));
-	};
 	const showInfo = (carcass: CarcassType) => {
 		currCarcass = carcass;
 		showCarcassInfo = true;
@@ -146,7 +138,6 @@
 					{#if carcass}
 						<Carcass
 							{carcass}
-							on:delete={handleDelete}
 							on:view={(e) => showInfo(e.detail.carcass)}
 							on:edit={(e) => goto(`carcass/manage?editing=${e.detail.id}`)}
 						/>

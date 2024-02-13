@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Carcasses } from '$lib/stores';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import Button from './ui/button/button.svelte';
 	import * as DropdownMenu from './ui/dropdown-menu';
@@ -9,9 +8,8 @@
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import PageLoader from './PageLoader.svelte';
-	import Modal from './Modal.svelte';
 	import { InfoIcon } from 'lucide-svelte';
-	import type { CarcassType } from '$lib/stores/carcass.stores';
+	import { Carcasses, type CarcassType } from '$lib/stores/carcass.stores';
 
 	dayjs.extend(relativeTime);
 
@@ -22,15 +20,13 @@
 	const dispatch = createEventDispatcher();
 	const deleteCarcass: SubmitFunction = ({ formData }) => {
 		loading = true;
-		formData.append('carcass-id', `${carcass.id}`);
+		formData.append('carcass-id', `${id}`);
 		return async ({ result, update }) => {
 			try {
-				if (result.status == 200) {
+				if (result.status === 200) {
 					const currCarcassId = carcass.id;
-					Carcasses.update((carcasses) =>
-						carcasses.filter((carcass) => carcass.id !== currCarcassId)
-					);
-					showToast('CarcassType deleted successfully', 'success');
+					Carcasses.update((carcasses) => carcasses.filter((carcass) => carcass.id !== id));
+					showToast('Carcass deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
