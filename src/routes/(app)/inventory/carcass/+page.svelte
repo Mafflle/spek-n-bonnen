@@ -126,35 +126,36 @@
 	</div>
 </div>
 
-<!-- If grid is true, render the table -->
-<div class="border rounded-xl">
-	<table class="table">
-		<thead>
-			<tr class="">
-				<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">ID</th>
-				<th class="bg-[#F9F9F9]">Vendor</th>
-				<th class="bg-[#F9F9F9]">Weight(kg)</th>
-				<th class="bg-[#F9F9F9]">Purchase price($)</th>
-				<th class="bg-[#F9F9F9]">Fat Score</th>
-				<th class="bg-[#F9F9F9]">Date Recieved</th>
-				<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-			</tr>
-		</thead>
+{#if $Carcasses.length != 0}
+	<div class="border rounded-xl">
+		<table class="table">
+			<thead>
+				<tr class="">
+					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">ID</th>
+					<th class="bg-[#F9F9F9]">Vendor</th>
+					<th class="bg-[#F9F9F9]">Weight(kg)</th>
+					<th class="bg-[#F9F9F9]">Purchase price($)</th>
+					<th class="bg-[#F9F9F9]">Fat Score</th>
+					<th class="bg-[#F9F9F9]">Date Recieved</th>
+					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+				</tr>
+			</thead>
 
-		<tbody>
-			{#each $Carcasses as carcass (carcass?.id)}
-				{#if carcass}
-					<Carcass
-						{carcass}
-						on:delete={handleDelete}
-						on:view={(e) => showInfo(e.detail.carcass)}
-						on:edit={(e) => goto(`carcass/manage?editing=${e.detail.id}`)}
-					/>
-				{/if}
-			{/each}
-		</tbody>
-	</table>
-</div>
+			<tbody>
+				{#each $Carcasses as carcass (carcass?.id)}
+					{#if carcass}
+						<Carcass
+							{carcass}
+							on:delete={handleDelete}
+							on:view={(e) => showInfo(e.detail.carcass)}
+							on:edit={(e) => goto(`carcass/manage?editing=${e.detail.id}`)}
+						/>
+					{/if}
+				{/each}
+			</tbody>
+		</table>
+	</div>
+{/if}
 
 {#if $Carcasses.length === 0 && !searching}
 	<!-- Your existing empty state display -->
