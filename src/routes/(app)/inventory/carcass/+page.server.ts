@@ -33,7 +33,7 @@ export const actions = {
 			return { status: response.status, error };
 		}
 	},
-	search: async ({ cookies, request }) => {
+	search: async ({ cookies, request, fetch }) => {
 		console.log('searching');
 		const data = await request.formData();
 		console.log(data);
