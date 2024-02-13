@@ -21,7 +21,6 @@
 
 	let showModal = false;
 	let loading = false;
-	let grid = false;
 	let disabled = false;
 	let validationErrors: { name?: [string]; address?: [string] };
 
@@ -255,12 +254,6 @@
 
 		<div class="filter-buttons flex items-start gap-5">
 			<button
-				class="flex h-9 p-2 justify-center items-center gap-3 bg-[#F9F9F9]"
-				on:click={() => (grid = !grid)}
-			>
-				<img src={grid ? '/icons/grid.svg' : '/icons/filter-table.svg'} alt="filter table" />
-			</button>
-			<button
 				on:click={toggleModal}
 				class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
 			hover:bg-[#C7453C]
@@ -295,7 +288,6 @@
 						}}
 						on:edit={(e) => toggleEditModal(e.detail)}
 						data={farm}
-						{grid}
 						id={farm.id}
 					/>
 				{/each}
@@ -346,29 +338,5 @@
 				</div>
 			</div>
 		</div>
-	</div>
-{:else}
-	<div class="page h-full w-full">
-		<!-- render if page is empty -->
-
-		{#if grid}
-			<!-- Check if grid is false -->
-			<div class="w-full grid grid-cols-3 gap-10">
-				{#each $Farms as farm}
-					<FarmCard
-						on:delete={(e) => {
-							Farms.update((farms) => farms.filter((farm) => farm.id !== e.detail.id));
-							showToast('Farm deleted successfully', 'success');
-						}}
-						on:edit={(e) => toggleEditModal(e.detail)}
-						data={farm}
-						{grid}
-						id={farm.id}
-					/>
-				{/each}
-			</div>
-		{:else}
-			<!-- If grid is true, render the table -->
-		{/if}
 	</div>
 {/if}
