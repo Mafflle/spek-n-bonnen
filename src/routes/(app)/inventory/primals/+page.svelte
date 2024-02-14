@@ -21,6 +21,8 @@
 	// console.log(primals.results); // Add this line to debug
 	Primals.set(primals.results);
 
+	console.log($Primals);
+
 	let showModal = false;
 	let loading = false;
 	let grid = false;
@@ -28,6 +30,8 @@
 	let validationErrors: { name?: [string]; description?: [string] };
 	let description: string = '';
 	let slug: string = '';
+	let currPrimal: Primal | null = $Primals[0];
+	let showPrimalInfo: boolean = false;
 
 	function toggleModal() {
 		showModal = !showModal;
@@ -86,6 +90,10 @@
 				loading = false;
 			}
 		};
+	};
+	const showInfo = (primal: Primal) => {
+		currPrimal = primal;
+		showPrimalInfo = true;
 	};
 
 	const toggleGrid = () => {
@@ -190,7 +198,7 @@
 <div class="page h-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem]">Primals</div>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Primals</div>
 			<sub class="text-[#6B6B6B] text-sm"> Inventory / Primals / Manage</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
@@ -281,7 +289,13 @@
 		<!-- Check if grid is false -->
 		<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 			{#each $Primals as primal}
-				<PrimalCard on:edit={(e) => toggleEditModal(e.detail)} {primal} {grid} slug={primal.slug} />
+				<PrimalCard
+					on:edit={(e) => toggleEditModal(e.detail)}
+					on:view={(e) => showInfo(e.detail.primal)}
+					{primal}
+					{grid}
+					slug={primal.slug}
+				/>
 			{/each}
 		</div>
 	{:else}
@@ -290,7 +304,8 @@
 			<table class="table">
 				<thead>
 					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Primal</th>
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+						<th class="bg-[#F9F9F9]">Slug</th>
 						<th class="bg-[#F9F9F9]">Description</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
@@ -300,6 +315,7 @@
 					{#each $Primals as primal}
 						<PrimalCard
 							on:edit={(e) => toggleEditModal(e.detail)}
+							on:view={(e) => showInfo(e.detail.primal)}
 							{primal}
 							{grid}
 							slug={primal.slug}
@@ -310,3 +326,39 @@
 		</div>
 	{/if}
 </div>
+
+<Modal
+	on:close={() => {
+		showPrimalInfo = false;
+		currPrimal = null;
+	}}
+	showModal={showPrimalInfo}
+>
+	<div slot="modal-content" class="flex flex-col w-full max-w-4xl">
+		<section class="w-full border-b px-4 py-3">
+			<h3 class="font-satoshi font-medium text-lg">More information</h3>
+		</section>
+		<section
+			class="  flex flex-col md:flex-row md:justify-between items-start justify-center text-sm w-full"
+		>
+			<!-- More Details -->
+			<section class=" flex-auto flex flex-col items-start h-full w-full py-5">
+				<div class="mb-8 md:px-5 flex justify-between font-satoshi text-sm w-full">
+					<div class="labels w-full">
+						<p class="block text-grey-200">Name :</p>
+
+						<p class="block text-grey-200 text-sm">Description :</p>
+
+						<p class="text-grey-200">Slug :</p>
+					</div>
+					<div class="labels w-full">
+						<p>{currPrimal?.name}</p>
+						<p>{currPrimal?.description}</p>
+						<p>{currPrimal?.slug}</p>
+					</div>
+				</div>
+			</section>
+			<!-- More Details -->
+		</section>
+	</div>
+</Modal>
