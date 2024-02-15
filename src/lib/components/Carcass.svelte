@@ -96,13 +96,14 @@
 					</Button>
 				</DropdownMenu.Item>
 				<DropdownMenu.Item>
-					<Button
-						on:click={() => viewCarcassInfo(carcass)}
-						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
-					>
-						<InfoIcon class="text-grey-100" size="15" />
-						<span class="text-grey-100">More information</span>
-					</Button>
+					<a href={`/inventory/carcass/${carcass.id}`}>
+						<Button
+							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+						>
+							<InfoIcon class="text-grey-100" size="15" />
+							<span class="text-grey-100">More information</span>
+						</Button>
+					</a>
 				</DropdownMenu.Item>
 				<form action="?/delete" method="post" use:enhance={deleteCarcass}>
 					<input type="text" class="hidden" bind:value={carcass.id} name="id" />
