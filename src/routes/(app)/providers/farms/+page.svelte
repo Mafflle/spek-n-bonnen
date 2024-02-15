@@ -195,7 +195,7 @@
 </Modal>
 <div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 	<div class="headers flex flex-col items-start gap-[0.25rem]">
-		<div class="text-[2rem] tracking-[-0.04rem]">Farms</div>
+		<div class="text-[2rem] tracking-[-0.04rem] font-bold">Farms</div>
 		<sub class="text-[#6B6B6B] text-sm"> Inventory / Farms / Manage</sub>
 	</div>
 	<div class="filters flex items-center w-full justify-between">

@@ -6,8 +6,8 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<Dialog.Root bind:open={showModal} onOpenChange={() => dispatch('close')}>
-	<Dialog.Content class="md:p-0 ">
+<Dialog.Root bind:open={showModal} portal="test" onOpenChange={() => dispatch('close')}>
+	<Dialog.Content class="md:p-0 md:min-w-max ">
 		<slot name="modal-content" />
 	</Dialog.Content>
 </Dialog.Root>

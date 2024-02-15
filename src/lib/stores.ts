@@ -34,6 +34,7 @@ export type Primal = {
 	name: string;
 	slug: string;
 	description: string;
+	reorder_point: number;
 	created_at: Date;
 	updated_at: Date;
 };

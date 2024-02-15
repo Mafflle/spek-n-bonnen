@@ -55,40 +55,43 @@
 	<td>
 		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">
-				<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
-			</button> -->
+					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
+				</button> -->
 
 			<DropdownMenu.Trigger asChild let:builder>
-				<Button builders={[builder]} class=" px-1.5 flex justify-center items-center">
+				<Button builders={[builder]} class=" p-0 flex justify-center items-center">
 					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"
 					></iconify-icon></Button
 				>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="py-3 px-2">
-				<div class="grid gap-3">
-					<form class="grid items-center gap-4">
+			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
+				<DropdownMenu.Item>
+					<Button
+						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+					>
+						<img src="/icons/edit.svg" alt="edit icon" />
+						<span class="text-grey-100">Edit</span>
+					</Button>
+				</DropdownMenu.Item>
+				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+				<DropdownMenu.Item>
+					<form action="?/delete" method="post" class="">
 						<Button
-							class="text-xs flex items-center py-2 w-full rounded h-auto gap-1"
-							variant="secondary"
-						>
-							<iconify-icon icon="material-symbols:edit-outline" width="15"></iconify-icon>
-							<span class="text-sm">Edit</span></Button
-						>
-					</form>
-					<form class="grid items-center gap-4">
-						<input type="text" class="hidden" bind:value={id} name="id" />
-						<Button
-							variant="destructive"
-							class="text-sm flex items-center gap-1 py-2 rounded h-auto w-full"
+							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							type="submit"
 							>{#if loading}
-								<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
+								<iconify-icon
+									class="text-primary-red"
+									width="20"
+									icon="eos-icons:three-dots-loading"
+								></iconify-icon>
 							{:else}
-								<iconify-icon icon="codicon:trash" width="15"></iconify-icon>
-								<span class="button-text text-xs">Delete </span>
+								<img src="/icons/trash.svg" alt="trash icon" />
+								<span class="button-text text-primary-red">Delete </span>
 							{/if}</Button
 						>
 					</form>
-				</div>
+				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</td>

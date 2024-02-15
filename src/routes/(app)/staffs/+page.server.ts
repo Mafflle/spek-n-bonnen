@@ -103,12 +103,14 @@ export const actions: Actions = {
 				body: JSON.stringify(validatedData)
 			});
 
+			console.log('inviting', res.status, res.statusText);
+
 			if (res.ok) {
 				const invitedStaff = await res.json();
 
-				{
-					invitedStaff;
-				}
+				return {
+					invitedStaff
+				};
 			} else if (!res.ok) {
 				const details = await res.json();
 				// console.log('error', details);

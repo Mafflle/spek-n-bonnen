@@ -1,4 +1,4 @@
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from '../../inventory/$types';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -142,7 +142,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		console.log(data);
 		const search = data.get('search');
-	
+
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/?search=${search}`, {
 			method: 'GET',
 			headers: {
@@ -153,7 +153,7 @@ export const actions: Actions = {
 
 		if (response.ok) {
 			const farms = await response.json();
-			console.log("carcassss search", farms);
+			console.log('carcassss search', farms);
 			return { farms };
 		} else {
 			// handle error
@@ -161,5 +161,5 @@ export const actions: Actions = {
 			console.log(error);
 			return { status: response.status, error };
 		}
-	},
+	}
 };

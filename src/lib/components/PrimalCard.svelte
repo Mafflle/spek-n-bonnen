@@ -61,7 +61,7 @@
 				{primal.name}
 			</p>
 			<section class="flex w-full items-center justify-between">
-				<span class="date-added flex items-center gap-2 self-stretch line-clamp-3">
+				<span class="date-added flex items-center gap-2 self-stretch line-clamp-2">
 					{primal.description ?? 'No description'}
 				</span>
 				<DropdownMenu.Root>
@@ -120,8 +120,8 @@
 				</span>
 			</div>
 		</td>
-		<td class="text-[#9C9C9C]"> <span class="line-clamp-1">{primal.slug}</span></td>
-		<td class="text-[#9C9C9C]">
+		<td class="text-[#9C9C9C]"> <span class="line-clamp-2">{primal.reorder_point ?? 0}kg</span></td>
+		<td class="text-[#9C9C9C] max-w-[280px]">
 			<span class="line-clamp-3">{primal.description ?? 'No description'}</span></td
 		>
 		<td class="table-cell">

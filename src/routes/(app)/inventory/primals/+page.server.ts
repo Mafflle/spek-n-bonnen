@@ -8,17 +8,22 @@ const manageSchema = z.object({
 		.string({ required_error: 'Brand name is required' })
 		.trim()
 		.min(3, { message: 'Brand name should be at least 3 characters ' }),
+	reorder_point: z
+		.number({ required_error: 'Reorder point is required' })
+		.max(2147483647, { message: 'Reorder point exceeded maximum value' })
+		.min(-2147483648, { message: 'Reorder point is below the minimum value' }),
 	description: z.string().optional(),
 	primalToEdit: z.string().optional()
 });
 
 type Errors = {
 	name?: [string];
+	reorderPoint?: [string];
 	description?: [string];
 	server?: [string];
 };
 
-export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url }) => {
 	const getAllPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
 
 	if (getAllPrimals.ok) {
@@ -41,11 +46,13 @@ export const actions: Actions = {
 		const name = formData.get('primal-name');
 		const description = formData.get('primal-description');
 		const primalToEdit = formData.get('primalToEdit');
+		const reorder_point = parseInt(formData.get('reorder-point') as string);
 
 		const dataToValidate = {
 			...(name && { name }),
 			...(description && { description }),
-			...(primalToEdit && { primalToEdit })
+			...(primalToEdit && { primalToEdit }),
+			...(reorder_point && { reorder_point })
 		};
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
