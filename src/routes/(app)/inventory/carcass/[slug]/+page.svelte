@@ -3,10 +3,29 @@
 	import type { PageData } from '../$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import type { CarcassType } from '$lib/stores';
+	import Modal from '$lib/components/Modal.svelte';
+	import { enhance } from '$app/forms';
+	import { slide } from 'svelte/transition';
+
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
 	];
+
+	let carcass_id: number;
+	let primal_id: number;
+	let ean_barcode: string;
+	let quantity: number;
+	let expiry_date: Date;
+	let loading: boolean = false;
+	let validationErrors: {
+		carcass_id?: [number];
+		primal_id?: [number];
+		ean_barcode?: [string];
+		quantity?: [number];
+		expiry_date?: [Date];
+	};
+	let disabled = false;
 
 	export let data: PageData;
 	let carcass: CarcassType = [];
@@ -14,7 +33,93 @@
 	$: carcass = data.carcass;
 
 	console.log(data);
+	let showModal = false;
+
+	function toggleModal() {
+		showModal = !showModal;
+	}
 </script>
+
+<Modal {showModal} on:close={toggleModal}>
+	<div slot="modal-content" class="w-full">
+		<!-- Your modal content goes here -->
+
+		<!-- uncomment when you want to test -->
+		<!-- <form
+			action="?/manage-batch"
+			method="post"
+			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			use:enhance={submit}
+		> -->
+		<form
+			action="?/create-batch"
+			method="post"
+			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+		>
+			<div class="modal-title flex items-center gap-3 self-stretch">
+				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
+					Fill the form below to create batch
+				</div>
+				<button
+					type="button"
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={toggleModal}
+				>
+					<img src="/icons/close.svg" alt="close icon" />
+				</button>
+			</div>
+
+			<div class="modal-input w-full">
+				<input
+					type="text"
+					name="ean_barcode"
+					id="ean_barcode"
+					placeholder="Ean barcode"
+					bind:value={ean_barcode}
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+				{#if validationErrors?.ean_barcode}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.ean_barcode}</sub
+					>
+				{/if}
+			</div>
+			<div class="modal-input w-full">
+				<input
+					type="number"
+					name="quantity"
+					id="quantity"
+					placeholder="Quantity"
+					bind:value={quantity}
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+				{#if validationErrors?.quantity}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.quantity}</sub
+					>
+				{/if}
+			</div>
+			<div class="modal-submit">
+				<button
+					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
+					"
+					type="submit"
+					{disabled}
+				>
+					{#if loading}
+						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else}
+						<span class="button-text">Add batch </span>
+					{/if}
+				</button>
+			</div>
+		</form>
+	</div>
+</Modal>
 
 <div class="flex flex-col w-full max-w-full">
 	<section class="w-full border-b px-4 py-3">
@@ -194,5 +299,30 @@
 			<!-- Tabs -->
 		</section>
 		<!-- More Details -->
+	</section>
+	<section>
+		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
+			<div
+				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+			>
+				Batches
+			</div>
+
+			<div class="filter-buttons flex items-start gap-2 sm:gap-5">
+				<button
+					on:click={toggleModal}
+					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+                hover:bg-[#C7453C]
+                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+				>
+					<div class="w-5 h-5 relative">
+						<img src="/icons/plus.svg" alt="batches-plus" />
+					</div>
+					<span class="text-white hidden sm:block text-sm font-bold font-['Satoshi']"
+						>Add batch</span
+					>
+				</button>
+			</div>
+		</div>
 	</section>
 </div>
