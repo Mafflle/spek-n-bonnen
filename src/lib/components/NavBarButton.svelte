@@ -19,10 +19,25 @@
 		showChildren = !showChildren;
 	};
 	// console.log(children);
+	let keepOpen = false;
+
+	function checkIfChildActive() {
+		children.map((child) => {
+			if (child.href === $page.url.pathname) {
+				keepOpen = true;
+				return;
+			}
+		});
+	}
+	checkIfChildActive();
 </script>
 
 {#if children.length > 0}
-	<Collapsible.Root class="md:w-full lg:flex hidden items-start flex-col ">
+	<Collapsible.Root
+		onOpenChange={checkIfChildActive}
+		bind:open={keepOpen}
+		class="md:w-full lg:flex hidden items-start flex-col "
+	>
 		<Collapsible.Trigger class="" asChild let:builder>
 			<a
 				on:mouseenter={() => {
@@ -32,7 +47,8 @@
 					if ($page.url.pathname === href && active === false) active = true;
 				}}
 				class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
-		hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
+		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
+					'bg-primary-light text-primary-red'}
 		"
 				{href}
 			>
@@ -88,7 +104,7 @@
 										{#each child.childRoutes as route}
 											<a
 												class="py-2 w-full {childActive &&
-													'bg-primary-light text-[#DA4E45] shadow-inner'}
+													'bg-primary-light text-primary-red shadow-inner'}
 											 px-3 rounded-sm flex gap-3 hover:bg-primary-light hover:text-primary-red"
 												href={route.href}
 											>
@@ -100,8 +116,8 @@
 							</Collapsible.Root>
 						{:else}
 							<a
-								class="py-2 w-full text-grey-200 {childActive &&
-									'bg-primary-light text-[#DA4E45] shadow-inner'}
+								class="py-2 w-full text-grey-200 {$page.url.pathname === child.href &&
+									'bg-primary-light text-primary-red shadow-inner'}
 											 px-3 rounded-sm flex gap-3 hover:bg-primary-light hover:text-primary-red"
 								href={child.href}
 							>
@@ -119,7 +135,7 @@
 		<Menubar.Menu>
 			<Menubar.Trigger
 				class="p-0 space-x-0 w-full flex items-center justify-center rounded-full {active &&
-					'bg-primary-light text-[#DA4E45]'} w-8 h-8"
+					'bg-primary-light text-primary-red'} w-8 h-8"
 			>
 				<a
 					on:mouseenter={() => {
@@ -175,7 +191,7 @@
 								{#each child.childRoutes as route}
 									<Menubar.Item class="">
 										<a
-											class="p-2 {childActive && ' text-[#DA4E45] shadow-inner'}
+											class="p-2 {childActive && ' text-primary-red shadow-inner'}
 												  rounded-md flex gap-3 hover:text-primary-red"
 											href={route.href}
 										>
@@ -188,7 +204,7 @@
 					{:else}
 						<Menubar.Item>
 							<a
-								class="p-2 w-full {childActive && ' text-[#DA4E45] shadow-inner'}
+								class="p-2 w-full {childActive && ' text-primary-red shadow-inner'}
 												  rounded-md flex gap-3 hover:text-primary-red"
 								href={child.href}
 							>
@@ -204,7 +220,7 @@
 	<a
 		class="flex max-w-full md:w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center text-grey-200 justify-center lg:justify-around rounded-full lg:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
-			' bg-primary-light text-[#DA4E45]'}
+			' bg-primary-light text-primary-red'}
 										"
 		{href}
 		on:mouseenter={() => {
