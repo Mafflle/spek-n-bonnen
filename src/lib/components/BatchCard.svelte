@@ -114,7 +114,7 @@
 					</Button>
 				</DropdownMenu.Item>
 				<form action="?/delete" method="post" use:enhance={deleteBatch} class="">
-					<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+					<input type="text" class="hidden" bind:value={batch.id} name="batch_id" id="batch_id" />
 					<DropdownMenu.Item>
 						<Button
 							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"

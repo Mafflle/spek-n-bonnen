@@ -16,10 +16,13 @@
 
 	console.log(data);
 
-	const { carcass, primals, access, batches } = data;
+	let { carcass, primals, access, batches } = data;
 
+	let disabled: boolean;
 	$: {
 		Batches.set(batches.results);
+		disabled = batches.results.length > 0;
+		batches = batches.results;
 	}
 
 	const allTabs = [
@@ -40,8 +43,6 @@
 		quantity?: [number];
 		expiry_date?: [Date];
 	};
-
-	let disabled = false;
 
 	const primalOptions = primals.results.map((primal) => ({
 		value: primal.id,
@@ -76,6 +77,9 @@
 		return async ({ result, update }) => {
 			loading = false;
 			if (result.status === 200) {
+				console.log('batches store', $Batches);
+				console.log('batches', batches);
+
 				showToast('Batch created successfully', 'success');
 				toggleModal();
 			} else {
@@ -353,29 +357,6 @@
 							</div>
 						</div>
 					</Tabs.Content>
-					<!-- Traceability -->
-
-					<!-- <div class="w-full self flex items-center justify-between mt-4 px-4">
-                    {#if allTabs.indexOf(currentTab) > 0}
-                        <Button
-                            on:click={() => switchTabs('previous')}
-                            variant="secondary"
-                            class=" flex gap-1 items-center hover:bg-primary-50 hover:text-white "
-                            ><iconify-icon rotate="180deg" icon="grommet-icons:form-next"></iconify-icon>
-                            <span class="hidden md:block">Previous </span>
-                        </Button>
-                    {/if}
-                    {#if allTabs.indexOf(currentTab) + 1 < allTabs.length}
-                        <Button
-                            on:click={() => switchTabs('next')}
-                            variant="secondary"
-                            class=" flex gap-1  items-center hover:bg-primary-50 hover:text-white "
-                        >
-                            <span class="hidden md:block">Next </span>
-                            <iconify-icon icon="grommet-icons:form-next"></iconify-icon></Button
-                        >
-                    {/if}
-                </div> -->
 				</section>
 			</Tabs.Root>
 			<!-- Tabs -->
@@ -398,7 +379,7 @@
                 focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
 				disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#D9D9D9]
 				"
-					disabled={batches.results.length > 0}
+					{disabled}
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="batches-plus" />
@@ -417,6 +398,8 @@
 						<th class="bg-[#F9F9F9]">Carcass</th>
 						<th class="bg-[#F9F9F9]">EAN Barcode</th>
 						<th class="bg-[#F9F9F9]">Quantity</th>
+						<th class="bg-[#F9F9F9]">Remaining Quantity</th>
+						<th class="bg-[#F9F9F9]">Expiry Date</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
 				</thead>

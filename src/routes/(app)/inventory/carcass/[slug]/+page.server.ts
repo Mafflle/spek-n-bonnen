@@ -73,9 +73,9 @@ export const actions = {
                     Authorization: `Bearer ${cookies.get('access')}`
                 }
             });
-            console.log("response 1", response)
+        
             if(response.ok){
-                console.log("response", response)
+               
                 return { status: 200 }
             }
             else{
@@ -88,5 +88,25 @@ export const actions = {
             return { status: 400, error: error.errors }
         }
      
+    },
+    delete: async ({ fetch, request, cookies }) => {
+        const formData = await request.formData();
+        const batch_id = Number(formData.get('batch_id'));
+        const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/${batch_id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${cookies.get('access')}`
+            }
+        });
+        if(response.ok){
+            console.log("response", response)
+            return { status: 200 }
+        }
+        else{
+            const errorData = await response.json(); // Extract error data from response
+            console.log("error", errorData)
+            return { status: 400, error: errorData } // Return error data instead of response object
+        }
     }
+
 }
