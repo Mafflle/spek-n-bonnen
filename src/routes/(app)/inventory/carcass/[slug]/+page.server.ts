@@ -17,30 +17,36 @@ const batchSchema = z.object({
         required_error: 'Quantity is required'
     })
     .min(-2147483648, "Quantity below minumum acceptable")
-    .max(3, "Quantity above maximum acceptable"),
+    .max(2147483647, "Quantity above maximum acceptable"),
     expiry_date: z.date({
         required_error: 'Date is required'
     })
 })
 
-export const load: PageServerLoad = async ({ fetch, params }) => {
+export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
     const getCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${params.slug}`)
-    if(getCarcass.ok){
+    const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`)
+    if(getCarcass.ok && getPrimals.ok){
         const carcass = getCarcass.json()
+        const primals = getPrimals.json()
+		const access = cookies.get('access');
+
         return{
-            carcass
+            carcass,
+            primals,
+            access
         }
     }
 }
 
 export const actions = {
-    "create-batch": async ({ fetch, request }) => {
+    create: async ({ fetch, request, cookies }) => {
         const formData = await request.formData();
-        const primal_id = formData.get('primal_id');
-        const carcass_id = formData.get('carcass_id');
+        const primal_id = Number(formData.get('primal_id'));
+        const carcass_id = Number(formData.get('carcass_id'));
         const ean_barcode = formData.get('ean_barcode');
-        const quantity = formData.get('quantity');
-        const expiry_date = formData.get('expiry_date');
+        const quantity = Number(formData.get('quantity'));
+        const expiry_date = new Date(formData.get('expiry_date'));
 
         const dataToValidate = {
             primal_id,
@@ -54,6 +60,10 @@ export const actions = {
             const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`, {
                 method: 'POST',
                 body: JSON.stringify(validatedData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${cookies.get('access')}`
+                }
             });
             if(response.ok){
                 return { status: 200 }
