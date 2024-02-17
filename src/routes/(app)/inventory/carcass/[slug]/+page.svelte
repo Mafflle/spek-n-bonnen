@@ -11,6 +11,8 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	export let data: PageData;
 
+	console.log(data);
+
 	const { carcass, primals, access } = data;
 
 	const allTabs = [
@@ -45,18 +47,28 @@
 		showModal = !showModal;
 	}
 
+	let today = new Date();
+	let dd = today.getDate();
+	let mm = today.getMonth() + 1;
+	let year = today.getFullYear();
+
+	if (dd < 10) {
+		dd = '0' + dd;
+	}
+
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+	let maxDate = year + '-' + mm + '-' + dd;
+
 	let form;
 
 	const submit: SubmitFunction = ({ formData }) => {
 		loading = true;
-		// formData.append('carcass_id', `${carcass_id}`);
-		// formData.append('primal_id', `${primal_id}`);
-		// formData.append('ean_barcode', `${ean_barcode}`);
-		// formData.append('quantity', `${quantity}`);
-		// formData.append('expiry_date', `${expiry_date}`);
+
 		return async ({ result, update }) => {
 			loading = false;
-			if (result.status === 201) {
+			if (result.status === 200) {
 				showToast('Batch created successfully', 'success');
 				toggleModal();
 			} else {
@@ -80,7 +92,7 @@
 		> -->
 		<form
 			action="?/create"
-			method="POST"
+			method="post"
 			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={submit}
 			bind:this={form}
@@ -168,6 +180,7 @@
 					name="expiry_date"
 					id="expiry_date"
 					placeholder="Expiry date"
+					max={maxDate}
 					bind:value={expiry_date}
 					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>

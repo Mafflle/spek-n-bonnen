@@ -1,6 +1,7 @@
 import { PUBLIC_API_ENDPOINT } from "$env/static/public";
 import type { PageServerLoad } from "../$types";
 import { z } from 'zod';
+import dayjs from 'dayjs';
 
 
 const batchSchema = z.object({
@@ -18,22 +19,27 @@ const batchSchema = z.object({
     })
     .min(-2147483648, "Quantity below minumum acceptable")
     .max(2147483647, "Quantity above maximum acceptable"),
-    expiry_date: z.date({
+    expiry_date: z.coerce
+    .date({
         required_error: 'Date is required'
     })
+		.transform((val) => dayjs(val).format('YYYY-MM-DD'))
 })
 
 export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
     const getCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${params.slug}`)
     const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`)
+    const getBatches = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`)
     if(getCarcass.ok && getPrimals.ok){
         const carcass = getCarcass.json()
         const primals = getPrimals.json()
+        const batches = getBatches.json()
 		const access = cookies.get('access');
 
         return{
             carcass,
             primals,
+            batches,
             access
         }
     }
@@ -46,7 +52,8 @@ export const actions = {
         const carcass_id = Number(formData.get('carcass_id'));
         const ean_barcode = formData.get('ean_barcode');
         const quantity = Number(formData.get('quantity'));
-        const expiry_date = new Date(formData.get('expiry_date'));
+        const expiry_date = dayjs(formData.get('expiry_date') as string).format('YYYY-MM-DD');
+       
 
         const dataToValidate = {
             primal_id,
@@ -56,6 +63,7 @@ export const actions = {
             expiry_date
         }
         try{
+            console.log("data to validate",dataToValidate)
             const validatedData = batchSchema.parse(dataToValidate)
             const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`, {
                 method: 'POST',
@@ -65,10 +73,18 @@ export const actions = {
                     Authorization: `Bearer ${cookies.get('access')}`
                 }
             });
+            console.log("response 1", response)
             if(response.ok){
+                console.log("response", response)
                 return { status: 200 }
             }
+            else{
+                const errorData = await response.json(); // Extract error data from response
+                console.log("error", errorData)
+                return { status: 400, error: errorData } // Return error data instead of response object
+            }
         }catch(error){
+            console.log("error", error)
             return { status: 400, error: error.errors }
         }
      
