@@ -2,18 +2,25 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import type { PageData } from '../$types';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import type { CarcassType, Primal } from '$lib/stores';
+	import { Batches, type Batch } from '$lib/stores';
+
 	import Modal from '$lib/components/Modal.svelte';
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import Selector from '$lib/components/Selector.svelte';
 	import { showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import Batch from '$lib/components/BatchCard.svelte';
+	import BatchCard from '$lib/components/BatchCard.svelte';
 	export let data: PageData;
 
 	console.log(data);
 
-	const { carcass, primals, access } = data;
+	const { carcass, primals, access, batches } = data;
+
+	$: {
+		Batches.set(batches.results);
+	}
 
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
@@ -81,15 +88,6 @@
 
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content" class="w-full">
-		<!-- Your modal content goes here -->
-
-		<!-- uncomment when you want to test -->
-		<!-- <form
-			action="?/manage-batch"
-			method="post"
-			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
-			use:enhance={submit}
-		> -->
 		<form
 			action="?/create"
 			method="post"
@@ -384,10 +382,10 @@
 		</section>
 		<!-- More Details -->
 	</section>
-	<section>
+	<section class="flex flex-col gap-4">
 		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] gap-2 rounded-md text-[#232222] px-2 text-3xl font-semibold"
 			>
 				Batches
 			</div>
@@ -397,7 +395,10 @@
 					on:click={toggleModal}
 					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                 hover:bg-[#C7453C]
-                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
+				disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#D9D9D9]
+				"
+					disabled={batches.results.length > 0}
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="batches-plus" />
@@ -407,6 +408,27 @@
 					>
 				</button>
 			</div>
+		</div>
+		<div class="border rounded-xl">
+			<table class="table">
+				<thead>
+					<tr class="">
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Primal</th>
+						<th class="bg-[#F9F9F9]">Carcass</th>
+						<th class="bg-[#F9F9F9]">EAN Barcode</th>
+						<th class="bg-[#F9F9F9]">Quantity</th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{#each $Batches as batch (batch?.id)}
+						{#if batch}
+							<BatchCard {batch} />
+						{/if}
+					{/each}
+				</tbody>
+			</table>
 		</div>
 	</section>
 </div>
