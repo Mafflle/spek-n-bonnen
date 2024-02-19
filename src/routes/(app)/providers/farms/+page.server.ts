@@ -1,4 +1,4 @@
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from '../../inventory/$types';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -153,6 +153,31 @@ export const actions: Actions = {
 		} else {
 			console.log('No id provided');
 			return fail(400);
+		}
+	},
+	search: async ({ cookies, request, fetch }) => {
+		console.log('searching');
+		const data = await request.formData();
+		console.log(data);
+		const search = data.get('search');
+
+		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/?search=${search}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${cookies.get('access')}`
+			}
+		});
+
+		if (response.ok) {
+			const farms = await response.json();
+			console.log('carcassss search', farms);
+			return { farms };
+		} else {
+			// handle error
+			const error = await response.json();
+			console.log(error);
+			return { status: response.status, error };
 		}
 	}
 };

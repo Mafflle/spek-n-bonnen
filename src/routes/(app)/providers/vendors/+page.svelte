@@ -112,7 +112,7 @@
 				}
 			};
 		}}
-		class="md:max-w-2xl w-[350px] md:w-xl flex flex-col items-center p-4 md:p-6 gap-8 bg-white rounded-md"
+		class=" max-xsm:w-[350px] md:w-xl flex flex-col items-center p-4 md:p-6 gap-8 bg-white rounded-md"
 	>
 		<div class="modal-title flex items-center gap-3 w-full">
 			<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">

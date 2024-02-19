@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
 	import SearchInput from './SearchInput.svelte';
-	import { string } from 'zod';
 	import * as Select from './ui/select';
-	import { Group } from 'lucide-svelte';
+	import { string } from 'zod';
 
 	const dispatch = createEventDispatcher();
 	let open = false;
 
-	export let name: string;
+	export let inputName: string = '';
 	export let selectMultiple: boolean = false;
 	export let maxSelectable: number = 5;
 	export let addUnavailable: boolean = false;
@@ -38,9 +36,9 @@
 	let selectedArray: any = [];
 
 	function onSelected(option: any) {
-		dispatch('selected', option);
 		if (option !== '') {
 			selected = option;
+			selectedValue = option.value;
 
 			if (selected !== '') {
 				if (selectedArray.length >= 1) {
@@ -55,6 +53,7 @@
 
 		toggle();
 		search = '';
+		dispatch('selected', option);
 	}
 	const removeSelected = (itemIndex: number) => {
 		selectedArray = selectedArray.filter((element: string, index: number) => {
@@ -70,15 +69,17 @@
 
 	onMount(() => {
 		if (prop !== undefined && selected === undefined) {
-			selected = prop;
+			if (!prop.value) {
+				const editedProp = { value: prop.id, label: prop.name };
+				selected = editedProp;
+			} else selected = prop;
 			// console.log(selected);
-			selectedArray = selected;
 		}
 	});
-	let selectedValue = selected?.value;
+	let selectedValue: string | number = selected?.value;
 </script>
 
-<Select.Root>
+<Select.Root {selected} multiple={selectMultiple}>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- <input type="text" {name} class="hidden" bind:value={selectedValue} /> -->
 	<Select.Trigger class="max-w-full w-full flex hover:border-primary-100 ">
@@ -150,6 +151,7 @@
 			{:else}
 				{#each options as option}
 					<Select.Item
+						on:click={() => onSelected(option)}
 						value={option.value}
 						label={option.label}
 						class="p-2 text-[14px] hover:bg-primary-100 cursor-pointer hover:text-white w-full flex
@@ -164,7 +166,15 @@
 			{/if}
 		</Select.Group>
 	</Select.Content>
-	<Select.Input {required} {name} />
+	<!-- <input
+		type="text"
+		class=" absolute"
+		on:change={(e) => console.log('changed')}
+		name={inputName}
+		{required}
+		bind:value={selectedValue}
+	/> -->
+	<Select.Input {required} name={inputName} on:change={() => console.log('voila')} />
 </Select.Root>
 
 <!-- <style>

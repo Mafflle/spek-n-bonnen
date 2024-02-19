@@ -3,6 +3,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import Button from './ui/button/button.svelte';
 	import * as Menubar from '$lib/components/ui/menubar';
+	import { ChevronDown } from 'lucide-svelte';
 
 	export let href: string = '';
 	export let icon: string = '';
@@ -18,55 +19,73 @@
 		showChildren = !showChildren;
 	};
 	// console.log(children);
+	let keepOpen = false;
+
+	function checkIfChildActive() {
+		children.map((child) => {
+			if (child.href === $page.url.pathname) {
+				keepOpen = true;
+				return;
+			}
+		});
+	}
+	checkIfChildActive();
 </script>
 
 {#if children.length > 0}
-	<Collapsible.Root class="md:w-full lg:flex hidden items-start flex-col ">
-		<a
-			on:mouseenter={() => {
-				if ($page.url.pathname === href && active === true) active = false;
-			}}
-			on:mouseleave={() => {
-				if ($page.url.pathname === href && active === false) active = true;
-			}}
-			class="flex w-full md:w-full items-center px-3 py-1 justify-around rounded-md
-		hover:bg-grey-200 hover:text-white hover:shadow-inner {active && 'bg-primary-light text-[#DA4E45]'}
+	<Collapsible.Root
+		onOpenChange={checkIfChildActive}
+		bind:open={keepOpen}
+		class="md:w-full lg:flex hidden items-start flex-col "
+	>
+		<Collapsible.Trigger class="" asChild let:builder>
+			<a
+				on:mouseenter={() => {
+					if ($page.url.pathname === href && active === true) active = false;
+				}}
+				on:mouseleave={() => {
+					if ($page.url.pathname === href && active === false) active = true;
+				}}
+				class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
+		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
+					'bg-primary-light text-primary-red'}
 		"
-			{href}
-		>
-			<span class="side-nav-button w-full flex items-center justify-between">
-				<div class="button-content flex items-center gap-2.5 self-stretch">
-					<span>{@html active ? activeIcon : icon}</span>
-					<span
-						class="button-text hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
-					>
-						{text}
-					</span>
-				</div>
-				{#if alert}
-					<div
-						class="button-alert flex w-[1.875rem] py-[0.1875rem] px-[0.625rem] flex-col justify-center items-center gap-[0.625rem] self-stretch
+				{href}
+			>
+				<span class="side-nav-button w-full text-inherit flex items-center justify-between">
+					<div class="button-content flex items-center gap-2.5 self-stretch">
+						<span class="test-inherit">{@html active ? activeIcon : icon}</span>
+						<span
+							class="button-text {active &&
+								'text-primary-red'} hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
+						>
+							{text}
+						</span>
+					</div>
+					{#if alert}
+						<div
+							class="button-alert flex w-[1.875rem] py-[0.1875rem] px-[0.625rem] flex-col justify-center items-center gap-[0.625rem] self-stretch
 		rounded-[1.875rem] bg-[#FF1C0D]
 		"
-					>
-						<span class="alert-text text-white text-xs font-bold">4</span>
-					</div>
-				{/if}
-			</span>
+						>
+							<span class="alert-text text-white text-xs font-bold">4</span>
+						</div>
+					{/if}
+				</span>
 
-			<Collapsible.Trigger class="" asChild let:builder>
 				<Button
 					builders={[builder]}
 					class="flex items-center justify-center p-0 {active && 'text-black-100'}"
-					><iconify-icon icon="iconamoon:arrow-up-2-fill" width="20" rotate="90deg"></iconify-icon>
+				>
+					<img src="/icons/Chevron down.svg" alt="arrow down icon" />
 					<span class="sr-only">Toggle</span></Button
 				>
-			</Collapsible.Trigger>
-		</a>
+			</a>
+		</Collapsible.Trigger>
 
-		<Collapsible.Content class="py-2 px-2 w-full">
-			<ul class="ml-4 w-full border-l border-grey-300 pl-2">
-				<div class="flex flex-col w-full gap-3 justify-between">
+		<Collapsible.Content class="py-2 pl-1 w-full">
+			<ul class="ml-4 w-full border-l-[1.5px] border-white">
+				<div class="flex flex-col w-full gap-3 px-2 justify-between">
 					{#each children as child}
 						{#if child.childRoutes}
 							<Collapsible.Root>
@@ -85,7 +104,7 @@
 										{#each child.childRoutes as route}
 											<a
 												class="py-2 w-full {childActive &&
-													'bg-primary-light text-[#DA4E45] shadow-inner'}
+													'bg-primary-light text-primary-red shadow-inner'}
 											 px-3 rounded-sm flex gap-3 hover:bg-primary-light hover:text-primary-red"
 												href={route.href}
 											>
@@ -97,11 +116,12 @@
 							</Collapsible.Root>
 						{:else}
 							<a
-								class="py-2 w-full {childActive && 'bg-primary-light text-[#DA4E45] shadow-inner'}
+								class="py-2 w-full text-grey-200 {$page.url.pathname === child.href &&
+									'bg-primary-light text-primary-red shadow-inner'}
 											 px-3 rounded-sm flex gap-3 hover:bg-primary-light hover:text-primary-red"
 								href={child.href}
 							>
-								<span class="item-title font-medium text-xs">{child.title}</span>
+								<span class="item-title font-medium text-sm">{child.title}</span>
 							</a>
 						{/if}
 					{/each}
@@ -115,7 +135,7 @@
 		<Menubar.Menu>
 			<Menubar.Trigger
 				class="p-0 space-x-0 w-full flex items-center justify-center rounded-full {active &&
-					'bg-primary-light text-[#DA4E45]'} w-8 h-8"
+					'bg-primary-light text-primary-red'} w-8 h-8"
 			>
 				<a
 					on:mouseenter={() => {
@@ -171,7 +191,7 @@
 								{#each child.childRoutes as route}
 									<Menubar.Item class="">
 										<a
-											class="p-2 {childActive && ' text-[#DA4E45] shadow-inner'}
+											class="p-2 {childActive && ' text-primary-red shadow-inner'}
 												  rounded-md flex gap-3 hover:text-primary-red"
 											href={route.href}
 										>
@@ -184,7 +204,7 @@
 					{:else}
 						<Menubar.Item>
 							<a
-								class="p-2 w-full {childActive && ' text-[#DA4E45] shadow-inner'}
+								class="p-2 w-full {childActive && ' text-primary-red shadow-inner'}
 												  rounded-md flex gap-3 hover:text-primary-red"
 								href={child.href}
 							>
@@ -198,9 +218,9 @@
 	</Menubar.Root>
 {:else}
 	<a
-		class="flex max-w-full md:w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center justify-center lg:justify-around rounded-full lg:rounded-md
+		class="flex max-w-full md:w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center text-grey-200 justify-center lg:justify-around rounded-full lg:rounded-md
 										md:hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
-			' bg-primary-light text-[#DA4E45]'}
+			' bg-primary-light text-primary-red'}
 										"
 		{href}
 		on:mouseenter={() => {
@@ -210,12 +230,14 @@
 			if ($page.url.pathname === href && active === false) active = true;
 		}}
 	>
-		<span class="side-nav-button flex max-w-full w-full items-center lg:justify-between">
+		<span
+			class="side-nav-button text-inherit flex max-w-full w-full items-center lg:justify-between"
+		>
 			<div
-				class="button-content flex items-center justify-center lg:justify-start w-full md:gap-2.5"
+				class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5"
 			>
 				<!-- <enhanced:img src={icon} /> -->
-				<span class="">{@html active ? activeIcon : icon}</span>
+				<span class="text-inherit">{@html active ? activeIcon : icon}</span>
 				<span
 					class="button-text hidden lg:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
 				>

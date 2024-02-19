@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Carcass from '$lib/components/Carcass.svelte';
 	import PageLoader from '$lib/components/PageLoader.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -11,6 +12,7 @@
 	import { Carcasses } from '$lib/stores/carcass.stores';
 	import { showToast, type CarcassErrors } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { onMount } from 'svelte';
 
 	import { slide } from 'svelte/transition';
 
@@ -19,13 +21,34 @@
 	const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers, carcassToEdit } =
 		data;
 
-	console.log(carcassToEdit);
-
 	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
-	const allTabs = ['physical-info', 'vendor', 'traceability', 'origin'];
+	const allTabs = ['physical-info', 'traceability'];
 	let currentTab: string = 'physical-info';
 	let currentTabInfo;
+	let tabButtons;
+	let fatScoreOptions = [
+		{ value: '1', label: '10%' },
+		{ value: '2', label: '20%' },
+		{ value: '3', label: '30%' },
+		{ value: '4', label: '40%' },
+		{ value: '5', label: '50%' },
+		{ value: '6', label: '60%' }
+	];
+	let sexCategoryOptions = [
+		{ value: 'A', label: 'Young bull' },
+		{ value: 'B', label: 'Bull' },
+		{ value: 'C', label: 'Steer' },
+		{ value: 'E', label: 'Heifer' }
+	];
+	let conformationOptions = [
+		{ value: 'S', label: 'CONF-S' },
+		{ value: 'E', label: 'CONF-E' },
+		{ value: 'U', label: 'CONF-U' },
+		{ value: 'R', label: 'CONF-R' },
+		{ value: 'O', label: 'CONF-O' },
+		{ value: 'P', label: 'CONF-P' }
+	];
 
 	let loading: boolean = false;
 	let today = new Date();
@@ -51,14 +74,31 @@
 		}
 	};
 
-	const manageCarcass: SubmitFunction = async () => {
+	const manageCarcass: SubmitFunction = async ({ formData }) => {
 		loading = true;
+		if (carcassToEdit && currCarcassId) {
+			formData.append('currCarcassId', `${currCarcassId}`);
+		}
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					const newCarcass = result.data.newCarcass;
-					showToast('Carcass added successfully', 'success');
-					Carcasses.update((items) => [newCarcass, ...items]);
+					if (result.data.edited) {
+						const editedCarcass = result.data.editedCarcass;
+						Carcasses.update((carcasses) => {
+							const updatedCarcasses = carcasses.map((carcass) => {
+								if (carcass.id === editedCarcass.id) {
+									carcass = editedCarcass;
+								}
+								return carcass;
+							});
+							return updatedCarcasses;
+						});
+						showToast('Carcass edited successfully', 'success');
+					} else {
+						const newCarcass = result.data.newCarcass;
+						showToast('Carcass added successfully', 'success');
+						Carcasses.update((items) => [newCarcass, ...items]);
+					}
 					await goto('/inventory/carcass');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
@@ -71,21 +111,62 @@
 			}
 		};
 	};
-	$: {
-		if (browser) {
-			let tabs = currentTabInfo?.children[1].children;
-			console.log(tabs);
 
-			if (tabs) {
-				for (let i = 0; i < tabs.length; i++) {
-					if (tabs[i].attributes[1]?.value === currentTab) {
-						const requiredInputs = tabs[i].querySelectorAll('input[required]');
-						console.log(requiredInputs);
-					}
-				}
+	const validateInputs = (inputs: any[]) => {
+		function isValidDate(dateString: string) {
+			const regex = /^\d{4}-\d{2}-\d{2}$/;
+			return regex.test(dateString);
+		}
+
+		console.log(inputs);
+		for (const input of inputs) {
+			if (!input.value.trim()) {
+				return false; // Return false if any required input is empty
+			}
+			if (input.type === 'date' && !isValidDate(input.value)) {
+				return false;
+			}
+			if (input.type === 'number' && isNaN(input.value)) {
+				return false;
 			}
 		}
-	}
+		return true;
+	};
+	const checkIfFormFilled = () => {
+		// let tabs = currentTabInfo?.children[1].children;
+		// let buttons = currentTabInfo?.children[0].children[0].children;
+		// if (tabs) {
+		// 	for (let i = 0; i < tabs.length; i++) {
+		// 		if (tabs[i].attributes[1]?.value === currentTab) {
+		// 			const requiredInputs = tabs[i].querySelectorAll('input[required]');
+		// 			for (const button of buttons) {
+		// 				if (button.attributes['data-value']?.value !== currentTab) {
+		// 					// console.log(validateInputs(requiredInputs));
+		// 					if (validateInputs(requiredInputs)) {
+		// 						button.removeAttribute('disabled');
+		// 					} else {
+		// 						button.setAttribute('disabled', 'disabled');
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+	};
+
+	onMount(() => {
+		// let tabs = currentTabInfo?.children[1].children;
+		// if (tabs) {
+		// 	for (let i = 0; i < tabs.length; i++) {
+		// 		if (tabs[i].attributes[1]?.value === currentTab) {
+		// 			const inputs = tabs[i].querySelectorAll('input[required]');
+		// 			inputs.forEach((input) => {
+		// 				input.addEventListener('input', checkIfFormFilled());
+		// 			});
+		// 		}
+		// 	}
+		// }
+	});
 </script>
 
 <svelte:head>
@@ -116,15 +197,15 @@
 					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
 				{:else}
 					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
-					<span> Add carcass</span>
+					<span> {carcassToEdit ? 'Edit' : 'Add'} carcass</span>
 				{/if}
 			</button>
 		</section>
 		<section
-			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[450px] justify-center text-sm w-full lg:gap-10"
+			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-10"
 		>
 			<!-- Providers -->
-			<section class="flex-auto px-2 h-full overflow-y-scroll no-scrollbar w-full">
+			<section class="flex-auto px-2 h-full overflow-y-scroll no-scrollbar w-full sticky top-3">
 				<div class="pb-3 sticky top-0 w-full bg-white px-2">
 					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">PROVIDERS</h3>
 				</div>
@@ -132,7 +213,8 @@
 					<div class="manufacturer">
 						<label for="manufacturer" class="block mb-2 text-sm">Manufacturer</label>
 						<Selector
-							name="manufacturer"
+							prop={carcassToEdit?.manufacturer}
+							inputName="manufacturer"
 							placeholder="Select manufacturer "
 							options={manufacturers.results}
 							token={data.access}
@@ -151,10 +233,11 @@
 					<div>
 						<label for="brand" class="block mb-2 text-sm">Brand</label>
 						<Selector
+							prop={carcassToEdit?.brand}
 							token={data.access}
 							endpoint="manage"
 							searchEndpoint="api/inventory/brands"
-							name="brand"
+							inputName="brand"
 							placeholder="Select brand "
 							options={brands.results}
 						/>
@@ -169,10 +252,11 @@
 					<div class="butcher-shop">
 						<label for="butcher_shop" class="block mb-2 text-sm">Butcher shop</label>
 						<Selector
+							prop={carcassToEdit?.butcher_shop}
 							token={data.access}
 							endpoint="manage"
 							searchEndpoint="api/inventory/butcher_shops"
-							name="butcher_shop"
+							inputName="butcher_shop"
 							placeholder="Select butcher shop "
 							options={butcherShops.results}
 						/>
@@ -191,13 +275,14 @@
 						<div class="purchase flex flex-col gap-2 items-start">
 							<label for="certifications" class="block mb-2 text-sm">Certifications</label>
 							<input
+								value={carcassToEdit?.certifications}
 								type="number"
 								name="certifications"
 								id="certifications"
 								placeholder="Enter certification (optional)"
 								class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 							/>
-							{#if validationErrors?.purchase_price}
+							{#if validationErrors?.certifications}
 								<sub
 									transition:slide={{ delay: 250, duration: 300 }}
 									class="text-rose-500 text-xs tracking-[-0.0075rem]"
@@ -211,9 +296,10 @@
 					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">FINANCE</h3>
 					<div class=" flex flex-col gap-[1.28rem] w-full">
 						<div class="purchase flex flex-col gap-2 items-start">
-							<label for="purchase-price" class="block mb-2 text-sm">Purchase price</label>
+							<label for="purchase-price" class="block mb-2 text-sm">Purchase price($)</label>
 							<input
-								type="text"
+								value={carcassToEdit?.purchase_price}
+								type="number"
 								name="purchase-price"
 								id="purchase-price"
 								placeholder="Enter purchase price eg - ($100)"
@@ -232,16 +318,19 @@
 			</section>
 			<!-- Providers -->
 
+			<!-- More Details -->
 			<!-- Separator -->
 			<Separator orientation="vertical" class="" />
 			<!-- Separator -->
-
-			<!-- More Details -->
 			<section class="md:px-2 flex-auto flex flex-col items-start h-full w-full">
 				<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MORE DETAILS</h3>
 
 				<!-- Tabs -->
 				<Tabs.Root
+					onValueChange={(e) => {
+						e = 'physical-info';
+						return e;
+					}}
 					bind:value={currentTab}
 					bind:el={currentTabInfo}
 					class="relative w-full h-full overflow-y-scroll no-scrollbar"
@@ -250,30 +339,31 @@
 					<section
 						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
 					>
-						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 ">
+						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
 							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="physical-info"
 								>Physical information</Tabs.Trigger
 							>
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="vendor"
-								>Vendor</Tabs.Trigger
-							>
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="traceability"
+
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="traceability"
 								>Traceability</Tabs.Trigger
-							>
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold  " value="origin"
-								>Origin</Tabs.Trigger
 							>
 						</Tabs.List>
 					</section>
 					<!-- Tabs trigger -->
 
-					<section>
+					<section class="w-full">
 						<!-- Physical info -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full" value="physical-info">
-							<div class="flex flex-col gap-[1.28rem]">
+							<div
+								on:change={(e) => {
+									checkIfFormFilled();
+								}}
+								class="flex flex-col gap-[1.28rem]"
+							>
 								<div class="weight flex flex-col gap-2 items-start">
-									<label for="weight" class="block mb-2 text-sm">Weight</label>
+									<label for="weight" class="block mb-2 text-sm">Weight(kg)</label>
 									<input
+										value={carcassToEdit?.weight}
 										required
 										type="number"
 										name="weight"
@@ -291,8 +381,9 @@
 								</div>
 
 								<div class="w-full flex flex-col gap-2 items-start">
-									<label for="cold-weight" class="block mb-2 text-sm">Cold weight</label>
+									<label for="cold-weight" class="block mb-2 text-sm">Cold weight(kg)</label>
 									<input
+										value={carcassToEdit?.cold_weight}
 										required
 										type="number"
 										name="cold-weight"
@@ -312,15 +403,16 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="sex-category" class="block mb-2 text-sm">Sex category</label>
 									<Selector
-										required={true}
-										name="sex-category"
-										placeholder="Select sex category"
-										options={[
-											{ value: 'A', label: 'Young bull' },
-											{ value: 'B', label: 'Bull' },
-											{ value: 'C', label: 'Steer' },
-											{ value: 'E', label: 'Heifer' }
+										on:selected={() => checkIfFormFilled()}
+										prop={sexCategoryOptions[
+											sexCategoryOptions.findIndex(
+												(option) => option.value == carcassToEdit?.sex_category
+											)
 										]}
+										required={true}
+										inputName="sex-category"
+										placeholder="Select sex category"
+										options={sexCategoryOptions}
 									/>
 									{#if validationErrors?.sex_category}
 										<sub
@@ -333,17 +425,18 @@
 								<div class="flex flex-col gap-2 items-start w-full">
 									<label for="fat-score" class="block mb-2 text-sm">Fat score</label>
 									<Selector
-										required={true}
-										name="fat-score"
-										placeholder="Select fat score"
-										options={[
-											{ value: '1', label: '10%' },
-											{ value: '2', label: '20%' },
-											{ value: '3', label: '30%' },
-											{ value: '4', label: '40%' },
-											{ value: '5', label: '50%' },
-											{ value: '6', label: '60%' }
+										on:selected={() => {
+											checkIfFormFilled();
+										}}
+										prop={fatScoreOptions[
+											fatScoreOptions.findIndex(
+												(option) => option.value == carcassToEdit?.fat_score
+											)
 										]}
+										required={true}
+										inputName="fat-score"
+										placeholder="Select fat score"
+										options={fatScoreOptions}
 									/>
 									{#if validationErrors?.fat_score}
 										<sub
@@ -357,17 +450,16 @@
 								<div class="conformation flex flex-col gap-2 items-start">
 									<label for="conformation" class="block mb-2 text-sm">Conformation</label>
 									<Selector
-										required={true}
-										name="conformation"
-										placeholder="Select conformation"
-										options={[
-											{ value: 'S', label: 'CONF-S' },
-											{ value: 'E', label: 'CONF-E' },
-											{ value: 'U', label: 'CONF-U' },
-											{ value: 'R', label: 'CONF-R' },
-											{ value: 'O', label: 'CONF-O' },
-											{ value: 'P', label: 'CONF-P' }
+										on:selected={() => checkIfFormFilled()}
+										prop={conformationOptions[
+											conformationOptions.findIndex(
+												(option) => option.value == carcassToEdit?.conformation
+											)
 										]}
+										required={true}
+										inputName="conformation"
+										placeholder="Select conformation"
+										options={conformationOptions}
 									/>
 
 									{#if validationErrors?.conformation}
@@ -383,103 +475,7 @@
 						<!-- Physical info -->
 
 						<!-- Vendor info -->
-						<Tabs.Content class="px-4 h-full mb-8 w-full " value="vendor">
-							<div class="flex flex-col gap-[1.28rem]">
-								<div class="flex flex-col gap-2 items-start">
-									<label for="vendor" class="block mb-2 text-sm">Vendor</label>
-									<Selector
-										required={true}
-										token={data.access}
-										endpoint="manage"
-										searchEndpoint="api/inventory/vendors"
-										name="vendor"
-										placeholder="Select vendor "
-										options={vendors.results}
-									/>
-									{#if validationErrors?.vendor_id}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.vendor_id}</sub
-										>
-									{/if}
-								</div>
-								<div class="vendor-code flex flex-col gap-2 items-start">
-									<label for="vendor-code" class="block mb-2 text-sm">Vendor code</label>
-									<input
-										required
-										type="text"
-										name="vendor-code"
-										id="vendor-code"
-										placeholder="Enter vendor code"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-									{#if validationErrors?.vendor_code}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.vendor_code}</sub
-										>
-									{/if}
-								</div>
 
-								<div class="w-full flex flex-col gap-2 items-start">
-									<label for="vendor-moq" class="block mb-2 text-sm">Vendor MOQ</label>
-									<input
-										required
-										type="number"
-										name="vendor-moq"
-										id="vendor-moq"
-										placeholder="Enter moq"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-									{#if validationErrors?.vendor_moq}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.vendor_moq}</sub
-										>
-									{/if}
-								</div>
-
-								<div class="flex flex-col gap-2 items-start">
-									<label for="vendor-moq-unit" class="block mb-2 text-sm">Vendor MOQ unit</label>
-									<input
-										required
-										type="text"
-										name="vendor-moq-unit"
-										id="vendor-moq-unit "
-										placeholder="Enter vendor's moq"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-									{#if validationErrors?.vendor_moq_unit}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.vendor_moq_unit}</sub
-										>
-									{/if}
-								</div>
-								<div class="flex flex-col gap-2 items-start">
-									<label for="vendor-item-name" class="block mb-2 text-sm">Vendor item name</label>
-									<input
-										required
-										type="text"
-										name="vendor-item-name"
-										id="vendor-item-name"
-										placeholder="Enter vendor item name"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-									{#if validationErrors?.vendor_item_name}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.vendor_item_name}</sub
-										>
-									{/if}
-								</div>
-							</div>
-						</Tabs.Content>
 						<!-- Vendor info -->
 
 						<!-- Traceability -->
@@ -488,6 +484,7 @@
 								<div class="lot-number flex flex-col gap-2 items-start">
 									<label for="lot-number" class="block mb-2 text-sm">Lot number</label>
 									<input
+										value={carcassToEdit?.lot_number ?? ''}
 										required
 										type="text"
 										name="lot-number"
@@ -507,6 +504,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="carcass_number" class="block mb-2 text-sm">Carcass number</label>
 									<input
+										value={carcassToEdit?.carcass_number ?? ''}
 										required
 										type="number"
 										name="carcass_number"
@@ -523,13 +521,14 @@
 									{/if}
 								</div>
 								<div class="w-full flex flex-col gap-2 items-start">
-									<label for="abhd-number" class="block mb-2 text-sm">ABHD number</label>
+									<label for="abhd-number" class="block mb-2 text-sm">AHDB code</label>
 									<input
+										value={carcassToEdit?.ahdb_code ?? ''}
 										required
 										type="text"
 										name="abhd-number"
 										id="abhd-number"
-										placeholder="Enter abhd number"
+										placeholder="Enter ahdb code"
 										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.ahdb_code}
@@ -544,6 +543,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="ear-tag" class="block mb-2 text-sm">Ear tag</label>
 									<input
+										value={carcassToEdit?.ear_tag ?? ''}
 										required
 										type="text"
 										name="ear-tag"
@@ -562,11 +562,13 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="slaughter_house" class="block mb-2 text-sm">Slaughter house</label>
 									<Selector
+										on:selected={() => checkIfFormFilled()}
+										prop={carcassToEdit?.slaughter_house}
 										required={true}
 										token={data.access}
 										endpoint="manage"
 										searchEndpoint="api/inventory/slaughter_houses"
-										name="slaughter_house"
+										inputName="slaughter_house"
 										placeholder="Select slaughter house "
 										options={slaughterHouses.results}
 									/>
@@ -583,6 +585,7 @@
 										>Date of slaughter
 									</label>
 									<input
+										value={carcassToEdit?.date_of_slaughter}
 										required
 										type="date"
 										max={maxDate}
@@ -603,6 +606,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="date_received" class="block mb-2 text-sm">Date received </label>
 									<input
+										value={carcassToEdit?.date_received}
 										required
 										type="date"
 										name="date_received"
@@ -623,6 +627,7 @@
 								<div class="flex flex-col gap-2 items-start">
 									<label for="lairage-number" class="block mb-2 text-sm">Lairage number</label>
 									<input
+										value={carcassToEdit?.lairage_number}
 										required
 										type="number"
 										name="lairage-number"
@@ -638,18 +643,111 @@
 										>
 									{/if}
 								</div>
-							</div>
-						</Tabs.Content>
-						<!-- Traceability -->
+								<div class="flex flex-col gap-2 items-start">
+									<label for="vendor" class="block mb-2 text-sm">Vendor</label>
+									<Selector
+										on:selected={() => checkIfFormFilled()}
+										prop={carcassToEdit?.vendor}
+										required={true}
+										token={data.access}
+										endpoint="manage"
+										searchEndpoint="api/inventory/vendors"
+										inputName="vendor"
+										placeholder="Select vendor "
+										options={vendors.results}
+									/>
+									{#if validationErrors?.vendor_id}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_id}</sub
+										>
+									{/if}
+								</div>
+								<div class="vendor-code flex flex-col gap-2 items-start">
+									<label for="vendor-code" class="block mb-2 text-sm">Vendor code</label>
+									<input
+										value={carcassToEdit?.vendor_code ?? ''}
+										required
+										type="text"
+										name="vendor-code"
+										id="vendor-code"
+										placeholder="Enter vendor code"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									{#if validationErrors?.vendor_code}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_code}</sub
+										>
+									{/if}
+								</div>
 
-						<!-- Origin -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="origin">
-							<div class=" flex flex-col gap-[1.28rem] w-full">
+								<div class="w-full flex flex-col gap-2 items-start">
+									<label for="vendor-moq" class="block mb-2 text-sm">Vendor MOQ</label>
+									<input
+										value={carcassToEdit?.vendor_moq ?? ''}
+										required
+										type="number"
+										name="vendor-moq"
+										id="vendor-moq"
+										placeholder="Enter moq"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									{#if validationErrors?.vendor_moq}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_moq}</sub
+										>
+									{/if}
+								</div>
+
+								<div class="flex flex-col gap-2 items-start">
+									<label for="vendor-moq-unit" class="block mb-2 text-sm">Vendor MOQ unit</label>
+									<input
+										value={carcassToEdit?.vendor_moq_unit ?? ''}
+										required
+										type="text"
+										name="vendor-moq-unit"
+										id="vendor-moq-unit "
+										placeholder="Enter vendor's moq"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									{#if validationErrors?.vendor_moq_unit}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_moq_unit}</sub
+										>
+									{/if}
+								</div>
+								<div class="flex flex-col gap-2 items-start">
+									<label for="vendor-item-name" class="block mb-2 text-sm">Vendor item name</label>
+									<input
+										value={carcassToEdit?.vendor_item_name ?? ''}
+										required
+										type="text"
+										name="vendor-item-name"
+										id="vendor-item-name"
+										placeholder="Enter vendor item name"
+										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+									{#if validationErrors?.vendor_item_name}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.vendor_item_name}</sub
+										>
+									{/if}
+								</div>
 								<div class="flex flex-col gap-2 items-start">
 									<label for="origin-and-terrior" class="block mb-2 text-sm"
 										>Origin and terrior</label
 									>
 									<input
+										value={carcassToEdit?.origin_and_terroir ?? ''}
 										required
 										type="text"
 										name="origin-and-terrior"
@@ -669,6 +767,7 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="country" class="block mb-2 text-sm">Country of origin</label>
 									<input
+										value={carcassToEdit?.country_of_origin ?? ''}
 										required
 										type="text"
 										name="country"
@@ -688,11 +787,13 @@
 								<div class="w-full flex flex-col gap-2 items-start">
 									<label for="farm" class="block mb-2 text-sm">Farm</label>
 									<Selector
+										on:selected={() => checkIfFormFilled()}
+										prop={carcassToEdit?.farm}
 										required
 										token={data.access}
 										endpoint="manage"
 										searchEndpoint="api/inventory/farms"
-										name="farm"
+										inputName="farm"
 										placeholder="Select farm "
 										options={farms.results}
 									/>
@@ -711,25 +812,12 @@
 										>
 									{/if}
 								</div>
-								<!-- <div>
-									<label for="slaughter_house" class="block mb-2 text-sm">Slaughter house</label>
-									<Selector
-										token={data.access}
-										endpoint="manage"
-										searchEndpoint="api/inventory/slaughter_houses"
-										name="slaughter_house"
-										placeholder="Select slaughter house "
-										options={slaughterHouses.results}
-									/>
-									{#if validationErrors?.slaughter_house_id}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.slaughter_house_id}</sub
-								>
-							{/if}
-								</div> -->
 							</div>
 						</Tabs.Content>
+						<!-- Traceability -->
+
+						<!-- Origin -->
+
 						<!-- Origin -->
 
 						<div class="w-full self flex items-center justify-between mt-4 px-4">

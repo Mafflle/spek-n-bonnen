@@ -5,7 +5,7 @@
 	import SearchInput from '$lib/components/SearchInput.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
 	import { Users, container } from '$lib/stores.js';
-	import { showToast, type Option } from '$lib/utils.js';
+	import { showToast } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
@@ -26,19 +26,24 @@
 		groups?: [string];
 	} = {};
 
-	Users.set(users.results);
+	$Users = users.results;
+
+	console.log($Users);
+
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		$container.forEach((item) => formData.append('permission', `${item.value}`));
+		$container.forEach((item) => formData.append('role', `${item.value}`));
+		console.log(formData.getAll('role'));
 
 		return async ({ result, update }) => {
 			try {
 				console.log(result);
 
 				if (result.status === 200) {
-					container.update((options) => (options = []));
-					Users.update((users) => [result.data.newStaff, ...users]);
+					container.set([]);
+					$Users = [result.data.invitedStaff, ...$Users];
 					showToast('Staff invited successfully', 'success');
+					toggleModal();
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 				} else if (result.status == 500) {
@@ -50,25 +55,25 @@
 			}
 		};
 	};
-	const createRolesInput = (options: Option[]) => {
-		const inputsContainer = document.getElementById('rolesContainer');
+	// const createRolesInput = (options: Option[]) => {
+	// 	const inputsContainer = document.getElementById('rolesContainer');
 
-		while (inputsContainer?.firstChild) {
-			inputsContainer.removeChild(inputsContainer.firstChild);
-		}
-		if (options.length > 0) {
-			rolesSelected = true;
-			options.forEach((option) => {
-				const input = document.createElement('input');
-				input.name = 'role';
-				input.type = 'number';
-				input.value = `${option.value}`;
-				input.className = 'hidden';
+	// 	while (inputsContainer?.firstChild) {
+	// 		inputsContainer.removeChild(inputsContainer.firstChild);
+	// 	}
+	// 	if (options.length > 0) {
+	// 		rolesSelected = true;
+	// 		options.forEach((option) => {
+	// 			const input = document.createElement('input');
+	// 			input.name = 'role';
+	// 			input.type = 'number';
+	// 			input.value = `${option.value}`;
+	// 			input.className = 'hidden';
 
-				inputsContainer?.appendChild(input);
-			});
-		} else rolesSelected = false;
-	};
+	// 			inputsContainer?.appendChild(input);
+	// 		});
+	// 	} else rolesSelected = false;
+	// };
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
@@ -103,7 +108,7 @@
 <div class="staff-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
 	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem]">Staff management</div>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Staff management</div>
 			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
@@ -180,7 +185,7 @@
 	</div>
 </div>
 
-<Modal on:close={() => (showModal = !showModal)} {showModal}>
+<Modal on:close={toggleModal} {showModal}>
 	<form
 		action="?/invite_staff"
 		method="post"
@@ -192,6 +197,7 @@
 			<h3 class="text-lg font-medium font-satoshi">Invite a user</h3>
 			<button
 				disabled={loading}
+				type="submit"
 				class="bg-primary-red p-2.5 rounded-md text-white text-xs py-2 px-4 flex items-center font-bold font-satoshi"
 			>
 				{#if loading}

@@ -7,6 +7,7 @@
 	import { enhance } from '$app/forms';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import PageLoader from './PageLoader.svelte';
+	import { InfoIcon } from 'lucide-svelte';
 
 	export let grid: boolean;
 	export let slug: string;
@@ -33,6 +34,9 @@
 			}
 		};
 	};
+	const viewPrimalInfo = (primal: Primal) => {
+		dispatch('view', { primal });
+	};
 
 	const dispatch = createEventDispatcher();
 	const editPrimal = (primal: Primal) => {
@@ -57,8 +61,8 @@
 				{primal.name}
 			</p>
 			<section class="flex w-full items-center justify-between">
-				<span class="date-added flex items-center gap-2 self-stretch line-clamp-1">
-					{primal.description}
+				<span class="date-added flex items-center gap-2 self-stretch line-clamp-2">
+					{primal.description ?? 'No description'}
 				</span>
 				<DropdownMenu.Root>
 					<!-- <button class=" px-1.5 flex justify-center items-center">
@@ -79,6 +83,15 @@
 							>
 								<img src="/icons/edit.svg" alt="edit icon" />
 								<span class="text-grey-100">Edit</span>
+							</Button>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<Button
+								on:click={() => viewPrimalInfo(primal)}
+								class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							>
+								<InfoIcon class="text-grey-100" size="15" />
+								<span class="text-grey-100">More information</span>
 							</Button>
 						</DropdownMenu.Item>
 						<form action="?/delete" method="post" use:enhance={deletePrimal} class="">
@@ -107,7 +120,10 @@
 				</span>
 			</div>
 		</td>
-		<td class="text-[#9C9C9C]"> <span class="line-clamp-1">{primal.description}</span></td>
+		<td class="text-[#9C9C9C]"> <span class="line-clamp-2">{primal.reorder_point ?? 0}kg</span></td>
+		<td class="text-[#9C9C9C] max-w-[280px]">
+			<span class="line-clamp-3">{primal.description ?? 'No description'}</span></td
+		>
 		<td class="table-cell">
 			<DropdownMenu.Root>
 				<!-- <button class=" px-1.5 flex justify-center items-center">
@@ -128,6 +144,15 @@
 						>
 							<img src="/icons/edit.svg" alt="edit icon" />
 							<span class="text-grey-100">Edit</span>
+						</Button>
+					</DropdownMenu.Item>
+					<DropdownMenu.Item>
+						<Button
+							on:click={() => viewPrimalInfo(primal)}
+							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+						>
+							<InfoIcon class="text-grey-100" size="15" />
+							<span class="text-grey-100">More information</span>
 						</Button>
 					</DropdownMenu.Item>
 					<form action="?/delete" method="post" use:enhance={deletePrimal} class="">

@@ -44,6 +44,7 @@ export const actions = {
 		}
 	},
 	delete: async ({ cookies, request }) => {
+	delete: async ({ fetch, request }) => {
 		const data = await request.formData();
 		const id = data.get('carcass-id');
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${id}`, {
@@ -55,12 +56,40 @@ export const actions = {
 		});
 
 		if (response.ok) {
-			showToast('Carcass deleted successfully', 'success');
+		
 			return { status: 200 };
 		} else {
 			// handle error
 			const error = await response.json();
 			showToast('Failed to delete carcass', 'error');
+			return { status: response.status, error };
+		}
+	},
+	search: async ({ cookies, request, fetch }) => {
+		console.log('searching');
+		const data = await request.formData();
+		console.log(data);
+		const search = data.get('search');
+
+		const response = await fetch(
+			`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/?search=${search}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${cookies.get('access')}`
+				}
+			}
+		);
+
+		if (response.ok) {
+			const carcasses = await response.json();
+			console.log('carcassss search', carcasses);
+			return { carcasses };
+		} else {
+			// handle error
+			const error = await response.json();
+			console.log(error);
 			return { status: response.status, error };
 		}
 	}

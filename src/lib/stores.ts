@@ -34,6 +34,7 @@ export type Primal = {
 	name: string;
 	slug: string;
 	description: string;
+	reorder_point: number;
 	created_at: Date;
 	updated_at: Date;
 };
@@ -143,7 +144,6 @@ export let Vendors = writable<Vendor[]>([]);
 export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let Batches = writable<Batch[]>([]);
-export let Carcasses = writable<CarcassType[]>([]);
 export let currentProvider = writable<
 	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);

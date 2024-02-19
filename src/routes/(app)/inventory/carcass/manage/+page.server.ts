@@ -184,7 +184,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 };
 
 export const actions: Actions = {
-	'manage-carcass': async ({ request, fetch }) => {
+	'manage-carcass': async ({ request, fetch, url }) => {
 		const formData = await request.formData();
 
 		const purchase_price = formData.get('purchase-price');
@@ -220,6 +220,7 @@ export const actions: Actions = {
 		const brand_id = parseInt(formData.get('brand') as string);
 		const vendor_id = parseInt(formData.get('vendor') as string);
 
+		const carcassToEdit = parseInt(formData.get('currCarcassId') as string);
 		const dataToValidate = {
 			...(purchase_price && { purchase_price }),
 			...(cold_weight && { cold_weight }),
@@ -252,26 +253,48 @@ export const actions: Actions = {
 
 		try {
 			const validatedData = manageSchema.parse(dataToValidate);
-			console.log('validation successfull', validatedData);
+			// console.log('validation successfull', validatedData);
 
-			const addNewCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/`, {
-				method: 'post',
-				body: JSON.stringify(validatedData)
-			});
+			if (carcassToEdit) {
+				const editing = await fetch(
+					`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${carcassToEdit}/`,
+					{ method: 'put', body: JSON.stringify(validatedData) }
+				);
 
-			if (addNewCarcass.ok) {
-				const newCarcass = await addNewCarcass.json();
-				return {
-					newCarcass,
-					edited: false
-				};
-			} else if (!addNewCarcass.ok && addNewCarcass.status === 400) {
-				const badBody = await addNewCarcass.json();
-				console.log(dataToValidate);
+				if (editing.ok) {
+					const editedCarcass = await editing.json();
+					return {
+						editedCarcass,
+						edited: true
+					};
+				} else if (!editing.ok && editing.status === 400) {
+					const badBody = await editing.json();
+					console.log(dataToValidate);
 
-				console.log('bad request body', badBody);
+					console.log('bad request body', badBody);
+				} else {
+					console.log(editing.status, editing.statusText);
+				}
 			} else {
-				console.log(addNewCarcass.status, addNewCarcass.statusText);
+				const addNewCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/`, {
+					method: 'post',
+					body: JSON.stringify(validatedData)
+				});
+
+				if (addNewCarcass.ok) {
+					const newCarcass = await addNewCarcass.json();
+					return {
+						newCarcass,
+						edited: false
+					};
+				} else if (!addNewCarcass.ok && addNewCarcass.status === 400) {
+					const badBody = await addNewCarcass.json();
+					console.log(dataToValidate);
+
+					console.log('bad request body', badBody);
+				} else {
+					console.log(addNewCarcass.status, addNewCarcass.statusText);
+				}
 			}
 		} catch (error) {
 			const toSend = {

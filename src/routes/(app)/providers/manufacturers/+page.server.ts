@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from '../../inventory/$types';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
