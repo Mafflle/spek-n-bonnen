@@ -26,7 +26,7 @@ const batchSchema = z.object({
 		.transform((val) => dayjs(val).format('YYYY-MM-DD'))
 })
 
-export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
+export const load = async ({ fetch, params, cookies }) => {
     const getCarcass = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${params.slug}`)
     const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`)
     const getBatches = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`)
@@ -75,8 +75,8 @@ export const actions = {
             });
         
             if(response.ok){
-               
-                return { status: 200 }
+                
+                return { status: 200, data: await response.json()}
             }
             else{
                 const errorData = await response.json(); // Extract error data from response
