@@ -2,6 +2,10 @@ import type { PageServerLoad } from '../../inventory/$types';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import { getCurrentUser } from '$lib/user';
+import { showToast } from '$lib/utils';
+
+// const currentUser = getCurrentUser();
 
 const manageSchema = z.object({
 	name: z
@@ -34,7 +38,15 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 };
 
 export const actions: Actions = {
+	
 	'manage-farm': async ({ fetch, request, url }) => {
+		const currentUser = getCurrentUser();
+        if (!currentUser?.is_superuser){
+            console.log('You do not have permission to perform this action');
+            showToast('You do not have permission to perform this action', 'error');
+            return fail(403, { message: 'You do not have permission to perform this action' });
+        }
+     
 		const formData = await request.formData();
 
 		const name = formData.get('farm-name');
@@ -115,6 +127,12 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ fetch, request }) => {
+		const currentUser = getCurrentUser();
+        if (!currentUser?.is_superuser){
+            console.log('You do not have permission to perform this action');
+            showToast('You do not have permission to perform this action', 'error');
+            return fail(403, { message: 'You do not have permission to perform this action' });
+        }
 		const formData = await request.formData();
 		const id = formData.get('id');
 		console.log(id);

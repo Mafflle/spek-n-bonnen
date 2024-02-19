@@ -18,7 +18,7 @@
 
 	currentProvider.set(null);
 	// console.log(Primals);
-	const { primals } = data;
+	let { primals } = data;
 	// console.log(primals.results); // Add this line to debug
 	Primals.set(primals.results);
 
@@ -125,6 +125,31 @@
 		currentProvider.set(null);
 		unsubscribe;
 	});
+	let searching = false;
+
+	const searchPrimals: SubmitFunction = ({ formData }) => {
+		console.log('searching', formData);
+		searching = true;
+		return async ({ result, update, error }) => {
+			if (error) {
+				console.error('Error occurred during search:', error);
+				searching = false;
+				return;
+			}
+
+			console.log('search', result);
+			console.log('search result', result.data.primals.results);
+			primals = result.data.primals.results; // Update primals array
+			Primals.set(primals);
+			searching = false;
+		};
+	};
+
+	let form: HTMLFormElement;
+
+	const submitSearch = () => {
+		form.requestSubmit();
+	};
 </script>
 
 <svelte:head>
