@@ -2,17 +2,35 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import type { PageData } from '../$types';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import type { CarcassType } from '$lib/stores';
+	import { Batches, type Batch } from '$lib/stores';
+
 	import Modal from '$lib/components/Modal.svelte';
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
+	import Selector from '$lib/components/Selector.svelte';
+	import { showToast } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import Batch from '$lib/components/BatchCard.svelte';
+	import BatchCard from '$lib/components/BatchCard.svelte';
+	export let data: PageData;
+
+	console.log(data);
+
+	let { carcass, primals, access, batches } = data;
+
+	let disabled: boolean;
+	$: {
+		Batches.set(batches.results);
+		disabled = batches.results.length > 0;
+		batches = batches.results;
+	}
 
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
 	];
 
-	let carcass_id: number;
+	let carcass_id: number = carcass.id;
 	let primal_id: number;
 	let ean_barcode: string;
 	let quantity: number;
@@ -25,36 +43,61 @@
 		quantity?: [number];
 		expiry_date?: [Date];
 	};
-	let disabled = false;
 
-	export let data: PageData;
-	let carcass: CarcassType = [];
+	const primalOptions = primals.results.map((primal) => ({
+		value: primal.id,
+		label: primal.name
+	}));
 
-	$: carcass = data.carcass;
-
-	console.log(data);
 	let showModal = false;
 
 	function toggleModal() {
 		showModal = !showModal;
 	}
+
+	let today = new Date();
+	let dd = today.getDate();
+	let mm = today.getMonth() + 1;
+	let year = today.getFullYear();
+
+	if (dd < 10) {
+		dd = '0' + dd;
+	}
+
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+	let maxDate = year + '-' + mm + '-' + dd;
+
+	let form;
+
+	const submit: SubmitFunction = ({ formData }) => {
+		loading = true;
+
+		return async ({ result, update }) => {
+			loading = false;
+			if (result.status === 200) {
+				console.log('batches store', $Batches);
+				console.log('batches', batches);
+
+				showToast('Batch created successfully', 'success');
+				toggleModal();
+			} else {
+				showToast('Ooops something went wrong', 'error');
+			}
+			loading = false;
+		};
+	};
 </script>
 
 <Modal {showModal} on:close={toggleModal}>
 	<div slot="modal-content" class="w-full">
-		<!-- Your modal content goes here -->
-
-		<!-- uncomment when you want to test -->
-		<!-- <form
-			action="?/manage-batch"
+		<form
+			action="?/create"
 			method="post"
 			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
 			use:enhance={submit}
-		> -->
-		<form
-			action="?/create-batch"
-			method="post"
-			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			bind:this={form}
 		>
 			<div class="modal-title flex items-center gap-3 self-stretch">
 				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
@@ -68,7 +111,38 @@
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
+			<div class="modal-input w-full hidden">
+				<input type="number" name="carcass_id" id="carcass_id" bind:value={carcass_id} />
+			</div>
+			<div class="modal-input w-full">
+				<label for="primal" class="block mb-2 text-sm">Primal</label>
+				<input
+					type="number"
+					class="hidden"
+					name="primal_id"
+					id="primal_id"
+					bind:value={primal_id}
+				/>
 
+				{#if primals && primals.results}
+					<Selector
+						on:selected={(e) => (primal_id = e.detail.value)}
+						prop={primal_id}
+						inputName="primal"
+						placeholder="Select primal"
+						options={primalOptions}
+						token={access}
+						endpoint="manage"
+						searchEndpoint="api/inventory/primals"
+					/>
+				{/if}
+				{#if validationErrors?.primal_id}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.primal_id}</sub
+					>
+				{/if}
+			</div>
 			<div class="modal-input w-full">
 				<input
 					type="text"
@@ -100,6 +174,18 @@
 						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.quantity}</sub
 					>
 				{/if}
+			</div>
+			<div class="modal-input w-full">
+				<!-- calender -->
+				<input
+					type="date"
+					name="expiry_date"
+					id="expiry_date"
+					placeholder="Expiry date"
+					max={maxDate}
+					bind:value={expiry_date}
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
 			</div>
 			<div class="modal-submit">
 				<button
@@ -271,39 +357,16 @@
 							</div>
 						</div>
 					</Tabs.Content>
-					<!-- Traceability -->
-
-					<!-- <div class="w-full self flex items-center justify-between mt-4 px-4">
-                    {#if allTabs.indexOf(currentTab) > 0}
-                        <Button
-                            on:click={() => switchTabs('previous')}
-                            variant="secondary"
-                            class=" flex gap-1 items-center hover:bg-primary-50 hover:text-white "
-                            ><iconify-icon rotate="180deg" icon="grommet-icons:form-next"></iconify-icon>
-                            <span class="hidden md:block">Previous </span>
-                        </Button>
-                    {/if}
-                    {#if allTabs.indexOf(currentTab) + 1 < allTabs.length}
-                        <Button
-                            on:click={() => switchTabs('next')}
-                            variant="secondary"
-                            class=" flex gap-1  items-center hover:bg-primary-50 hover:text-white "
-                        >
-                            <span class="hidden md:block">Next </span>
-                            <iconify-icon icon="grommet-icons:form-next"></iconify-icon></Button
-                        >
-                    {/if}
-                </div> -->
 				</section>
 			</Tabs.Root>
 			<!-- Tabs -->
 		</section>
 		<!-- More Details -->
 	</section>
-	<section>
+	<section class="flex flex-col gap-4">
 		<div class="filters flex items-center w-full xs:gap-5 sm:gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex items-center sm:w-[24em] gap-2 rounded-md text-[#232222] px-2 text-3xl font-semibold"
 			>
 				Batches
 			</div>
@@ -313,7 +376,10 @@
 					on:click={toggleModal}
 					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                 hover:bg-[#C7453C]
-                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+                focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]
+				disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#D9D9D9]
+				"
+					{disabled}
 				>
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="batches-plus" />
@@ -323,6 +389,29 @@
 					>
 				</button>
 			</div>
+		</div>
+		<div class="border rounded-xl">
+			<table class="table">
+				<thead>
+					<tr class="">
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Primal</th>
+						<th class="bg-[#F9F9F9]">Carcass</th>
+						<th class="bg-[#F9F9F9]">EAN Barcode</th>
+						<th class="bg-[#F9F9F9]">Quantity</th>
+						<th class="bg-[#F9F9F9]">Remaining Quantity</th>
+						<th class="bg-[#F9F9F9]">Expiry Date</th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{#each $Batches as batch (batch?.id)}
+						{#if batch}
+							<BatchCard {batch} />
+						{/if}
+					{/each}
+				</tbody>
+			</table>
 		</div>
 	</section>
 </div>
