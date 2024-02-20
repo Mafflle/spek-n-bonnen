@@ -28,7 +28,7 @@
 
 	$Users = users.results;
 
-	console.log($Users);
+	// console.log($Users);
 
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;

@@ -10,21 +10,21 @@
 	import Selector from '$lib/components/Selector.svelte';
 	import { showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import Batch from '$lib/components/BatchCard.svelte';
 	import BatchCard from '$lib/components/BatchCard.svelte';
+	import { get } from 'svelte/store';
 	export let data: PageData;
 
 	console.log(data);
 
-	let { carcass, primals, access, batches } = data;
+	let { carcass, primals, access } = data;
 
 	let disabled: boolean;
+
 	$: {
-		Batches.set(batches.results);
-		disabled = batches.results.length > 0;
-		batches = batches.results;
+		$Batches.length > 0 ? (disabled = true) : (disabled = false);
 	}
 
+	Batches.set(data.batches.results);
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
@@ -77,9 +77,7 @@
 		return async ({ result, update }) => {
 			loading = false;
 			if (result.status === 200) {
-				console.log('batches store', $Batches);
-				console.log('batches', batches);
-
+				Batches.set([result.data.data, ...$Batches]);
 				showToast('Batch created successfully', 'success');
 				toggleModal();
 			} else {
