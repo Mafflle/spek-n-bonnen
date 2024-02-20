@@ -297,8 +297,8 @@
 				{/if}
 			</button>
 		</section>
-		<div class="w-full flex flex-col gap-4 items-start justify-center">
-			<div class="name w-full flex flex-col items-start mb-5">
+		<div class="w-full flex flex-col gap-2 items-start justify-center">
+			<div class="name w-full flex flex-col items-start mb-3">
 				<label for="name" class="block mb-2 text-[0.875rem]">Name:</label>
 				<input
 					type="text"
@@ -317,7 +317,7 @@
 				{/if}
 			</div>
 			<div class="max-w-full w-full">
-				<div class=" w-full mb-5">
+				<div class=" w-full mb-1">
 					<input
 						type="text"
 						name="search"
