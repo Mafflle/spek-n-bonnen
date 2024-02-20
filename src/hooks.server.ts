@@ -50,11 +50,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 				path: '/'
 			});
 
-			const newAccessToken: string | undefined = event.cookies.get('access');
-
-			if (newAccessToken) {
-				request.headers.set('Authorization', `Bearer ${newAccessToken}`);
-			}
+			return;
 		} else if (attempt < maxAttempts && !refreshTokens.ok) {
 			const errorBody = await refreshTokens.json();
 
@@ -84,6 +80,10 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 		console.log('request intercepted');
 		await retryRequest();
+		const newAccessToken: string | undefined = event.cookies.get('access');
+		if (newAccessToken) {
+			request.headers.set('Authorization', `Bearer ${newAccessToken}`);
+		}
 		return fetch(request);
 	} else {
 		return res;

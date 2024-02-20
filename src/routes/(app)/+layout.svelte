@@ -2,7 +2,8 @@
 	import SideNav from '$lib/components/SideNav.svelte';
 	export let data;
 
-	console.log(data.permissions.permissions[0]);
+	const { permissions } = data;
+	console.log(permissions[0]);
 </script>
 
 <div class="max-w-screen flex bg-[#F9F9F9]">

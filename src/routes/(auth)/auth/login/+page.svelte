@@ -116,7 +116,7 @@
 						>
 							{#if currInputType === 'password'}
 								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
-							{:else}
+							{:else if currInputType == 'text'}
 								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
 							{/if}
 						</button>

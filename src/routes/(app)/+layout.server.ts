@@ -6,6 +6,7 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 	const access = cookies.get('access');
 	const checkIfAdminExist = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists`);
+	console.log(checkIfAdminExist.status, checkIfAdminExist.statusText);
 
 	let currUrl = url.pathname;
 	if (checkIfAdminExist.ok) {
@@ -34,10 +35,9 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 				} else if (getImages.status === 401) {
 					throw redirect(302, `/auth/login?from=${url.pathname}`);
 				}
+			} else if (!res.ok) {
+				throw redirect(302, `/auth/login?from=${url.pathname}`);
 			}
-			// else if (!res.ok && res.status === 401) {
-			// 	throw redirect(302, `/auth/login?from=${url.pathname}`);
-			// }
 		} else {
 			cookies.delete('access', { path: '/' });
 			cookies.delete('refresh', { path: '/' });
@@ -46,6 +46,6 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 	} else {
 		cookies.delete('access', { path: '/' });
 		cookies.delete('refresh', { path: '/' });
-		throw redirect(303, `/auth/setup-admin?from=${currUrl}`);
+		throw redirect(303, `/auth/login?from=${currUrl}`);
 	}
 };

@@ -2,14 +2,13 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { enhance } from '$app/forms';
-	import Batch from '$lib/components/Batch.svelte';
-	import MediaManager from '$lib/components/MediaManager.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast } from '$lib/utils.js';
 	import { slide } from 'svelte/transition';
 	import { Batches, currentProvider } from '$lib/stores.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { browser } from '$app/environment';
+	import BatchCard from '$lib/components/BatchCard.svelte';
 
 	dayjs.extend(relativeTime);
 
@@ -268,7 +267,7 @@
 			<div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
 				{#each $Batches as batch (batch?.id)}
 					{#if batch}
-						<Batch on:edit={(e) => toggleEditModal(e.detail)} {batch} {grid} />
+						<BatchCard on:edit={(e) => toggleEditModal(e.detail)} {batch} />
 					{/if}
 				{/each}
 			</div>
