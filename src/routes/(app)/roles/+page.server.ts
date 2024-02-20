@@ -3,13 +3,9 @@ import { showToast } from '$lib/utils';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
-import { getCurrentUser } from '$lib/user';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
-	if (getCurrentUser()?.is_superuser === false) {
-		throw redirect(302, '/');
-	}
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=group`);
+	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=role`);
 	const rolesRes = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/`);
 	const access = cookies.get('access');
 	const refresh = cookies.get('refresh');
@@ -39,7 +35,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	} else if (!rolesRes.ok) {
 		console.log('roles', rolesRes);
 
-		showToast('Error fetching roles', 'error');
+		// showToast('Error fetching roles', 'error');
 	}
 };
 

@@ -78,7 +78,9 @@ export const actions: Actions = {
 				body: JSON.stringify(validatedData)
 			});
 
-			if (setup.ok && setup.status == 201) {
+			console.log(setup.status, setup.statusText);
+
+			if (setup.ok) {
 				return {
 					success: true
 				};

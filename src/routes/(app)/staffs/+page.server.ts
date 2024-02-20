@@ -1,6 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { showToast } from '$lib/utils';
-import { fail, type Action, type Actions, redirect } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
 
@@ -67,8 +66,6 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 			groups: data.results,
 			users
 		};
-	} else if (groups.status === 401 || staffs.status === 401) {
-		throw redirect(302, `/auth/login?from=${url.pathname}`);
 	}
 };
 
