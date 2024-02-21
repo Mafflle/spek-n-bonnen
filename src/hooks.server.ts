@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import type { HandleFetch } from '@sveltejs/kit';
+import { redirect, type HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
@@ -81,7 +81,29 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 };
 
 export const handle = async ({ event, resolve }) => {
-	const refresh = event.cookies.get('refresh');
+	const access = event.cookies.get('access');
+	if (!event.url.pathname.includes('auth')) {
+		const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${access}`
+			}
+		});
+
+		if (res.ok) {
+			const user = await res.json();
+			event.locals.user = user;
+		}
+		// else if (!res.ok) {
+		// 	console.log('erorr fetching user profile', res.status, res.statusText);
+
+		// 	let currUrl = event.url.pathname;
+		// 	event.cookies.delete('access', { path: '/' });
+		// 	event.cookies.delete('refresh', { path: '/' });
+		// 	throw redirect(302, `/auth/login?from=${currUrl}`);
+		// }
+	}
 
 	return await resolve(event);
 };

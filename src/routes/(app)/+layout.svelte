@@ -3,7 +3,6 @@
 	export let data;
 
 	const { permissions } = data;
-	console.log(permissions[0]);
 </script>
 
 <div class="max-w-screen flex bg-[#F9F9F9]">

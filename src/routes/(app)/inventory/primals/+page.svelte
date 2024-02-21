@@ -22,7 +22,7 @@
 	// console.log(primals.results); // Add this line to debug
 	Primals.set(primals.results);
 
-	console.log($Primals);
+	// console.log($Primals);
 
 	let showModal = false;
 	let loading = false;
@@ -31,7 +31,7 @@
 	let validationErrors: { name?: [string]; description?: [string]; reorder_point?: [string] };
 	let description: string = '';
 	let descriptionContainer: HTMLElement;
-	let currPrimalReorderPoint: number;
+	let currPrimalReorderPoint: number | null;
 	let currPrimal: Primal | null;
 	let showPrimalInfo: boolean = false;
 
@@ -50,6 +50,7 @@
 		} else {
 			currentPrimalName = '';
 			description = '';
+			currPrimalReorderPoint = null;
 			currentProvider.set(null);
 		}
 		toggleModal();

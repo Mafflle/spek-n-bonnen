@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
 	if (getAllSlaughterHouses.ok) {
 		const slaughterHouses = await getAllSlaughterHouses.json();
-		console.log(slaughterHouses);
+		// console.log(slaughterHouses);
 		return {
 			slaughterHouses
 		};

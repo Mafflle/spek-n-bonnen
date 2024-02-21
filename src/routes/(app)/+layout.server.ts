@@ -3,23 +3,14 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 
-export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
-	const access = cookies.get('access');
-
+export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals }) => {
 	let currUrl = url.pathname;
 
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${access}`
-		}
-	});
-	console.log('user', res.status);
-
-	if (res.ok) {
+	if (locals.user) {
 		const allPermission = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/permissions/`);
-		const user = await res.json();
+		const user = locals.user;
+		// console.log(user);
+
 		const permissions = await allPermission.json();
 		const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);
 
@@ -30,7 +21,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 		} else if (getImages.status === 401) {
 			throw redirect(302, `/auth/login?from=${currUrl}`);
 		}
-	} else if (!res.ok) {
+	} else if (!locals.user) {
 		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
 };
