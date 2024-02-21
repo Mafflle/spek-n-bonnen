@@ -302,7 +302,7 @@
 					<tr class="">
 						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 						<th class="bg-[#F9F9F9]">Date added</th>
-						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
 					</tr>
 				</thead>
 

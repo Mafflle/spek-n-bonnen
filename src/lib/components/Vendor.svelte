@@ -28,7 +28,7 @@
 			try {
 				if (result.status == 200) {
 					Vendors.update((vendors) => vendors.filter((item) => item.id !== vendor.id));
-					showToast('Brand deleted successfully', 'success');
+					showToast('Vendor deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
