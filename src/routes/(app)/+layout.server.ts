@@ -28,9 +28,9 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url }) => {
 
 			return { images, user, permissions };
 		} else if (getImages.status === 401) {
-			throw redirect(302, `/auth/login?from=${url.pathname}`);
+			throw redirect(302, `/auth/login?from=${currUrl}`);
 		}
 	} else if (!res.ok) {
-		throw redirect(302, `/auth/login?from=${url.pathname}`);
+		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
 };

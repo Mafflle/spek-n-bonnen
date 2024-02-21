@@ -71,7 +71,7 @@
 
 	onDestroy(() => {
 		currentProvider.set(null);
-		unsubscribe;
+		unsubscribe();
 	});
 </script>
 

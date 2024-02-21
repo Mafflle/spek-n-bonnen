@@ -19,75 +19,64 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		const delay = Math.pow(2, attempt - 1) * 1000;
 		console.log(maxAttempts, attempt);
 
-		const refreshToken = event.cookies.get('refresh');
-
-		// refreshes tokens
-		const refreshTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
-			method: 'POST',
-			body: JSON.stringify({ refresh: refreshToken }),
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
+		try {
+			const refreshToken = event.cookies.get('refresh');
+			// refreshes tokens
+			const refreshTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
+				method: 'POST',
+				body: JSON.stringify({ refresh: refreshToken }),
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				}
+			});
+			if (refreshTokens.ok) {
+				const tokens = await refreshTokens.json();
+				// console.log('successfully refreshed', tokens);
+				event.cookies.delete('access', { path: '/' });
+				event.cookies.delete('refresh', { path: '/' });
+				event.cookies.set('access', tokens.access, {
+					httpOnly: true,
+					secure: true,
+					sameSite: 'lax',
+					path: '/'
+				});
+				event.cookies.set('refresh', tokens.refresh, {
+					httpOnly: true,
+					secure: true,
+					sameSite: 'lax',
+					path: '/'
+				});
 			}
-		});
+		} catch (error) {
+			console.error('Error refreshing token:', error);
 
-		// upon successfull token refresh
-		// console.log('refreshing', refreshTokens);
+			if (attempt < maxAttempts) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+				//  console.log(refreshTokens.status, refreshTokens.statusText);
+				//  console.log('errorbody', errorBody);
 
-		if (refreshTokens.ok) {
-			const tokens = await refreshTokens.json();
-			// console.log('successfully refreshed', tokens);
-			event.cookies.set('access', tokens.access, {
-				httpOnly: true,
-				secure: true,
-				sameSite: 'lax',
-				path: '/'
-			});
-			event.cookies.set('refresh', tokens.refresh, {
-				httpOnly: true,
-				secure: true,
-				sameSite: 'lax',
-				path: '/'
-			});
-
-			return;
-		} else if (attempt < maxAttempts && !refreshTokens.ok) {
-			const errorBody = await refreshTokens.json();
-
-			console.log(refreshTokens.status, refreshTokens.statusText);
-			console.log('errorbody', errorBody);
-
-			//when refresh fails, it tries again for confirmation
-			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
-			// wait for a bit before refreshing
-			await new Promise((resolve) => setTimeout(resolve, delay));
-			// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
-			await retryRequest(attempt + 1);
-		} else {
-			console.log(refreshTokens.status);
-
-			// can't think of anything better to do here
-			// event.cookies.delete('access');
-			// event.cookies.delete('refresh');
+				//when refresh fails, it tries again for confirmation
+				console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
+				// wait for a bit before refreshing
+				// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
+				await retryRequest(attempt + 1);
+			}
 		}
 	};
 
 	const res = await fetch(request.clone());
 
-	if (!res.ok && res.status === 401 && res.url.includes('login') === false) {
-		const body = await res.json();
-		console.log('response', body);
-
-		console.log('request intercepted');
+	if (!res.ok && res.status === 401 && !res.url.includes('login')) {
+		console.log('Request intercepted with 401 status');
 		await retryRequest();
 		const newAccessToken: string | undefined = event.cookies.get('access');
 		if (newAccessToken) {
 			request.headers.set('Authorization', `Bearer ${newAccessToken}`);
 		}
 		return fetch(request);
-	} else {
-		return res;
 	}
+	return res;
 	// console.log('hey');
 };
 

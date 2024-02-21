@@ -1,7 +1,7 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
+import type { PageServerLoad } from './$types';
 
 const manageSchema = z.object({
 	name: z
