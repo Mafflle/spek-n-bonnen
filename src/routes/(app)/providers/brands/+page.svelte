@@ -145,18 +145,22 @@
 			</div>
 			<div class="w-full">
 				<div
-					class="w-full relative rounded-xl flex py-8 px-5 md:px-24 flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
+					class="w-full rounded-xl {previewImage ??
+						'flex py-8 px-5 md:px-24 flex-col items-start gap-3 border-grey-300 hover:border-primary-red border-dashed hover:bg-primary-softPink-100 border-2 '} self-stretch"
 				>
 					<div
-						class="upload-box-info relative w-full flex flex-col justify-center items-center gap-8"
+						class="upload-box-info w-full {previewImage ??
+							'flex flex-col justify-center items-center gap-8'}"
 					>
 						{#if previewImage}
-							<img
-								src={previewImage.image}
-								alt=""
-								style="aspect-ratio: 4/3"
-								class=" h-full w-full object-cover pointer-events-none"
-							/>
+							<div on:click={toggleMediaManager} class="w-full h-[250px] cursor-pointer">
+								<img
+									src={previewImage.image}
+									alt=""
+									style="aspect-ratio: 4/3"
+									class=" w-full h-full object-cover pointer-events-none rounded"
+								/>
+							</div>
 						{:else}
 							<div
 								class="image w-14 h-14 rounded-full flex justify-center items-center border border-primary-softPink"
@@ -168,8 +172,8 @@
 						<button
 							on:click={toggleMediaManager}
 							type="button"
-							class="bg-primary-red py-2.5 px-4 w-full text-sm font-medium text-white rounded-[30px]"
-							>Import from Media Manager</button
+							class="bg-primary-red py-2.5 px-4 w-full text-sm font-medium text-white rounded-[30px] {previewImage &&
+								'hidden'}">Import from Media Manager</button
 						>
 					</div>
 				</div>
