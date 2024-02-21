@@ -202,7 +202,7 @@
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<iconify-icon icon="mdi:key-add" width="23"></iconify-icon>
-					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create roles</span>
+					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create role</span>
 				</button>
 			</div>
 		</div>
