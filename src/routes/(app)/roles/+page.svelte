@@ -46,7 +46,7 @@
 	let permissionsSelected: boolean = false;
 	let isFilled: boolean = false;
 	let loading: boolean = false;
-	let currRoleId: number;
+	let currRoleId: number | null;
 
 	// conditional(s)
 
@@ -69,12 +69,19 @@
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
-	const toggleEditModal = (role) => {
-		showModal = !showModal;
-		name = role.name;
-		currRoleId = role.id;
+	const toggleEditModal = (role?) => {
+		if (role) {
+			name = role.name;
+			currRoleId = role.id;
 
-		container.set(role.permissions);
+			container.set(role.permissions);
+		} else {
+			name = '';
+			currRoleId = null;
+			container.set([]);
+		}
+
+		toggleModal();
 	};
 	// $: console.log($Roles);
 
@@ -196,7 +203,7 @@
 
 			<div class="filter-buttons flex items-start">
 				<button
-					on:click={toggleModal}
+					on:click={() => toggleEditModal()}
 					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md text-white justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
