@@ -297,7 +297,7 @@
 				{/if}
 			</button>
 		</section>
-		<div class="w-full flex flex-col gap-2 items-start justify-center">
+		<div class="w-full flex flex-col gap-4 items-start justify-center">
 			<div class="name w-full flex flex-col items-start mb-3">
 				<label for="name" class="block mb-2 text-[0.875rem]">Name:</label>
 				<input
@@ -317,7 +317,7 @@
 				{/if}
 			</div>
 			<div class="max-w-full w-full">
-				<div class=" w-full mb-1">
+				<div class=" w-full mb-3">
 					<input
 						type="text"
 						name="search"
@@ -338,7 +338,7 @@
 						<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 					</div>
 				{:else if permissions.count > 0}
-					<label for="name" class="block mb-2 text-[0.875rem]">Select permissions:</label>
+					<label for="name" class="block text-[0.875rem]">Select permissions:</label>
 
 					<PillSelector options={permissions.results} disableOptions={loading} />
 					<div class="hidden" id="permissions"></div>
