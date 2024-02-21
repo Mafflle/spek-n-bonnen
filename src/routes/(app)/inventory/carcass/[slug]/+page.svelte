@@ -14,8 +14,6 @@
 	import { get } from 'svelte/store';
 	export let data: PageData;
 
-	console.log(data);
-
 	let { carcass, primals, access } = data;
 
 	let disabled: boolean;
