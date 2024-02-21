@@ -26,8 +26,10 @@
 
 	const toggleInputType = () => {
 		if (currInputType === 'password') {
+			document.getElementById('password').type = 'text';
 			currInputType = 'text';
 		} else {
+			document.getElementById('password').type = 'password';
 			currInputType = 'password';
 		}
 	};
@@ -56,6 +58,8 @@
 			}
 		};
 	};
+
+	$: console.log(currInputType);
 </script>
 
 <svelte:head>
@@ -89,7 +93,7 @@
 						name="email"
 						id="email"
 						placeholder="Enter your Email"
-						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -103,22 +107,23 @@
 					<label for="password" class="block mb-2 text-[0.875rem]">Password</label>
 					<div class="w-full relative flex items-center px-0">
 						<input
-							type={currInputType}
+							type="password"
 							name="password"
 							id="password"
 							placeholder="Enter your password"
-							class=" input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
 						/>
 						<button
 							type="button"
 							on:click={toggleInputType}
-							class="absolute right-1 flex items-center cursor-pointer z-10 w-fit p-2"
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
 						>
-							{#if currInputType === 'password'}
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
 								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
-							{:else if currInputType == 'text'}
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
 								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
-							{/if}
+							</span>
 						</button>
 					</div>
 					{#if validationErrors?.password}
