@@ -11,7 +11,7 @@
 	export let data;
 
 	const { vendors } = data;
-	console.log(vendors);
+	// console.log(vendors);
 
 	let showModal = false;
 	let loading = false;
@@ -119,6 +119,7 @@
 				{$currentProvider?.id ? 'Edit vendor' : 'Add vendor'}
 			</div>
 			<button
+				type="button"
 				class="close-button flex justify-center items-center w-1/12"
 				on:click={() => toggleEditModal()}
 			>
@@ -274,6 +275,7 @@
 				</div>
 				<div class="button">
 					<button
+						type="button"
 						class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
 			hover:bg-[#C7453C]
 			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
@@ -302,7 +304,7 @@
 					<tr class="">
 						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 						<th class="bg-[#F9F9F9]">Date added</th>
-						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
 					</tr>
 				</thead>
 

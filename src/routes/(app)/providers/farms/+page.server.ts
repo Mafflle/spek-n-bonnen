@@ -38,15 +38,12 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 };
 
 export const actions: Actions = {
-	
-	'manage-farm': async ({ fetch, request, url }) => {
-		const currentUser = getCurrentUser();
-        if (!currentUser?.is_superuser){
-            console.log('You do not have permission to perform this action');
-            showToast('You do not have permission to perform this action', 'error');
-            return fail(403, { message: 'You do not have permission to perform this action' });
-        }
-     
+	'manage-farm': async ({ fetch, request, url, locals }) => {
+		if (!locals.user.is_superuser) {
+			console.log('You do not have permission to perform this action');
+			return fail(403, { message: 'You do not have permission to perform this action' });
+		}
+
 		const formData = await request.formData();
 
 		const name = formData.get('farm-name');
@@ -126,13 +123,12 @@ export const actions: Actions = {
 		}
 	},
 
-	delete: async ({ fetch, request }) => {
-		const currentUser = getCurrentUser();
-        if (!currentUser?.is_superuser){
-            console.log('You do not have permission to perform this action');
-            showToast('You do not have permission to perform this action', 'error');
-            return fail(403, { message: 'You do not have permission to perform this action' });
-        }
+	delete: async ({ fetch, request, locals }) => {
+		if (!locals?.user.is_superuser) {
+			console.log('You do not have permission to perform this action');
+			showToast('You do not have permission to perform this action', 'error');
+			return fail(403, { message: 'You do not have permission to perform this action' });
+		}
 		const formData = await request.formData();
 		const id = formData.get('id');
 		console.log(id);

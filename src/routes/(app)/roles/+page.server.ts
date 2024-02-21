@@ -5,7 +5,7 @@ import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=role`);
+	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=group`);
 	const rolesRes = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/`);
 	const access = cookies.get('access');
 	const refresh = cookies.get('refresh');

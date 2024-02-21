@@ -119,6 +119,7 @@ export const actions: Actions = {
 					success: true
 				};
 			} else if (!deleteRole.ok) {
+				console.log(deleteRole.status, deleteRole.statusText);
 				console.log(deleteRole);
 			}
 		} else return fail(400);

@@ -116,6 +116,8 @@
 							toggleEditModal();
 						} else if (result.status === 400) {
 							validationErrors = result.data.errors;
+						} else if (result.status === 403) {
+							showToast('You do not have permission to perform this action', 'error');
 						} else if (result.status === 500) {
 							showToast('Ooops something went wrong', 'error');
 						}
@@ -193,110 +195,8 @@
 		</form>
 	</div>
 </Modal>
-<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
-	<div class="headers flex flex-col items-start gap-[0.25rem]">
-		<div class="text-[2rem] tracking-[-0.04rem] font-bold">Farms</div>
-		<sub class="text-[#6B6B6B] text-sm"> Inventory / Farms / Manage</sub>
-	</div>
-	<div class="filters flex items-center w-full justify-between">
-		<div
-			class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
-		>
-			<div
-				class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
-			>
-				<span>
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-							stroke="#A9A9A9"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-						<path
-							d="M21 20.9999L16.65 16.6499"
-							stroke="#A9A9A9"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</span>
-				<form
-					method="post"
-					action="?/search"
-					use:enhance={searchFarms}
-					bind:this={form}
-					name="search"
-					id="search-farms"
-					class="w-full"
-				>
-					<input type="submit" class="hidden" value="submit" />
-					<input
-						type="text"
-						placeholder="Search for farms..."
-						class="py-2 flex-auto outline-none w-full"
-						name="search"
-						on:input={() => {
-							submitSearch();
-						}}
-					/>
-				</form>
-			</div>
-		</div>
 
-		<div class="filter-buttons flex items-start gap-5">
-			<button
-				on:click={toggleModal}
-				class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
-			hover:bg-[#C7453C]
-			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
-			>
-				<div class="w-5 h-5 relative">
-					<img src="/icons/plus.svg" alt="vendor-plus" />
-				</div>
-				<div class="text-white hidden sm:block text-sm font-bold font-['Satoshi']">Add farm</div>
-			</button>
-		</div>
-	</div>
-</div>
-
-{#if $Farms.length != 0}
-	<div class="border rounded-xl">
-		<table class="table">
-			<thead>
-				<tr class="">
-					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Farm</th>
-					<th class="bg-[#F9F9F9]">address</th>
-					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-				</tr>
-			</thead>
-
-			<tbody>
-				{#each $Farms as farm}
-					<FarmCard
-						on:delete={(e) => {
-							Farms.update((farms) => farms.filter((farm) => farm.id !== e.detail.id));
-							showToast('Farm deleted successfully', 'success');
-						}}
-						on:edit={(e) => toggleEditModal(e.detail)}
-						data={farm}
-						id={farm.id}
-					/>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-{/if}
-
-{#if $Farms.length === 0 && !searching}
+{#if $Farms.length < 1}
 	<div class="empty w-full h-full flex justify-center items-center">
 		<div class="empty-indicator h-full flex flex-col justify-center items-center gap-5 w-[277px]">
 			<div class="icon">
@@ -324,6 +224,107 @@
 				</button>
 			</div>
 		</div>
+	</div>
+{/if}
+
+{#if $Farms.length !== 0}
+	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
+		<div class="headers flex flex-col items-start gap-[0.25rem]">
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Farms</div>
+			<sub class="text-[#6B6B6B] text-sm"> Inventory / Farms / Manage</sub>
+		</div>
+		<div class="filters flex items-center w-full justify-between">
+			<div
+				class="flex items-center sm:w-[24em] gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+			>
+				<div
+					class="flex items-center sm:w-[24em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				>
+					<span>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+								stroke="#A9A9A9"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+							<path
+								d="M21 20.9999L16.65 16.6499"
+								stroke="#A9A9A9"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</span>
+					<form
+						method="post"
+						action="?/search"
+						use:enhance={searchFarms}
+						bind:this={form}
+						name="search"
+						id="search-farms"
+						class="w-full"
+					>
+						<input
+							type="text"
+							placeholder="Search for farms..."
+							class="py-2 flex-auto outline-none w-full"
+							name="search"
+							on:input={() => {
+								submitSearch();
+							}}
+						/>
+					</form>
+				</div>
+			</div>
+
+			<div class="filter-buttons flex items-start gap-5">
+				<button
+					type="button"
+					on:click={toggleModal}
+					class="w-auto h-9 px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+			hover:bg-[#C7453C]
+			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+				>
+					<div class="w-5 h-5 relative">
+						<img src="/icons/plus.svg" alt="vendor-plus" />
+					</div>
+					<div class="text-white hidden sm:block text-sm font-bold font-['Satoshi']">Add farm</div>
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="border rounded-xl">
+		<table class="table">
+			<thead>
+				<tr class="">
+					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+					<th class="bg-[#F9F9F9]">Address</th>
+					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{#each $Farms as farm}
+					<FarmCard
+						on:delete={(e) => {
+							Farms.update((farms) => farms.filter((farm) => farm.id !== e.detail.id));
+							showToast('Farm deleted successfully', 'success');
+						}}
+						on:edit={(e) => toggleEditModal(e.detail)}
+						data={farm}
+					/>
+				{/each}
+			</tbody>
+		</table>
 	</div>
 {:else if $Farms.length === 0 && searching}
 	<div class="empty flex justify-center items-center py-5">

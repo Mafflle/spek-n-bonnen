@@ -22,12 +22,16 @@
 	let keepOpen = false;
 
 	function checkIfChildActive() {
-		children.map((child) => {
-			if (child.href === $page.url.pathname) {
-				keepOpen = true;
-				return;
-			}
-		});
+		if (children.length > 0) {
+			children.map((child) => {
+				if (child.href === $page.url.pathname) {
+					keepOpen = true;
+					return;
+				}
+			});
+		} else {
+			return (keepOpen = false);
+		}
 	}
 	checkIfChildActive();
 </script>

@@ -8,7 +8,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import PageLoader from './PageLoader.svelte';
 
-	export let grid: boolean;
+	export let grid: boolean = false;
 	export let data: Farm | ButcherShop;
 
 	let loading: boolean = false;

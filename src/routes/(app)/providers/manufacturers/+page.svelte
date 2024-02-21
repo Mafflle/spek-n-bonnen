@@ -125,6 +125,7 @@
 					{$currentProvider?.id ? 'Edit manufacturer' : 'Add manufacturer'}
 				</div>
 				<button
+					type="button"
 					class="close-button flex justify-center items-center w-1/12"
 					on:click={toggleEditModal}
 				>
@@ -280,7 +281,7 @@
 						<tr class="">
 							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 							<th class="bg-[#F9F9F9]">Date added</th>
-							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
 						</tr>
 					</thead>
 

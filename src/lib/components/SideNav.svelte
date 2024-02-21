@@ -41,7 +41,6 @@
 					href: '/inventory/primals',
 					color: '#FF1C0D'
 				}
-			
 			]
 		},
 		{
@@ -115,7 +114,7 @@
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem]">ERP SYSTEM</sub>
 	</div>
-	<nav class="sidebar-nav w-full flex flex-col gap-4 px-3 mb-4">
+	<nav class="sidebar-nav w-full h-full flex flex-col items-start justify-between gap-4 px-3 mb-4">
 		<ol class="w-full flex items-start flex-col gap-3 mb-8">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders'}

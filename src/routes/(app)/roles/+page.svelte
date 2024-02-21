@@ -46,7 +46,7 @@
 	let permissionsSelected: boolean = false;
 	let isFilled: boolean = false;
 	let loading: boolean = false;
-	let currRoleId: number;
+	let currRoleId: number | null;
 
 	// conditional(s)
 
@@ -69,12 +69,19 @@
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
-	const toggleEditModal = (role) => {
-		showModal = !showModal;
-		name = role.name;
-		currRoleId = role.id;
+	const toggleEditModal = (role?) => {
+		if (role) {
+			name = role.name;
+			currRoleId = role.id;
 
-		container.set(role.permissions);
+			container.set(role.permissions);
+		} else {
+			name = '';
+			currRoleId = null;
+			container.set([]);
+		}
+
+		toggleModal();
 	};
 	// $: console.log($Roles);
 
@@ -196,13 +203,13 @@
 
 			<div class="filter-buttons flex items-start">
 				<button
-					on:click={toggleModal}
+					on:click={() => toggleEditModal()}
 					class=" md:p-2.5 px-2.5 py-2 bg-primary-100 rounded-md text-white justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
 					<iconify-icon icon="mdi:key-add" width="23"></iconify-icon>
-					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create roles</span>
+					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create role</span>
 				</button>
 			</div>
 		</div>
@@ -298,7 +305,7 @@
 			</button>
 		</section>
 		<div class="w-full flex flex-col gap-4 items-start justify-center">
-			<div class="name w-full flex flex-col items-start mb-5">
+			<div class="name w-full flex flex-col items-start mb-3">
 				<label for="name" class="block mb-2 text-[0.875rem]">Name:</label>
 				<input
 					type="text"
@@ -317,7 +324,7 @@
 				{/if}
 			</div>
 			<div class="max-w-full w-full">
-				<div class=" w-full mb-5">
+				<div class=" w-full mb-3">
 					<input
 						type="text"
 						name="search"
@@ -338,7 +345,7 @@
 						<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 					</div>
 				{:else if permissions.count > 0}
-					<label for="name" class="block mb-2 text-[0.875rem]">Select permissions:</label>
+					<label for="name" class="block text-[0.875rem]">Select permissions:</label>
 
 					<PillSelector options={permissions.results} disableOptions={loading} />
 					<div class="hidden" id="permissions"></div>

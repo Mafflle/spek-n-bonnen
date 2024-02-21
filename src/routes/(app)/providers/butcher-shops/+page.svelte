@@ -111,7 +111,7 @@
 					<Card
 						on:delete={(e) => {
 							ButcherShops.update((shops) => shops.filter((shop) => shop.id !== e.detail.id));
-							showToast('Shop deleted successfully', 'success');
+							showToast('Butche shop deleted successfully', 'success');
 						}}
 						data={shop}
 						{grid}
@@ -126,7 +126,7 @@
 						<tr class="">
 							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
 							<th class="bg-[#F9F9F9]">Address</th>
-							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]">Actions</th>
 						</tr>
 					</thead>
 
@@ -236,6 +236,7 @@
 				{$currentProvider?.id ? 'Edit' : 'Add'} butcher shop
 			</div>
 			<button
+				type="button"
 				on:click={() => toggleEditModal()}
 				class="close-button flex justify-center items-center w-1/12"
 			>

@@ -54,10 +54,10 @@
 </script>
 
 <div
-	class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full h-full max-h-32 mb-3"
+	class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full h-full"
 >
 	<div
-		class="roles flex items-start gap-[0.625rem] w-full max-w-full overflow-x-scroll no-scrollbar flex-wrap"
+		class="roles flex items-start gap-[0.625rem] w-full max-w-full overflow-x-scroll no-scrollbar mb-5 flex-wrap"
 	>
 		{#each options as option, i (i)}
 			<Pill selected={checkSelected(option)} {option} on:selected={(e) => onSelected(e.detail)} />
