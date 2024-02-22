@@ -19,10 +19,13 @@
 	let disabled: boolean;
 
 	$: {
-		$Batches.length > 0 ? (disabled = true) : (disabled = false);
+		$Batches.length > 0 && $Batches[0].carcass.id === carcass.id
+			? (disabled = true)
+			: (disabled = false);
 	}
 
 	Batches.set(data.batches.results);
+	console.log(data);
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
@@ -402,7 +405,7 @@
 
 				<tbody>
 					{#each $Batches as batch (batch?.id)}
-						{#if batch}
+						{#if batch.carcass.id === carcass.id}
 							<BatchCard {batch} />
 						{/if}
 					{/each}
