@@ -37,9 +37,7 @@
 	};
 </script>
 
-<div
-	class="max-w-full w-xl md:w-2xl lg:w-[930px] bg-white rounded flex flex-col h-auto items-start"
->
+<div class="max-w-full w-full bg-white rounded flex flex-col h-auto items-start">
 	<section class="flex gap-2 px-3 py-4 items-center w-full shadow">
 		<h5 class="text-lg font-satoshi font-bold">Media manager</h5>
 	</section>
@@ -93,7 +91,7 @@
 				</button>
 			</section>
 		</div>
-		<div class="grid grid-cols-2 md:grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
+		<div class="grid grid-cols-3 md:grid-cols-4 gap-10 overflow-scroll no-scrollbar max-h-96">
 			{#each images as image}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -103,7 +101,7 @@
 				>
 					<div class="brand-image overflow-hidden relative h-32 self-stretch bg-[#f9f9f9]">
 						<img
-							class="h-full w-full object-cover rounded-lg"
+							class="h-full w-full object-cover aspect-[16/9] object-center rounded-lg"
 							src={image.image}
 							alt={image.title}
 						/>
