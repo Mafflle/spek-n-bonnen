@@ -25,7 +25,6 @@
 	}
 
 	Batches.set(data.batches.results);
-	console.log(data);
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
 		{ label: 'Traceability', value: 'traceability' }
