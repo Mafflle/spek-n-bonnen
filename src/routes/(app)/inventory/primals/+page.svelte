@@ -429,10 +429,14 @@
 							>
 								{currPrimal?.description}
 							</p>
-							<button
-								on:click={(e) => toggleMore(e)}
-								class="text-sm text-green-300 self-end mr-5 underline">More</button
-							>
+							{#if currPrimal?.description.length > 100}
+								<button
+									on:click={(e) => toggleMore(e)}
+									class="text-sm text-green-300 self-end mr-5 underline"
+								>
+									More
+								</button>
+							{/if}
 						</div>
 					</div>
 					<!-- <div class="labels w-full">
