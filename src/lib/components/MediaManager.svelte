@@ -19,6 +19,7 @@
 	let validationErrors: { name?: [string]; logo?: [string] };
 	let imageValidationError: string;
 	let selectedImage;
+	let imageCount: number;
 	const dispatch = createEventDispatcher();
 
 	const toggleModal = () => {
@@ -35,6 +36,10 @@
 		dispatch('selected', selectedImage);
 		showToast('Image selected successfully', 'info');
 	};
+
+	$: {
+		imageCount = images.length;
+	}
 </script>
 
 <div class="max-w-full w-full bg-white rounded flex flex-col h-auto items-start">
@@ -44,7 +49,7 @@
 
 	<div class="flex-1 flex flex-col gap-8 p-4 md:py-10 md:px-8 w-full">
 		<div class="flex flex-col gap-4 w-full">
-			<p>Gallery</p>
+			<p>Gallery ({imageCount})</p>
 			<section class=" flex justify-between items-center w-full">
 				<div
 					class="flex items-center sm:w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
