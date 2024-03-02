@@ -55,6 +55,18 @@
 			}
 		};
 	};
+
+	let currInputType = 'password';
+
+	const toggleInputType = () => {
+		if (currInputType === 'password') {
+			document.getElementById('password').type = 'text';
+			currInputType = 'text';
+		} else {
+			document.getElementById('password').type = 'password';
+			currInputType = 'password';
+		}
+	};
 	// const createRolesInput = (options: Option[]) => {
 	// 	const inputsContainer = document.getElementById('rolesContainer');
 
@@ -285,14 +297,28 @@
 			<div class="flex flex-col gap-4 justify-between items-center w-full">
 				<div class="form-item w-full flex flex-col gap-1">
 					<label for="password" class="text-sm hidden font-medium font-satoshi">Password</label>
-					<input
-						type="password"
-						name="password"
-						id="password"
-						disabled={loading}
-						placeholder="Password"
-						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-					/>
+
+					<div class="w-full relative flex items-center">
+						<input
+							type="password"
+							name="password"
+							id="password"
+							placeholder="Enter your password"
+							class="h-12 w-full px-4 py-2.5 rounded-md outline-none focus:outline-primary-100 focus:border-1 focus:border-primary-100 focus:shadow-custom border"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
+						>
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							</span>
+						</button>
+					</div>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
@@ -301,6 +327,7 @@
 						>
 					{/if}
 				</div>
+
 				<div class="form-item w-full flex flex-col gap-1">
 					<label for="confirm-password" class="text-sm hidden font-medium font-satoshi"
 						>Confirm password</label
