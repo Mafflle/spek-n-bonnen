@@ -14,6 +14,22 @@
 		password2?: [string];
 	};
 
+	let currInputType = 'password';
+
+	const toggleInputType = () => {
+		if (currInputType === 'password') {
+			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
+				input.type = 'text';
+			});
+			currInputType = 'text';
+		} else {
+			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
+				input.type = 'password';
+			});
+			currInputType = 'password';
+		}
+	};
+
 	// onMount(async () => {});
 </script>
 
@@ -123,57 +139,84 @@
 					{/if}
 				</div>
 
-				<div class="password flex flex-col">
-					<label for="password" class="block mb-2 text-[ 0.875rem]">Password</label>
-					<input
-						type="password"
-						id="password"
-						name="password"
-						placeholder="Enter your Password"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-					/>
+				<div class="password">
+					<label for="password" class="block mb-2 text-[0.875rem]">Password</label>
+					<div class="w-full relative flex items-center px-0">
+						<input
+							type={currInputType}
+							name="password"
+							id="password"
+							placeholder="Enter your password"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
+						>
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							</span>
+						</button>
+					</div>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.password[0]}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
 						>
 					{/if}
 				</div>
-				<div class="password flex flex-col">
-					<label for="confirm-password" class="block mb-2 text-[ 0.875rem]">Confirm password</label>
-					<input
-						type="password"
-						id="confirm-password"
-						name="confirm-password"
-						placeholder="Confirm your Password"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-					/>
+
+				<div class="password">
+					<label for="confirm-password" class="block mb-2 text-[0.875rem]">Confirm Password</label>
+					<div class="w-full relative flex items-center px-0">
+						<input
+							type={currInputType}
+							name="confirm-password"
+							id="confirm-password"
+							placeholder="Confirm your password"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
+						>
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							</span>
+						</button>
+					</div>
 					{#if validationErrors?.password2}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.password2[0]}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password2}</sub
 						>
 					{/if}
 				</div>
-			</div>
 
-			<div class="submit w-full flex flex-col gap-[1.88rem]">
-				<button
-					disabled={loading}
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full
+				<div class="submit w-full flex flex-col gap-[1.88rem]">
+					<button
+						disabled={loading}
+						class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full
                     hover:bg-[#C7453C] hover:rounded-[0.625rem] text-white font-bold text-sm max-h-12 flex items-center justify-center
                     focus:shadow-custom
                     "
-					type="submit"
-				>
-					{#if loading}
-						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
-					{:else}
-						<span class="button-text">Sign up</span>
-					{/if}
-				</button>
+						type="submit"
+					>
+						{#if loading}
+							<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
+						{:else}
+							<span class="button-text">Sign up</span>
+						{/if}
+					</button>
+				</div>
 			</div>
 		</div>
 	</form>

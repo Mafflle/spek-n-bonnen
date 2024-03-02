@@ -5,10 +5,12 @@
 	import SearchInput from '$lib/components/SearchInput.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
 	import { Users, container } from '$lib/stores.js';
-	import { showToast } from '$lib/utils.js';
+	import { generatePassword, showToast } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { KeyIcon } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	import { uid } from 'uid';
 
 	export let data;
 
@@ -25,6 +27,8 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
+
+	let generating: boolean = false;
 
 	$Users = users.results;
 
@@ -84,6 +88,33 @@
 		}
 	}
 	// console.log(users);
+
+	let currInputType = 'password';
+
+	const toggleInputType = () => {
+		if (currInputType === 'password') {
+			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
+				input.type = 'text';
+			});
+			currInputType = 'text';
+		} else {
+			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
+				input.type = 'password';
+			});
+			currInputType = 'password';
+		}
+	};
+
+	const usePassword = () => {
+		generating = true;
+		const password = generatePassword(9);
+		console.log(password);
+		document.querySelectorAll('#password, #confirm-password').forEach((input) => {
+			input.value = password;
+		});
+		generating = false;
+		currInputType = 'text';
+	};
 
 	onMount(() => {
 		// console.log(groups);
@@ -284,42 +315,81 @@
 			</div>
 			<div class="flex flex-col gap-4 justify-between items-center w-full">
 				<div class="form-item w-full flex flex-col gap-1">
-					<label for="password" class="text-sm hidden font-medium font-satoshi">Password</label>
-					<input
-						type="password"
-						name="password"
-						id="password"
-						disabled={loading}
-						placeholder="Password"
-						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-					/>
+					<label for="password" class="block mb-2 text-[0.875rem]">Password</label>
+					<div class="w-full relative flex items-center px-0">
+						<input
+							type={currInputType}
+							name="password"
+							id="password"
+							placeholder="Enter your password"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
+						>
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							</span>
+						</button>
+					</div>
 					{#if validationErrors?.password}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.password[0]}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password}</sub
 						>
 					{/if}
 				</div>
 				<div class="form-item w-full flex flex-col gap-1">
-					<label for="confirm-password" class="text-sm hidden font-medium font-satoshi"
-						>Confirm password</label
-					>
-					<input
-						type="password"
-						name="confirm-password"
-						id="confirm-password"
-						disabled={loading}
-						placeholder="Confirm password"
-						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-					/>
+					<label for="confirm-password" class="block mb-2 text-[0.875rem]">Confirm Password</label>
+					<div class="w-full relative flex items-center px-0">
+						<input
+							type={currInputType}
+							name="confirm-password"
+							id="confirm-password"
+							placeholder="Confirm your password"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
+						/>
+						<button
+							type="button"
+							on:click={toggleInputType}
+							class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
+						>
+							<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view" width="20"></iconify-icon>
+							</span>
+							<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
+								<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
+							</span>
+						</button>
+					</div>
 					{#if validationErrors?.password2}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]"
-							>{validationErrors.password2[0]}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.password2}</sub
 						>
 					{/if}
+				</div>
+				<div class="flex w-full justify-end">
+					<button
+						type="button"
+						disabled={generating}
+						on:click={() => usePassword()}
+						class="bg-primary-red p-2.5 rounded-md text-white text-sm py-2 px-4 flex items-center font-bold font-satoshi"
+					>
+						{#if generating}
+							<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
+						{:else}
+							<div class="flex items-center gap-2">
+								<KeyIcon size="20" />
+								<span>Generate Password</span>
+							</div>
+						{/if}
+					</button>
 				</div>
 			</div>
 		</div>

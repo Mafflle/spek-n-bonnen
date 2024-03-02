@@ -69,64 +69,65 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 	}
 };
 
-export const actions: Actions = {
-	invite_staff: async ({ fetch, request }) => {
-		const formData = await request.formData();
+// export const actions: Actions = {
+// 	invite_staff: async ({ fetch, request }) => {
+// 		const formData = await request.formData();
 
-		const roles = formData.getAll('role');
-		const first_name = formData.get('first-name');
-		const last_name = formData.get('last-name');
-		const email = formData.get('email');
-		const password = formData.get('password');
-		const password2 = formData.get('confirm-password');
+// 		const roles = formData.getAll('role');
+// 		const first_name = formData.get('first-name');
+// 		const last_name = formData.get('last-name');
+// 		const email = formData.get('email');
+// 		const password = formData.get('password');
+// 		const password2 = formData.get('confirm-password');
 
-		const groups = roles.map((role) => parseInt(role));
+// 		const groups = roles.map((role) => parseInt(role));
 
-		const dataToValidate = {
-			...(first_name && { first_name }),
-			...(last_name && { last_name }),
-			...(email && { email }),
-			...(password && { password }),
-			...(password2 && { password2 }),
-			...(groups && { groups })
-		};
+// 		const dataToValidate = {
+// 			...(first_name && { first_name }),
+// 			...(last_name && { last_name }),
+// 			...(email && { email }),
+// 			...(password && { password }),
+// 			...(password2 && { password2 }),
+// 			...(groups && { groups })
+// 		};
 
-		try {
-			const validatedData = inviteSchema.parse(dataToValidate);
-			// console.log(validatedData);
+// 		try {
+// 			const validatedData = inviteSchema.parse(dataToValidate);
+// 			// console.log(validatedData);
 
-			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/invite/`, {
-				method: 'POST',
-				body: JSON.stringify(validatedData)
-			});
+// 			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/invite/`, {
+// 				method: 'POST',
+// 				body: JSON.stringify(validatedData)
+// 			});
 
-			console.log('inviting', res.status, res.statusText);
+// 			console.log('inviting', res.status, res.statusText);
 
-			if (res.ok) {
-				const invitedStaff = await res.json();
+// 			if (res.ok) {
+// 				const invitedStaff = await res.json();
 
-				return {
-					invitedStaff
-				};
-			} else if (!res.ok) {
-				const details = await res.json();
-				// console.log('error', details);
-				return fail(400, { errors: details });
-			}
-		} catch (error) {
-			const toSend = {
-				message: 'Ooops something went wrong',
-				errors: {} as Errors
-			};
-			if (error instanceof z.ZodError) {
-				toSend.message = 'Validation error';
-				toSend.errors = error.flatten().fieldErrors;
+// 				return {
+// 					invitedStaff
+// 				};
+// 			} else if (!res.ok) {
+// 				const details = await res.json();
+// 				// console.log('error', details);
+// 				return fail(400, { errors: details });
+// 			}
+// 		} catch (error) {
+// 			const toSend = {
+// 				message: 'Ooops something went wrong',
+// 				errors: {} as Errors
+// 			};
+// 			if (error instanceof z.ZodError) {
+// 				toSend.message = 'Validation error';
+// 				toSend.errors = error.flatten().fieldErrors;
 
-				return fail(400, toSend);
-			}
+// 				return fail(400, toSend);
+// 			}
 
-			console.log('error', error);
-			return fail(500, toSend);
-		}
-	}
-};
+// 			console.log('error', error);
+// 			return fail(500, toSend);
+// 		}
+// 	}
+// 	delete_staff: async({})
+// };
