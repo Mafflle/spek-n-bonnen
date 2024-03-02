@@ -280,7 +280,7 @@
 								name="certifications"
 								id="certifications"
 								placeholder="Enter certification (optional)"
-								class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+								class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 							/>
 							{#if validationErrors?.certifications}
 								<sub
@@ -303,7 +303,7 @@
 								name="purchase-price"
 								id="purchase-price"
 								placeholder="Enter purchase price eg - ($100)"
-								class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+								class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 							/>
 							{#if validationErrors?.purchase_price}
 								<sub
@@ -369,7 +369,7 @@
 										name="weight"
 										id="weight"
 										placeholder="Enter weight eg - (99kg)"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.weight}
 										<sub
@@ -389,7 +389,7 @@
 										name="cold-weight"
 										id="cold-weight"
 										placeholder="Enter cold weight eg - (99kg)"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.cold_weight}
 										<sub
@@ -490,7 +490,7 @@
 										name="lot-number"
 										id="lot-number"
 										placeholder="Enter lot number"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.lot_number}
 										<sub
@@ -510,7 +510,7 @@
 										name="carcass_number"
 										id="carcass_number"
 										placeholder="Enter carcass number"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.carcass_number}
 										<sub
@@ -529,7 +529,7 @@
 										name="abhd-number"
 										id="abhd-number"
 										placeholder="Enter ahdb code"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.ahdb_code}
 										<sub
@@ -549,7 +549,7 @@
 										name="ear-tag"
 										id="ear-tag"
 										placeholder="Enter ear tag"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.ear_tag}
 										<sub
@@ -592,7 +592,7 @@
 										name="date_of_slaughter"
 										id="date_of_slaughter"
 										placeholder="Enter slaughter date"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.date_of_slaughter}
 										<sub
@@ -613,7 +613,7 @@
 										id="date_received"
 										max={maxDate}
 										placeholder="Enter date received"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.date_received}
 										<sub
@@ -633,7 +633,7 @@
 										name="lairage-number"
 										id="lairage-number"
 										placeholder="Enter lairage number (optional)"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.lairage_number}
 										<sub
@@ -673,7 +673,7 @@
 										name="vendor-code"
 										id="vendor-code"
 										placeholder="Enter vendor code"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.vendor_code}
 										<sub
@@ -693,7 +693,7 @@
 										name="vendor-moq"
 										id="vendor-moq"
 										placeholder="Enter moq"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.vendor_moq}
 										<sub
@@ -713,7 +713,7 @@
 										name="vendor-moq-unit"
 										id="vendor-moq-unit "
 										placeholder="Enter vendor's moq"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.vendor_moq_unit}
 										<sub
@@ -732,7 +732,7 @@
 										name="vendor-item-name"
 										id="vendor-item-name"
 										placeholder="Enter vendor item name"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.vendor_item_name}
 										<sub
@@ -753,7 +753,7 @@
 										name="origin-and-terrior"
 										id="origin-and-terrior"
 										placeholder="Enter origin and terrior"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.origin_and_terroir}
 										<sub
@@ -773,7 +773,7 @@
 										name="country"
 										id="country"
 										placeholder="Enter country of origin"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 									{#if validationErrors?.country_of_origin}
 										<sub
@@ -802,7 +802,7 @@
 										name="farm "
 										id="farm "
 										placeholder="Enter farm name"
-										class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/> -->
 									{#if validationErrors?.farm_id}
 										<sub

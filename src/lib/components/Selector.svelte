@@ -128,6 +128,8 @@
 						<input bind:value={search} type="text" {placeholder} class=" p-2 outline-none w-full" />
 					{/if}
 					{#if addUnavailable}
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
