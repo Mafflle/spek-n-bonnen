@@ -7,8 +7,8 @@ import { dev } from '$app/environment';
 const loginSchema = z.object({
 	email: z
 		.string({ required_error: 'Email is required' })
-		.email({ message: 'Not a valid email' })
-		.trim(),
+		.trim()
+		.email({ message: 'Not a valid email' }),
 	password: z
 		.string({ required_error: 'Password is required' })
 		.min(8, { message: 'Password must be at least 8 characters' })

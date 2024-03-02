@@ -10,7 +10,7 @@
 	import { KeyIcon } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { uid } from 'uid';
+	// import { uid } from 'uid';
 
 	export let data;
 
@@ -60,17 +60,6 @@
 		};
 	};
 
-	let currInputType = 'password';
-
-	const toggleInputType = () => {
-		if (currInputType === 'password') {
-			document.getElementById('password').type = 'text';
-			currInputType = 'text';
-		} else {
-			document.getElementById('password').type = 'password';
-			currInputType = 'password';
-		}
-	};
 	// const createRolesInput = (options: Option[]) => {
 	// 	const inputsContainer = document.getElementById('rolesContainer');
 
