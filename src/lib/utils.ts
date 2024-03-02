@@ -181,22 +181,31 @@ export const flyAndScale = (
 	};
 };
 
-
-export const getSexCategory = (code)=>{
+export const getSexCategory = (code) => {
 	let response;
 	switch (code) {
-		case "A":
-				response =  "Young Bull"
+		case 'A':
+			response = 'Young Bull';
 			break;
-		case "B":
-			response =  "Bull"
+		case 'B':
+			response = 'Bull';
 			break;
-		case "C":
-			response =  "Steer"
+		case 'C':
+			response = 'Steer';
 			break;
-		case "E":
-			response =  "Heifer"
+		case 'E':
+			response = 'Heifer';
 	}
 
 	return response;
-}
+};
+
+export const generatePassword = (length: number) => {
+	const charset =
+		'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*!@#$%^&()_+{}|:<>?[];.,/';
+	let password = '';
+	for (let i = 0; i < length; i++) {
+		password += charset.charAt(Math.floor(Math.random() * charset.length));
+	}
+	return password;
+};
