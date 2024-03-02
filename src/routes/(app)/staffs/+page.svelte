@@ -5,7 +5,7 @@
 	import SearchInput from '$lib/components/SearchInput.svelte';
 	import StaffMember from '$lib/components/StaffMember.svelte';
 	import { Users, container } from '$lib/stores.js';
-	import { showToast } from '$lib/utils.js';
+	import { generatePassword, showToast } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { KeyIcon } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
@@ -105,9 +105,10 @@
 		}
 	};
 
-	const generatePassword = () => {
+	const usePassword = () => {
 		generating = true;
-		const password = uid(8);
+		const password = generatePassword(9);
+		console.log(password);
 		document.querySelectorAll('#password, #confirm-password').forEach((input) => {
 			input.value = password;
 		});
@@ -377,7 +378,7 @@
 					<button
 						type="button"
 						disabled={generating}
-						on:click={() => generatePassword()}
+						on:click={() => usePassword()}
 						class="bg-primary-red p-2.5 rounded-md text-white text-sm py-2 px-4 flex items-center font-bold font-satoshi"
 					>
 						{#if generating}
