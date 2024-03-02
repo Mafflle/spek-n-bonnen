@@ -7,8 +7,8 @@ const setupSchema = z
 	.object({
 		email: z
 			.string({ required_error: 'Email is required' })
-			.email({ message: 'Not a valid email' })
-			.trim(),
+			.trim()
+			.email({ message: 'Not a valid email' }),
 		first_name: z
 			.string({ required_error: 'First name is required' })
 			.min(3, { message: 'Minimum of 3 characters is required' })

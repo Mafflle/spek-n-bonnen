@@ -24,8 +24,8 @@ const inviteSchema = z
 			.min(1, { message: 'Last name should be longer' }),
 		email: z
 			.string({ required_error: 'Email is required' })
-			.email({ message: 'Invalid email' })
-			.trim(),
+			.trim()
+			.email({ message: 'Invalid email' }),
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(8, { message: 'Password must be at least 8 characters' })
@@ -79,7 +79,7 @@ export const actions: Actions = {
 		const roles = formData.getAll('role');
 		const first_name = formData.get('first-name');
 		const last_name = formData.get('last-name');
-		const email = formData.get('email'); // Trim the email value
+		const email = formData.get('email');
 		const password = formData.get('password');
 		const password2 = formData.get('confirm-password');
 

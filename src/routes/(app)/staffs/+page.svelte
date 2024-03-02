@@ -10,7 +10,7 @@
 	import { KeyIcon } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { uid } from 'uid';
+	// import { uid } from 'uid';
 
 	export let data;
 
@@ -59,6 +59,7 @@
 			}
 		};
 	};
+
 	// const createRolesInput = (options: Option[]) => {
 	// 	const inputsContainer = document.getElementById('rolesContainer');
 
@@ -344,6 +345,7 @@
 						>
 					{/if}
 				</div>
+
 				<div class="form-item w-full flex flex-col gap-1">
 					<label for="confirm-password" class="block mb-2 text-[0.875rem]">Confirm Password</label>
 					<div class="w-full relative flex items-center px-0">
