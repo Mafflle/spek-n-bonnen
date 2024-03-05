@@ -37,6 +37,11 @@
 					color: '#FF1C0D'
 				},
 				{
+					title: 'Products',
+					href: '/inventory/products',
+					color: '#FF1C0D'
+				},
+				{
 					title: 'Primals',
 					href: '/inventory/primals',
 					color: '#FF1C0D'
