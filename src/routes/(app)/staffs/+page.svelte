@@ -309,7 +309,9 @@
 							<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 						</div>
 					{:else}
-						<PillSelector options={groups} />
+						<div class="max-w-full">
+							<PillSelector options={groups} />
+						</div>
 						<div class="hidden" id="rolesContainer"></div>
 					{/if}
 				</div>
