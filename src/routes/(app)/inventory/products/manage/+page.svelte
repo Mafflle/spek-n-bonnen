@@ -268,6 +268,16 @@
 							name="slug"
 						/>
 					</div>
+
+					<div class="short-desc">
+						<p class="mb-2 text-sm">Short description</p>
+						<LocaleInput />
+					</div>
+
+					<div class="long-desc">
+						<p class="mb-2 text-sm">Long description</p>
+						<LocaleInput textarea={true} />
+					</div>
 				</div>
 			</section>
 			<!-- Providers -->

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { Textarea } from '$lib/components/ui/textarea';
 
 	import Separator from './ui/separator/separator.svelte';
 
@@ -31,6 +32,8 @@
 		console.log(locales);
 		console.log(activeLocale);
 	}
+
+	export let textarea: boolean = false;
 </script>
 
 <div class="w-full">
@@ -50,11 +53,19 @@
 		<Separator />
 
 		<Tabs.Content value={activeLocale.name}>
-			<input
-				bind:value={activeLocale.value}
-				placeholder={`Enter ${activeLocale.name} translation`}
-				class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-			/>
+			{#if textarea}
+				<Textarea
+					bind:value={activeLocale.value}
+					placeholder={`Enter ${activeLocale.name} translation`}
+					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+			{:else}
+				<input
+					bind:value={activeLocale.value}
+					placeholder={`Enter ${activeLocale.name} translation`}
+					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+			{/if}
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
