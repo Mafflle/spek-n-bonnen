@@ -30,7 +30,7 @@
 
 	let generating: boolean = false;
 
-	$Users = users.results;
+	$Users = users;
 
 	// console.log($Users);
 

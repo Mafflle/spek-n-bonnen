@@ -2,6 +2,7 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
+import { check } from '$lib/utils';
 
 type Errors = {
 	name?: [string];
@@ -19,7 +20,10 @@ const manageSchema = z.object({
 	slaughterHouseToEdit: z.number().optional()
 });
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+	if (check('view_slaughterhouse', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
 	const getAllSlaughterHouses = await fetch(
 		`${PUBLIC_API_ENDPOINT}api/inventory/slaughter_houses/`
 	);

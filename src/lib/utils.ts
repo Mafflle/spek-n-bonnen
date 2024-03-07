@@ -2,7 +2,13 @@ import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
 import { toast } from 'svelte-sonner';
-import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
+import {
+	passwordConfirmation,
+	passwordModal,
+	inviteUserModal,
+	type Permission,
+	type Role
+} from '$lib/stores';
 
 // types
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
@@ -137,6 +143,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
+import type { User } from './user';
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
@@ -209,3 +216,20 @@ export const generatePassword = (length: number) => {
 	}
 	return password;
 };
+
+export function check(permission: string, user: User) {
+	if (permission && !user?.is_superuser) {
+		for (let i = 0; i < user.groups.length; i++) {
+			let currRole = user.groups[i];
+			for (let x = 0; x < currRole?.permissions.length; x++) {
+				let currPermission = currRole?.permissions[x];
+				if (currPermission?.codename === permission) {
+					return false;
+				}
+			}
+		}
+		return true;
+	} else {
+		return false;
+	}
+}

@@ -9,7 +9,6 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals }) =>
 	if (locals.user) {
 		const allPermission = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/permissions/`);
 		const user = locals.user;
-		// console.log(user);
 
 		const permissions = await allPermission.json();
 		const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);

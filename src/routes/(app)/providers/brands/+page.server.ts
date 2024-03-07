@@ -2,6 +2,7 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
+import { check } from '$lib/utils';
 
 const manageSchema = z.object({
 	name: z
@@ -17,8 +18,12 @@ type Errors = {
 	logo?: [string];
 	server?: [string];
 };
-export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
+export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 	const getAllBrands = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`);
+
+	if (check('view_brand', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
 
 	if (getAllBrands.ok) {
 		const brands = await getAllBrands.json();
