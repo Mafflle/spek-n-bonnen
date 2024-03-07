@@ -1,10 +1,14 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { showToast } from '$lib/utils';
+import { check, showToast } from '$lib/utils';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
+	if (check('view_group', locals.user) || check('view_permission', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+
 	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=group`);
 	const rolesRes = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/`);
 	const access = cookies.get('access');

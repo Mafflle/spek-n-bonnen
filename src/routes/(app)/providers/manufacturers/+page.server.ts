@@ -1,7 +1,8 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import type { PageServerLoad } from '../../inventory/$types';
+import { check } from '$lib/utils';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import type { PageServerLoad } from './$types';
 
 const createManufacturerSchema = z.object({
 	name: z
@@ -15,7 +16,10 @@ type Errors = {
 	server?: [string];
 };
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+	if (check('view_manufacturer', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
 	const getAllManufacturers = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`);
 
 	if (getAllManufacturers.ok) {

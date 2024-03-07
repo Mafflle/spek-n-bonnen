@@ -3,7 +3,7 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { getCurrentUser } from '$lib/user';
-import { showToast } from '$lib/utils';
+import { check, showToast } from '$lib/utils';
 
 // const currentUser = getCurrentUser();
 
@@ -23,7 +23,10 @@ type Errors = {
 	server?: [string];
 };
 
-export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
+export const load: PageServerLoad = async ({ locals, fetch, url }) => {
+	if (check('view_farm', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
 	const getAllFarms = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/`);
 
 	if (getAllFarms.ok) {

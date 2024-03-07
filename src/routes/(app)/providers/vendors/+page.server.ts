@@ -1,7 +1,8 @@
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { PageServerLoad } from './$types';
+import { check } from '$lib/utils';
 
 const manageSchema = z.object({
 	id: z.number().optional(),
@@ -30,7 +31,11 @@ type Errors = {
 	server?: [string];
 };
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	if (check('view_vendor', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+
 	const allVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/`);
 
 	if (allVendors.ok) {

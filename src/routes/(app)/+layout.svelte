@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import SideNav from '$lib/components/SideNav.svelte';
+	import { currentUser } from '$lib/user.js';
 	import { showToast, type ToastType } from '$lib/utils.js';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	export let data;
-	const { permissions } = data;
+	const { permissions, user } = data;
 
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
 
-	console.log(message, messageType);
+	// console.log('user profile', user);
 
 	onMount(() => {
 		if (message && messageType) {
@@ -17,6 +18,13 @@
 			$page.url.searchParams.delete('message');
 			$page.url.searchParams.delete('type');
 		}
+	});
+	currentUser.set(user);
+
+	const unsubscribe = currentUser.subscribe((currUser) => currUser);
+
+	onDestroy(() => {
+		unsubscribe();
 	});
 </script>
 

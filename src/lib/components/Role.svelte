@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Button } from './ui/button';
-	import { Input } from './ui/input';
-	import { Label } from './ui/label';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import { Roles } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import PageLoader from './PageLoader.svelte';
 
 	export let name: string;
@@ -111,25 +110,34 @@
 						<span class="text-grey-100">Edit</span>
 					</Button>
 				</DropdownMenu.Item>
-				<form action="?/delete" method="post" use:enhance={deleteRole} class="">
-					<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
-					<DropdownMenu.Item>
-						<Button
-							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
-							type="submit"
-							>{#if loading}
-								<iconify-icon
-									class="text-primary-red"
-									width="20"
-									icon="eos-icons:three-dots-loading"
-								></iconify-icon>
-							{:else}
-								<img src="/icons/trash.svg" alt="trash icon" />
-								<span class="button-text text-primary-red">Delete </span>
-							{/if}</Button
+				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+				<DropdownMenu.Item>
+					<!-- <Button
+						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+					> -->
+					<AlertDialog.Root>
+						<AlertDialog.Trigger class="flex items-center justify-start gap-2">
+							<img src="/icons/trash.svg" alt="trash icon" />
+							<span class="button-text text-primary-red">Delete </span></AlertDialog.Trigger
 						>
-					</DropdownMenu.Item>
-				</form>
+						<AlertDialog.Content>
+							<AlertDialog.Header>
+								<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+								<AlertDialog.Description>
+									This action cannot be undone. This will permanently delete your account and remove
+									your data from our servers.
+								</AlertDialog.Description>
+							</AlertDialog.Header>
+							<AlertDialog.Footer>
+								<form method="post" use:enhance={deleteRole} class="">
+									<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+									<AlertDialog.Action type="submit">Continue</AlertDialog.Action>
+								</form>
+							</AlertDialog.Footer>
+						</AlertDialog.Content>
+					</AlertDialog.Root>
+					<!-- </Button> -->
+				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</td>

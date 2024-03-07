@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { Permission, Role } from './stores';
 
 export type User = {
 	id: string;
@@ -10,14 +11,7 @@ export type User = {
 	is_staff: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	groups: Role[];
 };
 
-export const currentUser = writable<User | null>(); //current user store
-
-export const getCurrentUser = (): User | null => {
-	let user: User | null;
-	currentUser.subscribe((currUser) => {
-		user = currUser;
-	});
-	return user;
-};
+export const currentUser = writable<User | undefined>(); //current user store

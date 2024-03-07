@@ -345,10 +345,12 @@
 						<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 					</div>
 				{:else if permissions.count > 0}
-					<label for="name" class="block text-[0.875rem]">Select permissions:</label>
+					<div class="max-w-full w-full">
+						<label for="name" class="block text-[0.875rem] mb-3">Select permissions:</label>
 
-					<PillSelector options={permissions.results} disableOptions={loading} />
-					<div class="hidden" id="permissions"></div>
+						<PillSelector options={permissions.results} disableOptions={loading} />
+						<div class="hidden" id="permissions"></div>
+					</div>
 				{:else}
 					<div class="flex item-center justify-center w-full gap-2 text-primary-100 py-5">
 						<iconify-icon icon="nonicons:not-found-16" width="20"></iconify-icon>

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { isEqual, type Option } from './utils';
-type Permission = {
+export type Permission = {
 	id: number;
 	name: string;
 	codename: string;
@@ -47,15 +47,6 @@ export type Farm = {
 	updated_at: Date;
 };
 
-export type User = {
-	id: number;
-	first_name: string;
-	last_name: string;
-	email: string;
-	is_staff: boolean;
-	is_admin: boolean;
-	is_superuser: boolean;
-};
 export type Vendor = {
 	id: number;
 	name: string;

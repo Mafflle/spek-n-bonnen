@@ -11,6 +11,7 @@ export const GET = async ({ request, url }) => {
 	});
 
 	// console.log(res.headers.get('Authorization'));
+	// console.log(res.status);
 
 	if (res.ok) {
 		const filteredPerms = await res.json();
