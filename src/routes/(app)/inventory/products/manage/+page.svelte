@@ -271,17 +271,17 @@
 
 					<div class="short-desc">
 						<p class="mb-2 text-sm">Short description</p>
-						<LocaleInput />
+						<LocaleInput placeholder="Short description" />
 					</div>
 
 					<div class="long-desc">
 						<p class="mb-2 text-sm">Long description</p>
-						<LocaleInput textarea={true} />
+						<LocaleInput textarea={true} placeholder="Enter long description" />
 					</div>
 
 					<div class="abhd-desc">
 						<p class="mb-2 text-sm">ABHD description</p>
-						<LocaleInput textarea={true} />
+						<LocaleInput textarea={true} placeholder="Enter ABHD description" />
 					</div>
 
 					<div class="pb-3 sticky top-0 w-full bg-white px-2">
