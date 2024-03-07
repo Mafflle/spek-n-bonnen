@@ -1,7 +1,8 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
+import { check } from '$lib/utils';
 
 type Errors = {
 	first_name?: [string];
@@ -54,20 +55,24 @@ const inviteSchema = z
 		}
 	});
 
-export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	const access = cookies.get('access');
-	// console.log(access);
 
-	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=10`);
-	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?limit=10`);
+	// console.log(check('view_account', locals.user));
+	if (check('view_account', locals.user) || check('view_group', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups?limit=10`);
+	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users?limit=10`);
 
 	if (groups.ok && staffs.ok) {
 		const data = await groups.json();
 		const users = await staffs.json();
+
 		return {
 			access,
 			groups: data.results,
-			users
+			users: users.results
 		};
 	}
 };

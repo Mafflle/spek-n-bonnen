@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { redirect, type HandleFetch } from '@sveltejs/kit';
+import { type HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
@@ -33,8 +33,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 			if (refreshTokens.ok) {
 				const tokens = await refreshTokens.json();
 				// console.log('successfully refreshed', tokens);
-				event.cookies.delete('access', { path: '/' });
-				event.cookies.delete('refresh', { path: '/' });
+
 				event.cookies.set('access', tokens.access, {
 					httpOnly: true,
 					secure: true,

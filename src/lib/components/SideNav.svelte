@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import { LogOut } from 'lucide-svelte';
 	import NavBarButton from './NavBarButton.svelte';
+	import { currentUser } from '$lib/user';
+
 	const routes = [
 		{
 			href: '/',
@@ -15,14 +17,16 @@
 			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.9167 6.25008L15.8333 3.33341M17.5 1.66675L15.8333 3.33341L17.5 1.66675ZM9.49165 9.67508C9.92194 10.0996 10.264 10.6051 10.4981 11.1624C10.7322 11.7197 10.8538 12.3178 10.8558 12.9223C10.8579 13.5267 10.7403 14.1257 10.5099 14.6845C10.2795 15.2434 9.94087 15.7511 9.51344 16.1785C9.08601 16.606 8.57825 16.9446 8.0194 17.175C7.46055 17.4054 6.86165 17.523 6.25718 17.5209C5.65271 17.5189 5.0546 17.3973 4.49731 17.1632C3.94002 16.9291 3.43454 16.587 3.00998 16.1568C2.17509 15.2923 1.71312 14.1346 1.72356 12.9328C1.734 11.7311 2.21603 10.5815 3.06582 9.73175C3.9156 8.88196 5.06516 8.39994 6.2669 8.38949C7.46863 8.37905 8.62639 8.84102 9.49082 9.67592L9.49165 9.67508ZM9.49165 9.67508L12.9167 6.25008L9.49165 9.67508ZM12.9167 6.25008L15.4167 8.75008L18.3333 5.83342L15.8333 3.33341L12.9167 6.25008Z" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 			activeIcon:
 				'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.9167 6.25008L15.8333 3.33341M17.5 1.66675L15.8333 3.33341L17.5 1.66675ZM9.49165 9.67508C9.92194 10.0996 10.264 10.6051 10.4981 11.1624C10.7322 11.7197 10.8538 12.3178 10.8558 12.9223C10.8579 13.5267 10.7403 14.1257 10.5099 14.6845C10.2795 15.2434 9.94087 15.7511 9.51344 16.1785C9.08601 16.606 8.57825 16.9446 8.0194 17.175C7.46055 17.4054 6.86165 17.523 6.25718 17.5209C5.65271 17.5189 5.0546 17.3973 4.49731 17.1632C3.94002 16.9291 3.43454 16.587 3.00998 16.1568C2.17509 15.2923 1.71312 14.1346 1.72356 12.9328C1.734 11.7311 2.21603 10.5815 3.06582 9.73175C3.9156 8.88196 5.06516 8.39994 6.2669 8.38949C7.46863 8.37905 8.62639 8.84102 9.49082 9.67592L9.49165 9.67508ZM9.49165 9.67508L12.9167 6.25008L9.49165 9.67508ZM12.9167 6.25008L15.4167 8.75008L18.3333 5.83342L15.8333 3.33341L12.9167 6.25008Z" stroke="#DA4E45" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			pageTitle: 'Roles'
+			pageTitle: 'Roles',
+			permission: 'view_group'
 		},
 		{
 			href: '/orders',
 			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.50002 18.3334C7.96026 18.3334 8.33335 17.9603 8.33335 17.5001C8.33335 17.0398 7.96026 16.6667 7.50002 16.6667C7.03978 16.6667 6.66669 17.0398 6.66669 17.5001C6.66669 17.9603 7.03978 18.3334 7.50002 18.3334Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.6666 18.3334C17.1269 18.3334 17.5 17.9603 17.5 17.5001C17.5 17.0398 17.1269 16.6667 16.6666 16.6667C16.2064 16.6667 15.8333 17.0398 15.8333 17.5001C15.8333 17.9603 16.2064 18.3334 16.6666 18.3334Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.833313 0.833252H4.16665L6.39998 11.9916C6.47618 12.3752 6.6849 12.7199 6.9896 12.9652C7.2943 13.2105 7.67556 13.3407 8.06665 13.3333H16.1666C16.5577 13.3407 16.939 13.2105 17.2437 12.9652C17.5484 12.7199 17.7571 12.3752 17.8333 11.9916L19.1666 4.99992H4.99998" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 			activeIcon:
 				'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.50002 18.3334C7.96026 18.3334 8.33335 17.9603 8.33335 17.5001C8.33335 17.0398 7.96026 16.6667 7.50002 16.6667C7.03978 16.6667 6.66669 17.0398 6.66669 17.5001C6.66669 17.9603 7.03978 18.3334 7.50002 18.3334Z" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.6666 18.3334C17.1269 18.3334 17.5 17.9603 17.5 17.5001C17.5 17.0398 17.1269 16.6667 16.6666 16.6667C16.2064 16.6667 15.8333 17.0398 15.8333 17.5001C15.8333 17.9603 16.2064 18.3334 16.6666 18.3334Z" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.833313 0.833252H4.16665L6.39998 11.9916C6.47618 12.3752 6.6849 12.7199 6.9896 12.9652C7.2943 13.2105 7.67556 13.3407 8.06665 13.3333H16.1666C16.5577 13.3407 16.939 13.2105 17.2437 12.9652C17.5484 12.7199 17.7571 12.3752 17.8333 11.9916L19.1666 4.99992H4.99998" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			pageTitle: 'Orders'
+			pageTitle: 'Orders',
+			permission: 'view_order'
 		},
 		{
 			href: '/inventory',
@@ -34,7 +38,8 @@
 				{
 					title: 'Carcasses',
 					href: '/inventory/carcass',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_carcass'
 				},
 				{
 					title: 'Products',
@@ -44,7 +49,8 @@
 				{
 					title: 'Primals',
 					href: '/inventory/primals',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_primal'
 				}
 			]
 		},
@@ -58,32 +64,38 @@
 				{
 					title: 'Brands',
 					href: '/providers/brands',
-					color: '#CFB53B'
+					color: '#CFB53B',
+					permission: 'view_brand'
 				},
 				{
 					title: 'Vendors',
 					href: '/providers/vendors',
-					color: '#41AA00'
+					color: '#41AA00',
+					permission: 'view_vendor'
 				},
 				{
 					title: 'Manufacturers',
 					href: '/providers/manufacturers',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_manufacturer'
 				},
 				{
 					title: 'Farms',
 					href: '/providers/farms',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_farm'
 				},
 				{
 					title: 'Butcher shops',
 					href: '/providers/butcher-shops',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_butchershop'
 				},
 				{
 					title: 'Slaughter houses',
 					href: '/providers/slaughter-houses',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_slaughterhouse'
 				}
 			]
 		},
@@ -92,7 +104,8 @@
 			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1667 17.5V15.8333C14.1667 14.9493 13.8155 14.1014 13.1904 13.4763C12.5653 12.8512 11.7174 12.5 10.8334 12.5H4.16671C3.28265 12.5 2.43481 12.8512 1.80968 13.4763C1.18456 14.1014 0.833374 14.9493 0.833374 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.49996 9.16667C9.34091 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34091 2.5 7.49996 2.5C5.65901 2.5 4.16663 3.99238 4.16663 5.83333C4.16663 7.67428 5.65901 9.16667 7.49996 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.1666 17.5001V15.8334C19.1661 15.0948 18.9203 14.3774 18.4678 13.7937C18.0153 13.2099 17.3817 12.793 16.6666 12.6084" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3334 2.6084C14.0504 2.79198 14.6859 3.20898 15.1397 3.79366C15.5936 4.37833 15.8399 5.09742 15.8399 5.83757C15.8399 6.57771 15.5936 7.2968 15.1397 7.88147C14.6859 8.46615 14.0504 8.88315 13.3334 9.06673" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 			activeIcon:
 				'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1667 17.5V15.8333C14.1667 14.9493 13.8155 14.1014 13.1904 13.4763C12.5653 12.8512 11.7174 12.5 10.8334 12.5H4.16671C3.28265 12.5 2.43481 12.8512 1.80968 13.4763C1.18456 14.1014 0.833374 14.9493 0.833374 15.8333V17.5" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.49996 9.16667C9.34091 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34091 2.5 7.49996 2.5C5.65901 2.5 4.16663 3.99238 4.16663 5.83333C4.16663 7.67428 5.65901 9.16667 7.49996 9.16667Z" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.1666 17.5001V15.8334C19.1661 15.0948 18.9203 14.3774 18.4678 13.7937C18.0153 13.2099 17.3817 12.793 16.6666 12.6084" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3334 2.6084C14.0504 2.79198 14.6859 3.20898 15.1397 3.79366C15.5936 4.37833 15.8399 5.09742 15.8399 5.83757C15.8399 6.57771 15.5936 7.2968 15.1397 7.88147C14.6859 8.46615 14.0504 8.88315 13.3334 9.06673" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			pageTitle: 'Staffs'
+			pageTitle: 'Staffs',
+			permission: 'view_account'
 		},
 		{
 			href: '/settings',
@@ -123,27 +136,13 @@
 		<ol class="w-full flex items-start flex-col gap-3 mb-8">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders'}
-					<li class="w-full">
-						<NavBarButton
-							active={routes.indexOf(route) !== 0 && $page.url.pathname === route.href}
-							icon={route.icon}
-							href={route.href}
-							activeIcon={route.activeIcon}
-							text={route.pageTitle}
-							children={route?.children}
-						/>
-					</li>
+					<NavBarButton
+						active={routes.indexOf(route) !== 0 && $page.url.pathname === route.href}
+						hidden={false}
+						{route}
+					/>
 				{:else if route.pageTitle === 'Orders'}
-					<li class="w-full">
-						<NavBarButton
-							active={$page.url.pathname.startsWith(route.href)}
-							icon={route.icon}
-							href={route.href}
-							activeIcon={route.activeIcon}
-							text={route.pageTitle}
-							alert={true}
-						/>
-					</li>
+					<NavBarButton hidden={false} active={$page.url.pathname.startsWith(route.href)} {route} />
 				{/if}
 			{/each}
 		</ol>
@@ -175,29 +174,20 @@
 	>
 		{#each routes as route}
 			{#if route.pageTitle !== 'Orders'}
-				<li class="">
-					<NavBarButton
-						active={routes.indexOf(route) !== 0
-							? $page.url.pathname.startsWith(route.href)
-							: $page.url.pathname === route.href}
-						icon={route.icon}
-						href={route.href}
-						activeIcon={route.activeIcon}
-						text={route.pageTitle}
-						children={route?.children}
-					/>
-				</li>
+				<NavBarButton
+					hidden={false}
+					{route}
+					active={routes.indexOf(route) !== 0
+						? $page.url.pathname.startsWith(route.href)
+						: $page.url.pathname === route.href}
+				/>
 			{:else if route.pageTitle === 'Orders'}
-				<li class="">
-					<NavBarButton
-						active={$page.url.pathname.startsWith(route.href)}
-						icon={route.icon}
-						href={route.href}
-						activeIcon={route.activeIcon}
-						text={route.pageTitle}
-						alert={true}
-					/>
-				</li>
+				<NavBarButton
+					{route}
+					hidden={false}
+					active={$page.url.pathname.startsWith(route.href)}
+					alert={true}
+				/>
 			{/if}
 		{/each}
 	</ol>

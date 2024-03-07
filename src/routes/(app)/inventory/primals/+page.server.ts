@@ -2,6 +2,7 @@ import type { PageServerLoad } from '../$types';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import { check } from '$lib/utils';
 
 const manageSchema = z.object({
 	name: z
@@ -23,7 +24,11 @@ type Errors = {
 	server?: [string];
 };
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
+export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+	if (check('view_primal', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+
 	const getAllPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
 
 	if (getAllPrimals.ok) {
@@ -158,7 +163,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		console.log(data);
 		const search = data.get('search');
-	
+
 		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/?search=${search}`, {
 			method: 'GET',
 			headers: {
@@ -169,7 +174,7 @@ export const actions: Actions = {
 
 		if (response.ok) {
 			const primals = await response.json();
-			console.log("carcassss search", primals);
+			console.log('carcassss search', primals);
 			return { primals };
 		} else {
 			// handle error
@@ -177,5 +182,5 @@ export const actions: Actions = {
 			console.log(error);
 			return { status: response.status, error };
 		}
-	},
+	}
 };
