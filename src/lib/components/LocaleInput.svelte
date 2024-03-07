@@ -52,7 +52,7 @@
 		</Tabs.List>
 		<Separator />
 
-		<Tabs.Content value={activeLocale.name}>
+		<Tabs.Content value={activeLocale.name} class="flex flex-col gap-3">
 			{#if textarea}
 				<Textarea
 					bind:value={activeLocale.value}
@@ -65,6 +65,10 @@
 					placeholder={`Enter ${activeLocale.name} translation`}
 					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
+				<!-- 
+				<div class="text-actions flex ">
+
+				</div> -->
 			{/if}
 		</Tabs.Content>
 	</Tabs.Root>

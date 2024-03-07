@@ -54,7 +54,7 @@
 
 	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
-	const allTabs = ['physical-info', 'traceability'];
+	const allTabs = ['physical-info', 'nutrition', 'traceability', 'finance'];
 	let currentTab: string = 'physical-info';
 	let currentTabInfo;
 
@@ -178,7 +178,7 @@
 </script>
 
 <svelte:head>
-	<title>Manage carcass - Spek-N-Boonen</title>
+	<title>Manage product - Spek-N-Boonen</title>
 </svelte:head>
 
 {#if loading}
@@ -188,9 +188,9 @@
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
 			<h2 class="text-3xl font-semibold">
-				{currCarcassId ? `Edit carcass #${currCarcassId}` : 'Add carcass'}
+				{currCarcassId ? `Edit product #${currCarcassId}` : 'Add product'}
 			</h2>
-			<sub class="text-[#6B6B6B] text-sm"> Carcass / manage</sub>
+			<sub class="text-[#6B6B6B] text-sm"> Inventory / Product / Manage</sub>
 		</div>
 	</div>
 	<Separator class="my-8 md:block hidden" />
@@ -205,7 +205,7 @@
 					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
 				{:else}
 					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
-					<span> {carcassToEdit ? 'Edit' : 'Add'} carcass</span>
+					<span> {carcassToEdit ? 'Edit' : 'Add'} product</span>
 				{/if}
 			</button>
 		</section>
@@ -278,6 +278,27 @@
 						<p class="mb-2 text-sm">Long description</p>
 						<LocaleInput textarea={true} />
 					</div>
+
+					<div class="abhd-desc">
+						<p class="mb-2 text-sm">ABHD description</p>
+						<LocaleInput textarea={true} />
+					</div>
+
+					<div class="pb-3 sticky top-0 w-full bg-white px-2">
+						<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MARKETING</h3>
+					</div>
+
+					<div class="seo">
+						<p class="mb-2 text-sm">SEO</p>
+
+						<label class="mb-2 text-sm" for="seo" />
+						<input
+							placeholder="Enter SEO"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							id="seo"
+							name="seo"
+						/>
+					</div>
 				</div>
 			</section>
 			<!-- Providers -->
@@ -308,8 +329,15 @@
 								>Physical information</Tabs.Trigger
 							>
 
+							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="nutrition"
+								>Nutrition</Tabs.Trigger
+							>
+
 							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="traceability"
 								>Traceability</Tabs.Trigger
+							>
+							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="finance"
+								>Finance</Tabs.Trigger
 							>
 						</Tabs.List>
 					</section>
@@ -324,22 +352,18 @@
 								}}
 								class="flex flex-col gap-[1.28rem]"
 							>
-								n
+								p
 							</div></Tabs.Content
 						>
-						<!-- Physical info -->
-
-						<!-- Vendor info -->
-
-						<!-- Vendor info -->
+						<!-- Nutirion -->
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="nutrition">n</Tabs.Content>
 
 						<!-- Traceability -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">q</Tabs.Content>
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">t</Tabs.Content>
 						<!-- Traceability -->
 
-						<!-- Origin -->
-
-						<!-- Origin -->
+						<!-- FInance -->
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="finance">f</Tabs.Content>
 
 						<div class="w-full self flex items-center justify-between mt-4 px-4">
 							{#if allTabs.indexOf(currentTab) > 0}
