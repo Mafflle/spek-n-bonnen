@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Textarea } from '$lib/components/ui/textarea';
-
 	import Separator from './ui/separator/separator.svelte';
 
 	export let frPlaceholder: string = "Entrez le nom de l'élément en français";
@@ -30,16 +29,12 @@
 
 	let activeLocale = locales[0];
 
-	function setActiveLocale(locale: any) {
+	const setActiveLocale = (locale: { name: string; flag: string; value: string }) => {
 		activeLocale = locale;
-	}
+	};
 
-	// $: {
-	// 	console.log(locales);
-	// 	console.log(activeLocale);
-	// }
-
-	export let textarea: boolean = false;
+	export let textarea = false;
+	export let placeholder = 'Enter translation';
 </script>
 
 <div class="w-full">
@@ -57,7 +52,6 @@
 			{/each}
 		</Tabs.List>
 		<Separator />
-
 		<Tabs.Content value={activeLocale.name} class="flex flex-col gap-3 ">
 			{#if textarea}
 				<Textarea
@@ -71,10 +65,6 @@
 					placeholder={activeLocale.placeholder}
 					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
-				<!-- 
-				<div class="text-actions flex ">
-
-				</div> -->
 			{/if}
 		</Tabs.Content>
 	</Tabs.Root>
