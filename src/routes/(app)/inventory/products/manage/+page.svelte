@@ -17,6 +17,13 @@
 	import { onMount } from 'svelte';
 
 	import { slide } from 'svelte/transition';
+	import Selector from '$lib/components/Selector.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+	import MediaManager from '$lib/components/MediaManager.svelte';
+	import { Weight } from 'lucide-svelte';
+	import { cut_categories } from '$lib/stores/cuts.stores.js';
+	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
+	import { Textarea } from '$lib/components/ui/textarea';
 
 	export let data;
 
@@ -45,9 +52,21 @@
 		farm: any;
 	};
 
+	let pr;
+
 	let imageValidationError: string;
 
-	let status = ['active', 'inactive'];
+	let status = [
+		{ value: 'Available', label: 'Available' },
+		{ value: 'Discontinued', label: 'Discontinued' },
+		{ value: 'Limited', label: 'Limited' }
+	];
+
+	let weight_units = [
+		{ value: 'g', label: 'gram' },
+		{ value: 'kg', label: 'kilogram' },
+		{ value: 'lbs', label: 'pound' }
+	];
 
 	// const { brands, slaughterHouses, vendors, butcherShops, farms, manufacturers, carcassToEdit } =
 	// 	data;
@@ -175,6 +194,27 @@
 		// 	}
 		// }
 	});
+
+	let action_shot: number;
+	let background_shot: number;
+	let closeup_shot: number;
+	let lifestyle_shot: number;
+
+	let sexCategoryOptions = [
+		{ value: 'A', label: 'Young bull' },
+		{ value: 'B', label: 'Bull' },
+		{ value: 'C', label: 'Steer' },
+		{ value: 'E', label: 'Heifer' }
+	];
+	let ageing_duration = [
+		{ value: 'one_week_dry_aged', label: 'One week' },
+		{ value: 'two_weeks_dry_aged', label: 'Two weeks' },
+		{ value: 'three_weeks_dry_agedd', label: 'Three weeks' },
+		{ value: 'four_weeks_dry_aged', label: 'Four weeks' },
+		{ value: 'three_days_dry_aged', label: 'Three days' }
+	];
+
+	let checked = false;
 </script>
 
 <svelte:head>
@@ -210,43 +250,71 @@
 			</button>
 		</section>
 		<section
-			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-10"
+			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-8"
 		>
 			<!-- Providers -->
-			<section class="flex-auto px-2 h-full overflow-y-scroll no-scrollbar w-full sticky top-3">
-				<div class="pb-3 sticky top-0 w-full bg-white px-2">
-					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">PROVIDERS</h3>
+			<section class="flex-auto h-full overflow-y-scroll no-scrollbar w-full sticky top-3">
+				<div class="pb-3 sticky top-0 w-full bg-white z-10 px-2">
+					<h3 class="text-sm font-satoshi font-medium text-grey-200 capitalize mb-5">
+						PRIMARY INFORMATION
+					</h3>
 				</div>
-				<div class="mb-8 flex flex-col gap-6">
-					<div class="action-shot">
-						<p class="mb-2 text-sm">Action Shot</p>
-						<UploadBox error={imageValidationError} inputName="image" />
-					</div>
-					<div class="background-shot">
-						<p class="mb-2 text-sm">Background Shot</p>
-						<UploadBox error={imageValidationError} inputName="image" />
+				<div class="mb-8 flex flex-col gap-9 w-full">
+					<div class="flex flex-col gap-3 2xl:grid xl:grid-cols-2 xl:space-x-3.5">
+						<div class="action-shot">
+							<label for="action_shot" class="mb-4 text-sm font-medium font-satoshi"
+								>Action Shot</label
+							>
+							<UploadBox
+								on:imageSelected={(e) => (action_shot = e.detail.imageId)}
+								error={imageValidationError}
+								inputName="action_shot"
+							/>
+						</div>
+						<div class="background-shot">
+							<label for="background_shot" class="mb-4 text-sm font-medium font-satoshi"
+								>Background Shot</label
+							>
+							<UploadBox
+								on:imageSelected={(e) => (background_shot = e.detail.imageId)}
+								error={imageValidationError}
+								inputName="background_shot"
+							/>
+						</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<div class="w-1/2">
-							<p class="mb-2 text-sm">Close Up Shot</p>
-							<UploadBox error={imageValidationError} inputName="image" />
+							<label for="closeup_shot" class="mb-4 text-sm font-medium font-satoshi"
+								>Close Up Shot</label
+							>
+							<UploadBox
+								on:imageSelected={(e) => (closeup_shot = e.detail.imageId)}
+								error={imageValidationError}
+								inputName="closeup_shot"
+							/>
 						</div>
 						<div class="w-1/2">
-							<p class="mb-2 text-sm">Lifestyle Shot</p>
-							<UploadBox error={imageValidationError} inputName="image" />
+							<label for="lifestyle_shot" class="mb-4 text-sm font-medium font-satoshi"
+								>Lifestyle Shot</label
+							>
+							<UploadBox
+								on:imageSelected={(e) => (lifestyle_shot = e.detail.imageId)}
+								error={imageValidationError}
+								inputName="lifestyle_shot"
+							/>
 						</div>
 					</div>
 
 					<div class="item-name">
-						<p class="mb-2 text-sm">Item name</p>
+						<p class="mb-4 text-sm font-medium font-satoshi">Item name</p>
 						<LocaleInput />
 					</div>
 
-					<div class="status">
-						<label class="mb-2 text-sm" for="status" />
-						<Select.Root>
-							<Select.Trigger class="w-full">
-								<Select.Value placeholder="Theme" />
+					<div class="status w-full flex flex-col">
+						<label class="mb-4 text-sm font-medium font-satoshi" for="status">Status</label>
+						<!-- <Select.Root>
+							<Select.Trigger class=" max-w-full w-11/12 flex">
+								<Select.Value placeholder="Select status" class="placeholder:text-grey-200" />
 							</Select.Trigger>
 							<Select.Content>
 								{#each status as s}
@@ -254,13 +322,13 @@
 								{/each}
 							</Select.Content>
 							<Select.Input name="status" id="status" />
-						</Select.Root>
+						</Select.Root> -->
+
+						<Selector placeholder="Select status" options={status} inputName="status" />
 					</div>
 
-					<div class="slug">
-						<p class="mb-2 text-sm">Slug</p>
-
-						<label class="mb-2 text-sm" for="slug" />
+					<div class="slug flex flex-col">
+						<label class="mb-2 text-sm font-medium font-satoshi" for="slug">Slug </label>
 						<input
 							placeholder="Enter slug"
 							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
@@ -269,35 +337,54 @@
 						/>
 					</div>
 
-					<div class="short-desc">
-						<p class="mb-2 text-sm">Short description</p>
-						<LocaleInput />
-					</div>
-
-					<div class="long-desc">
-						<p class="mb-2 text-sm">Long description</p>
-						<LocaleInput textarea={true} />
-					</div>
-
-					<div class="abhd-desc">
-						<p class="mb-2 text-sm">ABHD description</p>
-						<LocaleInput textarea={true} />
-					</div>
-
-					<div class="pb-3 sticky top-0 w-full bg-white px-2">
-						<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MARKETING</h3>
-					</div>
-
-					<div class="seo">
-						<p class="mb-2 text-sm">SEO</p>
-
-						<label class="mb-2 text-sm" for="seo" />
-						<input
-							placeholder="Enter SEO"
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-							id="seo"
-							name="seo"
+					<div class="short-desc flex flex-col">
+						<label for="short_desc" class="mb-4 text-sm font-medium font-satoshi"
+							>Short description</label
+						>
+						<LocaleInput
+							enPlaceholder="Enter short description"
+							frPlaceholder="Entrez une brève description"
+							duPlaceholder="Voer een korte beschrijving in"
 						/>
+					</div>
+
+					<div class="long-desc flex flex-col">
+						<p class="mb-4 text-sm font-medium font-satoshi">Long description</p>
+						<LocaleInput
+							duPlaceholder="Voer een lange beschrijving in"
+							frPlaceholder="Entrez une longue description"
+							enPlaceholder="Enter long description"
+							textarea={true}
+						/>
+					</div>
+
+					<div class="abhd-desc flex flex-col">
+						<p class="mb-4 text-sm font-medium font-satoshi">ABHD description</p>
+						<LocaleInput
+							enPlaceholder="Enter ABHD description"
+							frPlaceholder="Entrez la description ABHD"
+							duPlaceholder="Voer de ABHD-beschrijving in"
+							textarea={true}
+						/>
+					</div>
+
+					<div class="flex flex-col items-start w-full">
+						<div class="pb-3 sticky top-0 w-full bg-white flex flex-col">
+							<h3 class="text-sm font-satoshi text-grey-200 font-medium capitalize mb-2">
+								MARKETING
+							</h3>
+						</div>
+
+						<div class="seo flex flex-col w-full">
+							<label for="seo" class="mb-2 text-sm font-medium font-satoshi">SEO</label>
+
+							<input
+								placeholder="Enter SEO"
+								class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+								id="seo"
+								name="seo"
+							/>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -325,19 +412,23 @@
 						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
 					>
 						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
-							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="physical-info"
-								>Physical information</Tabs.Trigger
+							<Tabs.Trigger
+								class="md:w-full data-[state=active]:font-bold  data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
+								value="physical-info">Physical information</Tabs.Trigger
 							>
 
-							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="nutrition"
-								>Nutrition</Tabs.Trigger
+							<Tabs.Trigger
+								class="md:w-full data-[state=active]:font-bold  data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
+								value="nutrition">Nutrition</Tabs.Trigger
 							>
 
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="traceability"
-								>Traceability</Tabs.Trigger
+							<Tabs.Trigger
+								class="w-full data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
+								value="traceability">Traceability</Tabs.Trigger
 							>
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="finance"
-								>Finance</Tabs.Trigger
+							<Tabs.Trigger
+								class="w-full data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
+								value="finance">Finance</Tabs.Trigger
 							>
 						</Tabs.List>
 					</section>
@@ -350,13 +441,244 @@
 								on:change={(e) => {
 									checkIfFormFilled();
 								}}
-								class="flex flex-col gap-[1.28rem]"
+								class="flex flex-col gap-8"
 							>
-								p
+								<div class="form-group">
+									<label for="weight_unit" class="form-label mb-4">Weight unit</label>
+
+									<Selector placeholder="Select weight unit" options={weight_units} />
+								</div>
+								<div class="form-group">
+									<label for="quantity_unit" class="form-label mb-4">Quantity unit</label>
+									<input
+										name="quantity_unit"
+										type="number"
+										placeholder="Enter quantity unit eg - (kg, g)"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="marbling" class="form-label mb-4">Marbling</label>
+									<input
+										name="marbling"
+										type="text"
+										placeholder="Enter marbling"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="sex" class="form-label">Sex</label>
+									<Selector
+										on:selected={() => checkIfFormFilled()}
+										prop={sexCategoryOptions[
+											sexCategoryOptions.findIndex(
+												(option) => option.value == carcassToEdit?.sex_category
+											)
+										]}
+										required={true}
+										inputName="sex"
+										placeholder="Select sex"
+										options={sexCategoryOptions}
+									/>
+									{#if validationErrors?.sex_category}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.sex_category}</sub
+										>
+									{/if}
+								</div>
+
+								<div class="form-group">
+									<label for="age" class="form-label">Age</label>
+									<input
+										name="age"
+										type="number"
+										placeholder="Enter age"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="livestock_breed" class="form-label mb-4">Livestock breed</label>
+									<input
+										name="livestock_breed"
+										type="text"
+										placeholder="Enter livestock breed"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="cut_type" class="form-label">Cut type</label>
+									<Selector
+										on:selected={() => checkIfFormFilled()}
+										required={true}
+										inputName="cut_type"
+										placeholder="Select cut type"
+										options={[
+											{ label: 'Basic', value: 'basic' },
+											{ label: 'Advanced', value: 'advanced' }
+										]}
+									/>
+									{#if validationErrors?.sex_category}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.sex_category}</sub
+										>
+									{/if}
+								</div>
+								<div class="form-group">
+									<label for="cut_category" class="form-label">Cut category</label>
+									<Selector
+										on:selected={() => checkIfFormFilled()}
+										required={true}
+										inputName="cut_category"
+										placeholder="Select cut category"
+										options={cut_categories}
+									/>
+									{#if validationErrors?.sex_category}
+										<sub
+											transition:slide={{ delay: 250, duration: 300 }}
+											class="text-rose-500 text-xs tracking-[-0.0075rem]"
+											>{validationErrors.sex_category}</sub
+										>
+									{/if}
+								</div>
+
+								<div class="form-group">
+									<label for="color" class="form-label mb-4">Color</label>
+									<input
+										name="color"
+										type="text"
+										placeholder="Enter color"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="texture" class="form-label mb-4">Texture</label>
+									<input
+										name="texture"
+										type="text"
+										placeholder="Enter texture"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="tenderness" class="form-label mb-4">Tenderness</label>
+									<input
+										name="tenderness"
+										type="text"
+										placeholder="Enter tenderness"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="flex gap-3">
+									<label for="qualifies_for_return" class="form-label mb-4"
+										>Qualifies for return:</label
+									>
+									<!-- <input
+										name="qualifies_for_return"
+										type="text"
+										placeholder="Enter livestock breed"
+										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/> -->
+									<Checkbox id="qualifies_for_return" class="w-5 h-5" bind:checked />
+								</div>
 							</div></Tabs.Content
 						>
 						<!-- Nutirion -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="nutrition">n</Tabs.Content>
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="nutrition">
+							<div class="flex flex-col gap-8">
+								<div class="form-group">
+									<label for="storage_requirements" class="form-label">Storage requirements</label>
+									<Textarea
+										placeholder="Enter storage requirements"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="allergens" class="mb-4 text-sm font-medium font-satoshi"
+										>Allergens</label
+									>
+									<LocaleInput
+										enPlaceholder="Enter allergens"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
+									/>
+								</div>
+								<div class="form-group">
+									<label for="ingredients" class="mb-4 text-sm font-medium font-satoshi"
+										>Ingredients</label
+									>
+									<LocaleInput
+										enPlaceholder="Enter ingredients1"
+										frPlaceholder="Entrez les ingrédients"
+										duPlaceholder="Voer ingrediënten in"
+										textarea={true}
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="nutritional_information" class="form-label"
+										>Nutritional informarion</label
+									>
+									<Textarea
+										placeholder="Enter nutritional information"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="pairing_suggestion" class="form-label">Pairing suggestions</label>
+									<Textarea
+										placeholder="Enter pairing suggesting"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="dry-ageing_duration" class="form-label">Dry ageing duration</label>
+									<Selector
+										placeholder="Select dry ageing duration"
+										options={ageing_duration}
+										inputName="dry-ageing-duration"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="flavour" class="form-label">Flavour</label>
+									<input
+										name="flavour"
+										placeholder="Describe flavour"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="fat_content" class="form-label">Fat content</label>
+									<input
+										name="fat_content"
+										placeholder="Enter fat content"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="moisture" class="form-label">Moisture content</label>
+									<input
+										name="moisture"
+										placeholder="Enter moisture content"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="bone_content" class="form-label">Bone content</label>
+									<input
+										name="bone_content"
+										placeholder="Enter bone content"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+							</div>
+						</Tabs.Content>
 
 						<!-- Traceability -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">t</Tabs.Content>

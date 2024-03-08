@@ -340,12 +340,14 @@
 						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
 					>
 						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
-							<Tabs.Trigger class="md:w-full data-[state=active]:font-bold  " value="physical-info"
-								>Physical information</Tabs.Trigger
+							<Tabs.Trigger
+								class="md:w-full data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow  "
+								value="physical-info">Physical information</Tabs.Trigger
 							>
 
-							<Tabs.Trigger class="w-full data-[state=active]:font-bold" value="traceability"
-								>Traceability</Tabs.Trigger
+							<Tabs.Trigger
+								class="w-full data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+								value="traceability">Traceability</Tabs.Trigger
 							>
 						</Tabs.List>
 					</section>

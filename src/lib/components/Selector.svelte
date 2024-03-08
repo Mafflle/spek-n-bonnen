@@ -2,7 +2,6 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import SearchInput from './SearchInput.svelte';
 	import * as Select from './ui/select';
-	import { string } from 'zod';
 
 	const dispatch = createEventDispatcher();
 	let open = false;
@@ -83,7 +82,7 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- <input type="text" {name} class="hidden" bind:value={selectedValue} /> -->
 	<Select.Trigger class="max-w-full w-full flex hover:border-primary-100 ">
-		<Select.Value {placeholder} />
+		<Select.Value {placeholder} class="text-base placeholder-shown:text-grey-200" />
 	</Select.Trigger>
 
 	<Select.Content class="w-full max-w-full">

@@ -75,8 +75,8 @@
 							if ($page.url.pathname === route.href && active === false) active = true;
 						}}
 						class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
-		hover:bg-grey-200 hover:text-white hover:shadow-inner {active ||
-							(checkIfChildActive() && 'bg-primary-light text-primary-red')}
+		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
+							'bg-primary-light text-primary-red'}
 		"
 					>
 						<span class="side-nav-button w-full text-inherit flex items-center justify-between">

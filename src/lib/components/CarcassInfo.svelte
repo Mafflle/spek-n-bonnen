@@ -64,11 +64,26 @@
 					<Tabs.List
 						class="bg-white oveflow-x-scroll flex flex-wrap md:flex-wrap-none pb-16 md:pb-1"
 					>
-						<Tabs.Trigger value="physical">Physical information</Tabs.Trigger>
-						<Tabs.Trigger value="vendor">Vendor</Tabs.Trigger>
-						<Tabs.Trigger value="traceability">Traceability</Tabs.Trigger>
-						<Tabs.Trigger value="origin">Origin</Tabs.Trigger>
-						<Tabs.Trigger value="destination">Destination</Tabs.Trigger>
+						<Tabs.Trigger
+							class="data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+							value="physical">Physical information</Tabs.Trigger
+						>
+						<Tabs.Trigger
+							class="data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+							value="vendor">Vendor</Tabs.Trigger
+						>
+						<Tabs.Trigger
+							class="data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+							value="traceability">Traceability</Tabs.Trigger
+						>
+						<Tabs.Trigger
+							class="data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+							value="origin">Origin</Tabs.Trigger
+						>
+						<Tabs.Trigger
+							class="data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
+							value="destination">Destination</Tabs.Trigger
+						>
 					</Tabs.List>
 					<Separator data-separator-root class="hidden md:block" />
 					<Tabs.Content value="physical" class="w-full">
