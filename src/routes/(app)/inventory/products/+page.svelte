@@ -6,7 +6,7 @@
 	export let data;
 	let carcasses = [];
 
-	Carcasses.set(data.carcasses.results);
+	Carcasses.set(data.carcasses?.results || []);
 
 	let searching = false;
 
