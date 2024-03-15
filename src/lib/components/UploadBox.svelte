@@ -6,8 +6,6 @@
 	import Modal from './Modal.svelte';
 	import MediaManager from './MediaManager.svelte';
 
-	console.log($page.data);
-
 	let images: FileList | undefined = undefined;
 	export let displayImages: File[] | string | undefined = undefined;
 	let previewImage: any | undefined = undefined;

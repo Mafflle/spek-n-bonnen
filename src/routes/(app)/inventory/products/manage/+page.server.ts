@@ -1,67 +1,21 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { showToast } from '$lib/utils';
-import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch }) => {
-    const getAllCarcasses = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/`);
+	const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
+	const getTags = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/`);
+	const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);
 
-    if (getAllCarcasses.ok) {
-        const carcasses = await getAllCarcasses.json();
+	console.log(getPrimals.statusText);
+	if (getPrimals.ok && getTags.ok && getMainGroups.ok) {
+		const primals = await getPrimals.json();
+		const tags = await getTags.json();
+		const groups = await getMainGroups.json();
 
-        return {
-            carcasses
-        };
-    }
-};
-
-export const actions: Actions = {
-    search: async ({ cookies, request }) => {
-        console.log('searching');
-        const data = await request.formData();
-        console.log(data);
-        const search = data.get('search');
-
-        const response = await fetch(
-            `${PUBLIC_API_ENDPOINT}api/inventory/carcasses/?search=${search}`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${cookies.get('access')}`
-                }
-            }
-        );
-
-        if (response.ok) {
-            const carcasses = await response.json();
-            console.log('carcassss search', carcasses);
-            return { carcasses };
-        } else {
-            // handle error
-            const error = await response.json();
-            console.log(error);
-            return { status: response.status, error };
-        }
-    },
-    delete: async ({ cookies, request }) => {
-        const data = await request.formData();
-        const id = data.get('carcass-id');
-        const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/carcasses/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${cookies.get('access')}`
-            }
-        });
-
-        if (response.ok) {
-            return { status: 200 };
-        } else {
-            // handle error
-            const error = await response.json();
-            showToast('Failed to delete carcass', 'error');
-            return { status: response.status, error };
-        }
-    }
+		return {
+			primals: primals.results,
+			tags: tags.results,
+			groups: groups.results
+		};
+	}
 };

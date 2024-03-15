@@ -27,6 +27,8 @@
 
 	export let data;
 
+	const { tags, primals, groups } = data;
+
 	// temp for UI
 	let carcassToEdit: {
 		weight: any;
@@ -52,7 +54,7 @@
 		farm: any;
 	};
 
-	let pr;
+	55;
 
 	let imageValidationError: string;
 
@@ -212,6 +214,12 @@
 		{ value: 'three_weeks_dry_agedd', label: 'Three weeks' },
 		{ value: 'four_weeks_dry_aged', label: 'Four weeks' },
 		{ value: 'three_days_dry_aged', label: 'Three days' }
+	];
+	let sellingTax = [
+		{ value: '0', label: '0%' },
+		{ value: '6', label: '6%' },
+		{ value: '12', label: '12%' },
+		{ value: '21', label: '21%' }
 	];
 
 	let checked = false;
@@ -588,7 +596,7 @@
 								</div>
 							</div></Tabs.Content
 						>
-						<!-- Nutirion -->
+						<!-- Nutrition -->
 						<Tabs.Content class="px-4 h-full mb-8  w-full " value="nutrition">
 							<div class="flex flex-col gap-8">
 								<div class="form-group">
@@ -614,7 +622,7 @@
 										>Ingredients</label
 									>
 									<LocaleInput
-										enPlaceholder="Enter ingredients1"
+										enPlaceholder="Enter ingredients"
 										frPlaceholder="Entrez les ingrédients"
 										duPlaceholder="Voer ingrediënten in"
 										textarea={true}
@@ -677,15 +685,138 @@
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 								</div>
+
+								<div class="form-group">
+									<label for="dry-ageing_duration" class="form-label">Dry ageing duration</label>
+									<Selector
+										placeholder="Select dry ageing duration"
+										options={ageing_duration}
+										inputName="dry-ageing-duration"
+									/>
+								</div>
 							</div>
 						</Tabs.Content>
 
 						<!-- Traceability -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">t</Tabs.Content>
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">
+							<div class="flex flex-col gap-8">
+								<div class="form-group">
+									<label for="plu" class="form-label">PLU</label>
+									<input
+										name="plu"
+										type="text"
+										placeholder="Enter PLU"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="sku" class="form-label">SKU</label>
+									<input
+										name="sku"
+										type="text"
+										placeholder="Enter SKU"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="tag" class="form-label">Tag</label>
+									<input
+										name="tag"
+										type="text"
+										placeholder="Create and choose tag"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+							</div>
+						</Tabs.Content>
 						<!-- Traceability -->
 
 						<!-- FInance -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="finance">f</Tabs.Content>
+						<Tabs.Content class="px-4 h-full mb-8  w-full " value="finance">
+							<div class="flex flex-col gap-8">
+								<div class="form-group">
+									<label for="q_factor" class="form-label">Q factor</label>
+									<input
+										name="q_factor"
+										type="text"
+										placeholder="Enter q factor"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="selling_tax" class="form-label mb-4">Selling tax(%)</label>
+									<Selector
+										inputName="selling_tax"
+										options={sellingTax}
+										placeholder="Select selling tax"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="shop_selling_price" class="form-label">Shop selling price</label>
+									<input
+										name="shop_selling_price"
+										type="text"
+										placeholder="Enter shop selling price eg - ($100)"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="ecommerce_selling_price_b2b" class="form-label"
+										>E-commerce selling price B2B</label
+									>
+									<input
+										name="ecommerce_selling_price_b2b"
+										type="text"
+										placeholder="Enter e-commerce selling price B2B"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="ecommerce_selling_price_b2c" class="form-label"
+										>E-commerce selling price B2C</label
+									>
+									<input
+										name="ecommerce_selling_price_b2c"
+										type="text"
+										placeholder="Enter e-commerce selling price B2C"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="selling_unit" class="form-label">Selling unit</label>
+									<input
+										name="selling_unit"
+										type="text"
+										placeholder="Enter selling unit"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="discount_percentage_b2b" class="form-label"
+										>Discount percentage B2B</label
+									>
+									<input
+										name="discount_percentage_b2b"
+										type="text"
+										placeholder="Enter discount percentage B2B"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="discount_percentage_b2c" class="form-label"
+										>Discount percentage B2C</label
+									>
+									<input
+										name="discount_percentage_b2c"
+										type="text"
+										placeholder="Enter discount percentage B2C"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+							</div>
+						</Tabs.Content>
 
 						<div class="w-full self flex items-center justify-between mt-4 px-4">
 							{#if allTabs.indexOf(currentTab) > 0}
