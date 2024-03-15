@@ -9,7 +9,6 @@
 	import { Batches, type Batch, currentProvider } from '$lib/stores.js';
 
 	import { showToast } from '$lib/utils.js';
-	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import { browser } from '$app/environment';
 	import Selector from '$lib/components/Selector.svelte';
 	import { onDestroy } from 'svelte';
@@ -22,6 +21,8 @@
 
 	currentProvider.set(null);
 	let { batches } = data;
+
+	console.log(batches);
 	Batches.set(batches.results);
 	const allTabs = [
 		{ label: 'Physical information', value: 'physical-info' },
@@ -33,6 +34,12 @@
 		$Batches.length > 0 && $Batches[0].carcass.id === carcass.id
 			? (disabled = true)
 			: (disabled = false);
+	}
+
+	let edit: boolean = false;
+
+	$: {
+		console.log(edit);
 	}
 
 	let showModal = false;
@@ -53,26 +60,33 @@
 	let ean_barcode: string;
 	let quantity: number;
 	let expiry_date: Date;
+	let batch_id: number;
 
 	const primalOptions = primals.results.map((primal) => ({
 		value: primal.id,
 		label: primal.name
 	}));
 
-	function toggleModal() {
+	function toggleModal(batch?: Batch) {
 		showModal = !showModal;
+		if (batch && !$currentProvider) {
+		} else if (batch && $currentProvider) {
+			console.log('editing');
+			edit = true;
+		}
 	}
 	let currentBatchData = {
 		primal_id: 0,
 		carcass_id: 0,
 		ean_barcode: '',
 		quantity: 0,
-		expiry_date: ''
+		expiry_date: '',
+		batch_id: 0
 	};
 
 	const toggleEditModal = (batch?: Batch) => {
-		console.log('curbdata', currentBatchData);
-
+		console.log('curbdata', batch);
+		batch_id = batch?.id;
 		if (batch && !$currentProvider) {
 			currentProvider.set(batch);
 			currentBatchData = {
@@ -80,12 +94,17 @@
 				carcass_id: batch.carcass.id,
 				ean_barcode: batch.ean_barcode,
 				quantity: batch.quantity,
+				batch_id: batch.id,
 				expiry_date: dayjs(batch.expiry_date).format('YYYY-MM-DD')
 			};
+			edit = true; // Set edit to true when editing an existing batch
 		} else {
+			// console.log('adding');
+			edit = false; // Set edit to false when adding a new batch
 			currentBatchData = {
 				primal_id: 0,
 				carcass_id: 0,
+				batch_id: 0,
 				ean_barcode: '',
 				quantity: 0,
 				expiry_date: ''
@@ -98,7 +117,7 @@
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
 		if ($currentProvider) {
-			formData.append('batch_id', `${$currentProvider?.id}`);
+			// formData.append('batch_id', `${$currentProvider?.id}`);
 		}
 		return async ({ result, update }) => {
 			try {
@@ -218,6 +237,12 @@
 				</div>
 				<div class="modal-input w-full hidden">
 					<input type="number" name="carcass_id" id="carcass_id" bind:value={carcass_id} />
+				</div>
+				<div class="modal-input w-full hidden">
+					<input type="number" name="batch_id" id="batch_id" bind:value={batch_id} />
+				</div>
+				<div class="modal-input w-full hidden">
+					<input type="checkbox" name="edit" id="edit" bind:value={edit} checked={edit} />
 				</div>
 				<div class="modal-input flex flex-col gap-1 w-full">
 					<label for="ean-barcode" class="font-satoshi font-medium text-sm">EAN Barcode</label>
@@ -493,8 +518,8 @@
 				<tbody>
 					{#each $Batches as batch (batch?.id)}
 						{#if batch.carcass.id === carcass.id}
-							<BatchCard {batch} />
-							<button on:click={() => toggleEditModal(batch)}>edit</button>
+							<BatchCard {batch} on:edit={() => toggleEditModal(batch)}/>
+						
 						{/if}
 					{/each}
 				</tbody>

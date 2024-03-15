@@ -25,6 +25,7 @@ const batchSchema = z.object({
 			required_error: 'Date is required'
 		})
 		.transform((val) => dayjs(val).format('YYYY-MM-DD'))
+
 });
 
 export const load = async ({ fetch, params, cookies }) => {
@@ -62,22 +63,23 @@ export const actions = {
 		const ean_barcode = formData.get('ean_barcode');
 		const quantity = Number(formData.get('quantity'));
 		const expiry_date = dayjs(formData.get('expiry_date') as string).format('YYYY-MM-DD');
+		const edit = formData.get('edit');
 
 		const dataToValidate = {
-			...(batch_id && { batch_id }),
+
 			primal_id,
 			carcass_id,
 			ean_barcode,
 			quantity,
-			expiry_date
+			expiry_date,
+			batch_id
 		};
 
 		try {
 			const validatedData = batchSchema.parse(dataToValidate);
-
-			if (validatedData.batch_id > 0) {
-				// Update existing batch
-				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/${validatedData.batch_id}`, {
+			console.log('vdata', validatedData);
+			if (edit === 'true') {
+				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/${batch_id}`, {
 					method: 'PUT',
 					body: JSON.stringify(validatedData),
 					headers: {
