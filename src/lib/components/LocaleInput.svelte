@@ -40,7 +40,7 @@
 				['bold', 'italic', 'underline', 'strike'],
 				[{ list: 'ordered' }, { list: 'bullet' }],
 				[{ align: [] }],
-				['link', 'image'],
+				['link'],
 				['clean'],
 				[{ header: [1, 2, 3, 4, 5, 6, false] }]
 			]
@@ -48,8 +48,8 @@
 	};
 
 	function onTextChange(event) {
-		console.log(event.detail);
-		console.log(locales);
+		// console.log(event.detail);
+		// console.log(locales);
 		const index = locales.findIndex((locale) => locale.name === activeLocale.name);
 		if (index !== -1) {
 			locales[index].value = event.detail.html;
@@ -107,7 +107,7 @@
 				<input
 					bind:value={activeLocale.value}
 					placeholder={activeLocale.placeholder}
-					class="input w-full focus:border-1 focus:border-\[#DA4E45\] focus:shadow-custom border-\[#D9D9D9\] rounded-\[0.5rem\]"
+					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 			{/if}
 		</Tabs.Content>

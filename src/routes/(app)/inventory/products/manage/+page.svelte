@@ -18,9 +18,7 @@
 
 	import { slide } from 'svelte/transition';
 	import Selector from '$lib/components/Selector.svelte';
-	import Modal from '$lib/components/Modal.svelte';
-	import MediaManager from '$lib/components/MediaManager.svelte';
-	import { Weight } from 'lucide-svelte';
+
 	import { cut_categories } from '$lib/stores/cuts.stores.js';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -53,8 +51,6 @@
 		country_of_origin: any;
 		farm: any;
 	};
-
-	55;
 
 	let imageValidationError: string;
 
