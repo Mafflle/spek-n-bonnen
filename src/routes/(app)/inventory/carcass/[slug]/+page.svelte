@@ -1,21 +1,32 @@
 <script lang="ts">
-	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import type { PageData } from '../$types';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Batches, type Batch } from '$lib/stores';
-
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 	import Modal from '$lib/components/Modal.svelte';
+	import BatchCard from '$lib/components/BatchCard.svelte';
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
-	import Selector from '$lib/components/Selector.svelte';
-	import { showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import BatchCard from '$lib/components/BatchCard.svelte';
-	import { get } from 'svelte/store';
-	export let data: PageData;
+	import { Batches, type Batch, currentProvider } from '$lib/stores.js';
 
+	import { showToast } from '$lib/utils.js';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { browser } from '$app/environment';
+	import Selector from '$lib/components/Selector.svelte';
+	import { onDestroy } from 'svelte';
+	import { Separator } from '$lib/components/ui/separator';
+	import type { PageData } from '../$types';
+	import * as Tabs from '$lib/components/ui/tabs';
+
+	export let data;
 	let { carcass, primals, access } = data;
 
+	currentProvider.set(null);
+	let { batches } = data;
+	Batches.set(batches.results);
+	const allTabs = [
+		{ label: 'Physical information', value: 'physical-info' },
+		{ label: 'Traceability', value: 'traceability' }
+	];
 	let disabled: boolean;
 
 	$: {
@@ -24,182 +35,259 @@
 			: (disabled = false);
 	}
 
-	Batches.set(data.batches.results);
-	const allTabs = [
-		{ label: 'Physical information', value: 'physical-info' },
-		{ label: 'Traceability', value: 'traceability' }
-	];
+	let showModal = false;
+	let loading = false;
+	let grid = false;
+	let validationErrors: {
+		primal_id?: [string];
+		carcass_id?: [string];
+		ean_barcode?: [string];
+		quantity?: [string];
+		expiry_date?: [string];
+	};
+	let currBatch: Batch | null;
+	let showBatchInfo: boolean = false;
 
 	let carcass_id: number = carcass.id;
 	let primal_id: number;
 	let ean_barcode: string;
 	let quantity: number;
 	let expiry_date: Date;
-	let loading: boolean = false;
-	let validationErrors: {
-		carcass_id?: [number];
-		primal_id?: [number];
-		ean_barcode?: [string];
-		quantity?: [number];
-		expiry_date?: [Date];
-	};
 
 	const primalOptions = primals.results.map((primal) => ({
 		value: primal.id,
 		label: primal.name
 	}));
 
-	let showModal = false;
-
 	function toggleModal() {
 		showModal = !showModal;
 	}
+	let currentBatchData = {
+		primal_id: 0,
+		carcass_id: 0,
+		ean_barcode: '',
+		quantity: 0,
+		expiry_date: ''
+	};
 
-	let today = new Date();
-	let dd = today.getDate();
-	let mm = today.getMonth() + 1;
-	let year = today.getFullYear();
+	const toggleEditModal = (batch?: Batch) => {
+		console.log('curbdata', currentBatchData);
 
-	if (dd < 10) {
-		dd = '0' + dd;
-	}
+		if (batch && !$currentProvider) {
+			currentProvider.set(batch);
+			currentBatchData = {
+				primal_id: batch.primal.id,
+				carcass_id: batch.carcass.id,
+				ean_barcode: batch.ean_barcode,
+				quantity: batch.quantity,
+				expiry_date: dayjs(batch.expiry_date).format('YYYY-MM-DD')
+			};
+		} else {
+			currentBatchData = {
+				primal_id: 0,
+				carcass_id: 0,
+				ean_barcode: '',
+				quantity: 0,
+				expiry_date: ''
+			};
+			currentProvider.set(null);
+		}
+		toggleModal();
+	};
 
-	if (mm < 10) {
-		mm = '0' + mm;
-	}
-	let maxDate = year + '-' + mm + '-' + dd;
-
-	let form;
-
-	const submit: SubmitFunction = ({ formData }) => {
+	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-
+		if ($currentProvider) {
+			formData.append('batch_id', `${$currentProvider?.id}`);
+		}
 		return async ({ result, update }) => {
-			loading = false;
-			if (result.status === 200) {
-				Batches.set([result.data.data, ...$Batches]);
-				showToast('Batch created successfully', 'success');
-				toggleModal();
-			} else {
-				showToast('Ooops something went wrong', 'error');
+			try {
+				if (result.status === 200) {
+					if (result.data.edited) {
+						const updatedBatch = result.data.updatedBatch;
+
+						Batches.update((batches) => {
+							const updatedBatches = batches.map((batch) => {
+								if (batch.id === updatedBatch.id) {
+									batch = updatedBatch;
+								}
+								return batch;
+							});
+							return updatedBatches;
+						});
+						showToast('Batch updated successfully', 'success');
+					} else {
+						Batches.set([result.data.newBatch, ...$Batches]);
+						showToast('Batch added successfully', 'success');
+					}
+					toggleEditModal();
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+				} else if (result.status === 500) {
+					showToast('Ooops something went wrong', 'error');
+				}
+			} finally {
+				update();
+				loading = false;
 			}
-			loading = false;
 		};
 	};
+
+	const showInfo = (batch: Batch) => {
+		currBatch = batch;
+		showBatchInfo = true;
+	};
+
+	const toggleGrid = () => {
+		grid = !grid;
+		localStorage.setItem('gridPreference', JSON.stringify(grid));
+	};
+
+	$: {
+		if (browser) {
+			grid = localStorage.getItem('gridPreference')
+				? JSON.parse(localStorage.getItem('gridPreference') as string)
+				: false;
+		}
+	}
+
+	const unsubscribe = currentProvider.subscribe((curr) => curr);
+	onDestroy(() => {
+		currentProvider.set(null);
+		unsubscribe;
+	});
 </script>
 
-<Modal {showModal} on:close={toggleModal}>
-	<div slot="modal-content" class="w-full">
+<svelte:head>
+	<title>Batches - Spek-n-Boonen</title>
+</svelte:head>
+
+<!-- Add/Edit batch modal -->
+<Modal {showModal} on:close={() => toggleEditModal()}>
+	<div slot="modal-content" class="w-full min-w-[500px]">
 		<form
-			action="?/create"
+			action="?/manage-batch"
 			method="post"
-			class="md:max-w-2xl w-[350px] md:w-[450px] flex flex-col items-center p-6 gap-8 bg-white rounded-md"
+			class="w-full min-w-[500px] flex flex-col items-center py-4 gap-4 bg-white rounded-md"
 			use:enhance={submit}
-			bind:this={form}
 		>
-			<div class="modal-title flex items-center gap-3 self-stretch">
-				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
-					Fill the form below to create batch
-				</div>
+			<div class="modal-title px-6 flex items-center gap-3 self-stretch">
+				<h3
+					class="title-text flex-[1 0 0] text-lg font-satoshi font-medium tracking-[-0.18px] w-full"
+				>
+					{$currentProvider?.id ? 'Edit' : 'Fill the form below to add'} batch
+				</h3>
 				<button
 					type="button"
 					class="close-button flex justify-center items-center w-1/12"
-					on:click={toggleModal}
+					on:click={() => toggleEditModal()}
 				>
 					<img src="/icons/close.svg" alt="close icon" />
 				</button>
 			</div>
-			<div class="modal-input w-full hidden">
-				<input type="number" name="carcass_id" id="carcass_id" bind:value={carcass_id} />
-			</div>
-			<div class="modal-input w-full">
-				<label for="primal" class="block mb-2 text-sm">Primal</label>
-				<input
-					type="number"
-					class="hidden"
-					name="primal_id"
-					id="primal_id"
-					bind:value={primal_id}
-				/>
-
-				{#if primals && primals.results}
-					<Selector
-						on:selected={(e) => (primal_id = e.detail.value)}
-						prop={primal_id}
-						inputName="primal"
-						placeholder="Select primal"
-						options={primalOptions}
-						token={access}
-						endpoint="manage"
-						searchEndpoint="api/inventory/primals"
+			<Separator orientation="horizontal" class="mb-5 text-grey-300" />
+			<div class="flex flex-col gap-6 px-6 w-full">
+				<div class="modal-input w-full">
+					<label for="primal" class="block mb-2 text-sm">Primal</label>
+					<input
+						type="number"
+						class="hidden"
+						name="primal_id"
+						id="primal_id"
+						bind:value={primal_id}
 					/>
-				{/if}
-				{#if validationErrors?.primal_id}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.primal_id}</sub
-					>
-				{/if}
-			</div>
-			<div class="modal-input w-full">
-				<input
-					type="text"
-					name="ean_barcode"
-					id="ean_barcode"
-					placeholder="Ean barcode"
-					bind:value={ean_barcode}
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-				{#if validationErrors?.ean_barcode}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.ean_barcode}</sub
-					>
-				{/if}
-			</div>
-			<div class="modal-input w-full">
-				<input
-					type="number"
-					name="quantity"
-					id="quantity"
-					placeholder="Quantity"
-					bind:value={quantity}
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-				{#if validationErrors?.quantity}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.quantity}</sub
-					>
-				{/if}
-			</div>
-			<div class="modal-input w-full">
-				<!-- calender -->
-				<input
-					type="date"
-					name="expiry_date"
-					id="expiry_date"
-					placeholder="Expiry date"
-					max={maxDate}
-					bind:value={expiry_date}
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-			</div>
-			<div class="modal-submit">
-				<button
-					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
-					hover:bg-[#C7453C] hover:rounded-[0.625rem]
-					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
-					"
-					type="submit"
-					{disabled}
-				>
-					{#if loading}
-						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
-					{:else}
-						<span class="button-text">Add batch </span>
+
+					{#if primals && primals.results}
+						<Selector
+							on:selected={(e) => (primal_id = e.detail.value)}
+							prop={primal_id}
+							inputName="primal"
+							placeholder="Select primal"
+							options={primalOptions}
+							token={access}
+							endpoint="manage"
+							searchEndpoint="api/inventory/primals"
+						/>
 					{/if}
-				</button>
+					{#if validationErrors?.primal_id}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.primal_id}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input w-full hidden">
+					<input type="number" name="carcass_id" id="carcass_id" bind:value={carcass_id} />
+				</div>
+				<div class="modal-input flex flex-col gap-1 w-full">
+					<label for="ean-barcode" class="font-satoshi font-medium text-sm">EAN Barcode</label>
+					<input
+						type="text"
+						name="ean_barcode"
+						id="ean_barcode"
+						placeholder="Enter EAN barcode"
+						bind:value={currentBatchData.ean_barcode}
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.ean_barcode}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors.ean_barcode}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input flex flex-col gap-1 w-full">
+					<label for="quantity" class="font-satoshi font-medium text-sm">Quantity</label>
+					<input
+						type="number"
+						name="quantity"
+						id="quantity"
+						placeholder="Enter quantity"
+						bind:value={currentBatchData.quantity}
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.quantity}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.quantity}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-input flex flex-col gap-1 w-full">
+					<label for="expiry-date" class="font-satoshi font-medium text-sm">Expiry Date</label>
+					<input
+						type="date"
+						name="expiry_date"
+						id="expiry_date"
+						placeholder="Select expiry date"
+						bind:value={currentBatchData.expiry_date}
+						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					/>
+					{#if validationErrors?.expiry_date}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]"
+							>{validationErrors.expiry_date}</sub
+						>
+					{/if}
+				</div>
+				<div class="modal-submit w-full flex items-center justify-end">
+					<button
+						class="bg-primary-50 py-2 px-3 rounded-md
+						hover:bg-[#C7453C] hover:rounded-[0.625rem]
+						focus:shadow-custom text-white font-bold text-sm flex items-center justify-center
+						"
+						type="submit"
+						disabled={loading}
+					>
+						{#if loading}
+							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+						{:else}
+							<span class="button-text">{$currentProvider?.id ? 'Edit' : 'Add'} batch</span>
+						{/if}
+					</button>
+				</div>
 			</div>
 		</form>
 	</div>
@@ -406,6 +494,7 @@
 					{#each $Batches as batch (batch?.id)}
 						{#if batch.carcass.id === carcass.id}
 							<BatchCard {batch} />
+							<button on:click={() => toggleEditModal(batch)}>edit</button>
 						{/if}
 					{/each}
 				</tbody>
