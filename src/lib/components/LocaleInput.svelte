@@ -37,7 +37,7 @@
 		content: activeLocale.value,
 		modules: {
 			toolbar: [
-				['bold', 'italic', 'underline', 'strike'],
+				['bold', 'italic', 'underline'],
 				[{ list: 'ordered' }, { list: 'bullet' }],
 				[{ align: [] }],
 				['link'],

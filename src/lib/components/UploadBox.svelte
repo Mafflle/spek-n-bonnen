@@ -70,7 +70,7 @@
 
 <div class="w-full">
 	<div
-		class="min-w-full relative rounded-xl h-full flex p-auto md:py-8 md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
+		class="min-w-full relative rounded-xl h-full min-h-[200px] flex p-auto justify-center md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 border-2 border-grey-300 hover:border-primary-red border-dashed"
 	>
 		<input
 			bind:files={images}
@@ -89,7 +89,7 @@
 			accept="image/*"
 			class="w-full cursor-pointer h-full absolute top-0 left-0 opacity-0 z-10"
 		/>
-		<div class="upload-box-info h-full w-full flex flex-col justify-center items-center gap-4">
+		<div class="upload-box-info h-full w-full flex flex-col justify-center items-center gap-2">
 			{#if previewImage}
 				<img
 					src={previewImage.image}
@@ -98,10 +98,10 @@
 					class=" h-full absolute w-full top-0 object-fit pointer-events-none rounded-xl"
 				/>
 			{/if}
-			<div class="image w-10 h-10 rounded-full flex justify-center items-center">
-				<img src="/icons/regular-image.svg" alt="reguar icon" />
+			<div class=" w-7 h-7 rounded-full flex justify-center items-center">
+				<img class="w-full h-full" src="/icons/image-upload-vector.svg" alt="file upload icon" />
 			</div>
-			<span class="w-fit text-center text-xs text-grey-100 p-1.5 text-clip">
+			<span class="w-fit max-w-[70%] text-center text-xs text-grey-100 text-clip">
 				Drop your image here or click here to upload
 			</span>
 			<!-- <span>or</span> -->

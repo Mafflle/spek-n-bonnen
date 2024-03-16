@@ -239,20 +239,6 @@
 	</div>
 	<Separator class="my-8 md:block hidden" />
 	<form action="?/manage-carcass" method="post" use:enhance={manageCarcass} class="w-full">
-		<section class="w-full my-5 flex items-center justify-end">
-			<button
-				disabled={loading}
-				type="submit"
-				class=" px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1 max-xsm:hidden"
-			>
-				{#if loading}
-					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
-				{:else}
-					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
-					<span> {carcassToEdit ? 'Edit' : 'Add'} product</span>
-				{/if}
-			</button>
-		</section>
 		<section
 			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-8"
 		>
@@ -264,9 +250,9 @@
 					</h3>
 				</div>
 				<div class="mb-8 flex flex-col gap-9 w-full">
-					<div class="flex flex-col gap-3 2xl:grid xl:grid-cols-2 xl:space-x-3.5">
-						<div class="action-shot">
-							<label for="action_shot" class="mb-4 text-sm font-medium font-satoshi"
+					<div class="flex flex-col gap-4 2xl:grid xl:grid-cols-2 2xl:gap-3">
+						<div class="action-shot flex flex-col">
+							<label for="action_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Action Shot</label
 							>
 							<UploadBox
@@ -275,8 +261,8 @@
 								inputName="action_shot"
 							/>
 						</div>
-						<div class="background-shot">
-							<label for="background_shot" class="mb-4 text-sm font-medium font-satoshi"
+						<div class="background-shot flex flex-col">
+							<label for="background_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Background Shot</label
 							>
 							<UploadBox
@@ -287,8 +273,8 @@
 						</div>
 					</div>
 					<div class="flex items-center gap-3">
-						<div class="w-1/2">
-							<label for="closeup_shot" class="mb-4 text-sm font-medium font-satoshi"
+						<div class="w-full flex flex-col">
+							<label for="closeup_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Close Up Shot</label
 							>
 							<UploadBox
@@ -297,8 +283,8 @@
 								inputName="closeup_shot"
 							/>
 						</div>
-						<div class="w-1/2">
-							<label for="lifestyle_shot" class="mb-4 text-sm font-medium font-satoshi"
+						<div class="w-full flex flex-col">
+							<label for="lifestyle_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Lifestyle Shot</label
 							>
 							<UploadBox
@@ -815,7 +801,7 @@
 						</Tabs.Content>
 
 						<div class="w-full self flex items-center justify-between mt-4 px-4">
-							{#if allTabs.indexOf(currentTab) > 0}
+							<!-- {#if allTabs.indexOf(currentTab) > 0}
 								<Button
 									on:click={() => switchTabs('previous')}
 									variant="secondary"
@@ -833,6 +819,23 @@
 									<span class="hidden md:block">Next </span>
 									<iconify-icon icon="grommet-icons:form-next"></iconify-icon></Button
 								>
+							{/if} -->
+
+							{#if allTabs.indexOf(currentTab) === allTabs.length - 1}
+								<section class="w-full my-5 flex items-center justify-end">
+									<button
+										disabled={loading}
+										type="submit"
+										class=" px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1 max-xsm:hidden"
+									>
+										{#if loading}
+											<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
+										{:else}
+											<!-- <img src="/icons/plus.svg" alt="Plus icon to represent adding" /> -->
+											<span> {carcassToEdit ? 'Edit' : 'Add'} product</span>
+										{/if}
+									</button>
+								</section>
 							{/if}
 						</div>
 					</section>
