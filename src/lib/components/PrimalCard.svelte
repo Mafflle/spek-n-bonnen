@@ -8,16 +8,23 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import PageLoader from './PageLoader.svelte';
 	import { InfoIcon } from 'lucide-svelte';
+	import DeleteConfirmation from './DeleteConfirmation.svelte';
 
 	export let grid: boolean;
 	export let slug: string;
 	export let primal: Primal;
+	export let showAlert: boolean = false;
+
+	let form: any;
+
+	console.log(primal.slug);
 
 	let loading: boolean = false;
 
 	const deletePrimal: SubmitFunction = ({ formData }) => {
 		loading = true;
-		formData.append('slug', `${primal.slug}`);
+		// formData.append('slug', `${primal.slug}`);
+		console.log('fdata', formData);
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
@@ -51,6 +58,15 @@
 {#if loading}
 	<PageLoader />
 {/if}
+
+<DeleteConfirmation
+	{showAlert}
+	on:close={() => (showAlert = false)}
+	on:delete={() => {
+		showAlert = false;
+		form.requestSubmit();
+	}}
+/>
 
 {#if grid}
 	<div
@@ -155,16 +171,26 @@
 							<span class="text-grey-100">More information</span>
 						</Button>
 					</DropdownMenu.Item>
-					<form action="?/delete" method="post" use:enhance={deletePrimal} class="">
-						<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+					<form
+						action="?/delete"
+						method="post"
+						use:enhance={deletePrimal}
+						class=""
+						bind:this={form}
+					>
+						<input type="text" class="hidden" bind:value={primal.slug} name="slug" />
 						<DropdownMenu.Item>
 							<Button
 								class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 								type="submit"
+								on:click={(e) => {
+									e.preventDefault(); // Move e.preventDefault() outside the conditional
+									showAlert = true;
+								}}
 							>
 								<img src="/icons/trash.svg" alt="trash icon" />
-								<span class="button-text text-primary-red">Delete </span></Button
-							>
+								<span class="button-text text-primary-red">Delete </span>
+							</Button>
 						</DropdownMenu.Item>
 					</form>
 				</DropdownMenu.Content>
