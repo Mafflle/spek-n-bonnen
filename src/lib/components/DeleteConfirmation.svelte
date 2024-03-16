@@ -6,8 +6,8 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<AlertDialog.Root bind:open={showAlert}>
-	<AlertDialog.Content>
+<AlertDialog.Root bind:open={showAlert} onOpenChange={() => dispatch('close')}>
+	<AlertDialog.Content class=" md:min-w-max ">
 		<AlertDialog.Header>
 			<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
 			<AlertDialog.Description>

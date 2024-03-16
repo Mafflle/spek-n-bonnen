@@ -91,7 +91,7 @@
 							></iconify-icon></Button
 						>
 					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
+					<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start">
 						<DropdownMenu.Item>
 							<Button
 								on:click={() => editPrimal(primal)}
@@ -184,7 +184,8 @@
 								class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 								type="submit"
 								on:click={(e) => {
-									e.preventDefault(); // Move e.preventDefault() outside the conditional
+									e.preventDefault();
+
 									showAlert = true;
 								}}
 							>
