@@ -25,6 +25,7 @@ const batchSchema = z.object({
 			required_error: 'Date is required'
 		})
 		.transform((val) => dayjs(val).format('YYYY-MM-DD'))
+
 });
 
 export const load = async ({ fetch, params, cookies }) => {
@@ -53,43 +54,95 @@ export const load = async ({ fetch, params, cookies }) => {
 };
 
 export const actions = {
-	create: async ({ fetch, request, cookies }) => {
+	'manage-batch': async ({ fetch, request, cookies, url }) => {
 		const formData = await request.formData();
+
+		const batch_id = formData.get('batch_id');
 		const primal_id = Number(formData.get('primal_id'));
 		const carcass_id = Number(formData.get('carcass_id'));
 		const ean_barcode = formData.get('ean_barcode');
 		const quantity = Number(formData.get('quantity'));
 		const expiry_date = dayjs(formData.get('expiry_date') as string).format('YYYY-MM-DD');
+		const edit = formData.get('edit');
 
 		const dataToValidate = {
+
 			primal_id,
 			carcass_id,
 			ean_barcode,
 			quantity,
-			expiry_date
+			expiry_date,
+			batch_id
 		};
-		try {
-			console.log('data to validate', dataToValidate);
-			const validatedData = batchSchema.parse(dataToValidate);
-			const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`, {
-				method: 'POST',
-				body: JSON.stringify(validatedData),
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${cookies.get('access')}`
-				}
-			});
 
-			if (response.ok) {
-				return { status: 200, data: await response.json() };
+		try {
+			const validatedData = batchSchema.parse(dataToValidate);
+			console.log('vdata', validatedData);
+			if (edit === 'true') {
+				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/${batch_id}`, {
+					method: 'PUT',
+					body: JSON.stringify(validatedData),
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${cookies.get('access')}`
+					}
+				});
+
+				if (response.ok) {
+					const updatedBatch = await response.json();
+					return {
+						updatedBatch,
+						edited: true
+					};
+				} else if (response.status === 400) {
+					const badBody = await response.json();
+					console.log(badBody);
+				} else if (response.status === 401) {
+					throw redirect(302, `/auth/login?from=${url.pathname}`);
+				} else {
+					console.log(response);
+				}
 			} else {
-				const errorData = await response.json(); // Extract error data from response
-				console.log('error', errorData);
-				return { status: 400, error: errorData }; // Return error data instead of response object
+				// Create new batch
+				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/batches/`, {
+					method: 'POST',
+					body: JSON.stringify(validatedData),
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${cookies.get('access')}`
+					}
+				});
+
+				if (response.ok) {
+					const newBatch = await response.json();
+					return {
+						newBatch
+					};
+				} else if (response.status === 400) {
+					const badBody = await response.json();
+					console.log(badBody);
+				} else if (response.status === 401) {
+					throw redirect(302, `/auth/login?from=${url.pathname}`);
+				} else {
+					console.log(response);
+				}
 			}
 		} catch (error) {
+			const toSend = {
+				message: 'Ooops something went wrong',
+				errors: {} as Error
+			};
+
+			if (error instanceof z.ZodError) {
+				toSend.message = 'Validation error';
+				toSend.errors = error.flatten().fieldErrors;
+				console.log(toSend.errors);
+
+				return fail(400, toSend);
+			}
+
 			console.log('error', error);
-			return { status: 400, error: error.errors };
+			return fail(500, toSend);
 		}
 	},
 	delete: async ({ fetch, request, cookies }) => {

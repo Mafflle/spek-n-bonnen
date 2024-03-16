@@ -187,20 +187,6 @@
 	</div>
 	<Separator class="my-8 md:block hidden" />
 	<form action="?/manage-carcass" method="post" use:enhance={manageCarcass} class="w-full">
-		<section class="w-full my-5 flex items-center justify-end">
-			<button
-				disabled={loading}
-				type="submit"
-				class=" px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1 max-xsm:hidden"
-			>
-				{#if loading}
-					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
-				{:else}
-					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
-					<span> {carcassToEdit ? 'Edit' : 'Add'} carcass</span>
-				{/if}
-			</button>
-		</section>
 		<section
 			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-10"
 		>
@@ -841,6 +827,19 @@
 									<span class="hidden md:block">Next </span>
 									<iconify-icon icon="grommet-icons:form-next"></iconify-icon></Button
 								>
+							{:else}
+								<button
+									disabled={loading}
+									type="submit"
+									class=" px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1 max-xsm:hidden"
+								>
+									{#if loading}
+										<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
+									{:else}
+										<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
+										<span> {carcassToEdit ? 'Edit' : 'Add'} carcass</span>
+									{/if}
+								</button>
 							{/if}
 						</div>
 					</section>
