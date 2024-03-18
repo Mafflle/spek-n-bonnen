@@ -1,71 +1,67 @@
 export let cut_categories = [
 	{
 		value: 'rjc',
-		label: 'Roasting joint cuts'
+		label: 'Roasting joint'
 	},
 	{
 		value: 'mrjc',
-		label: 'Mini roasting joint cuts'
+		label: 'Mini roasting joint'
 	},
 	{
-		value: 'steak_cuts',
-		label: 'Steak cuts'
+		value: 'steak',
+		label: 'Steak cut'
 	},
 	{
-		value: 'daubes_cuts',
-		label: 'Daubes cuts'
+		value: 'daubes',
+		label: 'Daubes cut'
 	},
 	{
-		value: 'ribs_cuts',
+		value: 'ribs',
 		label: 'Ribs cuts'
 	},
 	{
-		value: 'steak_cuts',
-		label: 'Steak cuts'
-	},
-	{
-		value: 'shanks_cuts',
+		value: 'shanks',
 		label: 'Shanks cuts'
 	},
 	{
-		value: 'dice_cuts',
+		value: 'dicd',
 		label: 'Dice cuts'
 	},
 	{
-		value: 'stir_fry_cuts',
+		value: 'stir_fry',
 		label: 'Stir fry cuts'
 	},
 	{
-		value: 'mince_cuts',
+		value: 'mince',
 		label: 'Mince cuts'
 	},
 	{
-		value: 'burgers_cuts',
-		label: 'Burgers cuts'
+		value: 'burgers',
+		label: 'Burger cuts'
 	},
 	{
-		value: 'trim_cuts',
+		value: 'trim',
 		label: 'Trim cuts'
 	},
 	{
-		value: 'offal_cuts',
+		value: 'offal',
 		label: 'Offal cuts'
 	},
 	{
-		value: 'preparation_cuts',
+		value: 'preparation',
 		label: 'Preparation cuts'
 	},
 	{
-		value: 'thin_cut_cuts',
-		label: 'Thin cut cuts'
+		value: 'thin_cuts',
+		label: 'Thin cuts'
 	},
 	{
-		value: 'normal_thickness_cut_cuts',
-		label: 'Normal thickness cut cuts'
+		value: 'normal_thickness_cuts',
+		label: 'Normal thickness cuts'
 	},
 
 	{
-		value: 'thick_cut_cuts',
-		label: 'Thick cut cuts'
+		value: 'thick_cuts',
+		label: 'Thick cuts'
 	}
 ];
