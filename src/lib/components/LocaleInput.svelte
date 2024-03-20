@@ -1,8 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { locale } from 'dayjs';
+	import Editor from '@tinymce/tinymce-svelte';
 	import Separator from './ui/separator/separator.svelte';
-	import { Editor } from '@tadashi/svelte-editor-quill';
 
 	export let frPlaceholder: string = "Entrez le nom de l'élément en français";
 	export let enPlaceholder: string = 'Enter item name';
@@ -94,6 +93,10 @@
 
 		content = locales[index].value;
 	}
+	let conf = {
+		toolbar: 'undo redo italic bold',
+		menubar: false
+	};
 </script>
 
 <svelte:head>
@@ -125,13 +128,19 @@
 				<Tabs.Content value={locale.label}>
 					<div class="flex flex-col gap-3">
 						{#if textarea}
-							<Editor {options} on:text-change={onTextChange} bind:data={locale.value} />
-							<input
-								type="text"
+							<!-- <Editor {options} on:text-change={onTextChange} bind:data={locale.value} /> -->
+
+							<Editor
+								modelEvents="input change undo redo"
+								bind:value={locale.value}
+								apiKey="vbxsmpoh53y8sefip8hwna0x2wunt6hw8gxi8z4z1bu7lglp"
+								{conf}
+							/>
+							<textarea
 								class="hidden"
 								bind:value={locale.value}
 								name={`${inputName}_${locale.label}`}
-							/>
+							></textarea>
 						{:else}
 							<input
 								name={`${inputName}_${locale.label}`}

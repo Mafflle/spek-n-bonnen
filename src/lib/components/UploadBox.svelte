@@ -16,7 +16,13 @@
 	export let allowMultiple: boolean = false;
 	export let isFileInput: boolean = false;
 	const setPreview = (image) => {
-		previewImage = URL.createObjectURL(image);
+		if (isFileInput) {
+			previewImage = URL.createObjectURL(image);
+		} else {
+			previewImage = image.image;
+			console.log('previewImage', previewImage);
+			console.log('image', image);
+		}
 	};
 
 	$: {
@@ -115,8 +121,8 @@
 								class="w-full z-30 bg-[#818080a6] absolute bottom-0 py-1 px-3 flex gap-2 items-center"
 							>
 								{#each files as image}
-									<button type="button" on:click={() => setPreview(image)}>
-										<img src={image.image} alt="" class="h-10 w-12 object-cover" />
+									<button type="button" class="h-10 w-12" on:click={() => setPreview(image)}>
+										<img src={image.image} alt="" class="h-full w-full object-cover" />
 									</button>
 								{/each}
 							</section>

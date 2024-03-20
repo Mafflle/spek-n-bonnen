@@ -19,7 +19,7 @@
 
 	export let data;
 
-	const { tags, primals } = data;
+	const { tags, primals, vendors } = data;
 
 	// temp for UI
 	let carcassToEdit: {
@@ -67,19 +67,6 @@
 	let currentTabInfo;
 
 	let loading: boolean = false;
-	let today = new Date();
-	let dd = today.getDate();
-	let mm = today.getMonth() + 1;
-	let year = today.getFullYear();
-
-	if (dd < 10) {
-		dd = '0' + dd;
-	}
-
-	if (mm < 10) {
-		mm = '0' + mm;
-	}
-	let maxDate = year + '-' + mm + '-' + dd;
 
 	const switchTabs = (direction: string) => {
 		const currTab = allTabs.findIndex((item) => item === currentTab);
@@ -201,6 +188,12 @@
 		{ value: '21', label: '21%' }
 	];
 
+	let primal_quarters = [
+		{ value: 'hind', label: 'Hindquarter' },
+		{ value: 'middle', label: 'Middle' },
+		{ value: 'fore', label: 'Forequarter' }
+	];
+
 	let checked = false;
 </script>
 
@@ -264,7 +257,7 @@
 								allowMultiple={true}
 								on:imageSelected={(e) => (closeup_shot = e.detail.imageId)}
 								error={imageValidationError}
-								inputName="closeup_shot"
+								inputName="closeup_shots"
 							/>
 						</div>
 						<div class="w-full flex flex-col">
@@ -275,7 +268,7 @@
 								allowMultiple={true}
 								on:imageSelected={(e) => (lifestyle_shot = e.detail.imageId)}
 								error={imageValidationError}
-								inputName="lifestyle_shot"
+								inputName="lifestyle_shots"
 							/>
 						</div>
 					</div>
@@ -614,11 +607,11 @@
 
 								<div class="form-group">
 									<label for="nutritional_information" class="form-label"
-										>Nutritional informarion</label
+										>Nutritional information</label
 									>
 									<Textarea
 										required
-										name="nutrional_information"
+										name="nutritional_information"
 										placeholder="Enter nutritional information"
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
@@ -631,12 +624,39 @@
 									/>
 								</div>
 								<div class="form-group">
-									<label for="dry-ageing_duration" class="form-label">Dry ageing duration</label>
+									<label for="cooking_instructions" class="form-label">Cooking instructions</label>
+									<Textarea
+										required
+										name="cooking_instructions"
+										placeholder="Enter cooking instructions"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="cooking_methods" class="form-label">Cooking methods</label>
+									<Textarea
+										required
+										name="cooking_methods"
+										placeholder="Enter cooking methods"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="diet" class="form-label">Diet</label>
+									<Textarea
+										required
+										name="diet"
+										placeholder="Enter diet"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="dry-aging_duration" class="form-label">Dry aging duration</label>
 									<Selector
 										required={true}
 										placeholder="Select dry ageing duration"
 										options={ageing_duration}
-										inputName="dry-ageing-duration"
+										inputName="dry_aging_duration"
 									/>
 								</div>
 								<div class="form-group">
@@ -677,11 +697,11 @@
 								</div>
 
 								<div class="form-group">
-									<label for="dry-ageing_duration" class="form-label">Dry ageing duration</label>
+									<label for="primal_quarter" class="form-label">Primal quarter</label>
 									<Selector
-										placeholder="Select dry ageing duration"
-										options={ageing_duration}
-										inputName="dry-ageing-duration"
+										placeholder="Select primal quarter"
+										options={primal_quarters}
+										inputName="primal_quarter"
 									/>
 								</div>
 							</div>
@@ -708,6 +728,14 @@
 										required
 										placeholder="Enter SKU"
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="tag" class="form-label">Preffered vendor</label>
+									<Selector
+										inputName="preffered_vendor"
+										options={vendors}
+										placeholder="Select preffered vendor"
 									/>
 								</div>
 								<div class="form-group">

@@ -288,10 +288,22 @@
   resolved "https://registry.yarnpkg.com/@lukeed/csprng/-/csprng-1.1.0.tgz#1e3e4bd05c1cc7a0b2ddbd8a03f39f6e4b5e6cfe"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
-"@melt-ui/svelte@0.75.3":
-  version "0.75.3"
-  resolved "https://registry.yarnpkg.com/@melt-ui/svelte/-/svelte-0.75.3.tgz#4b6fa9ee76891e77f92154b710a04e353a494515"
-  integrity sha512-EA2IKn7w9qtzO/M7VEENpphQ9A4az+QDMQbA8SJLuKyu+S8NWliln5y9vvmnx9dZF8GtKtUKuxpwRNyPg5LAOg==
+"@melt-ui/svelte@0.68.0":
+  version "0.68.0"
+  resolved "https://registry.yarnpkg.com/@melt-ui/svelte/-/svelte-0.68.0.tgz#97a7eecc1639466ff4882d9a39939578fed39c97"
+  integrity sha512-/QvA98hnYEodZtHJ71+ocum/WWp30hVNt3F8uiZKnNYwZDaiQYjlyR9AaGKYcZLCe6R68op1mfCzc0kTzJilyA==
+  dependencies:
+    "@floating-ui/core" "^1.3.1"
+    "@floating-ui/dom" "^1.4.5"
+    "@internationalized/date" "^3.5.0"
+    dequal "^2.0.3"
+    focus-trap "^7.5.2"
+    nanoid "^5.0.4"
+
+"@melt-ui/svelte@0.76.0":
+  version "0.76.0"
+  resolved "https://registry.yarnpkg.com/@melt-ui/svelte/-/svelte-0.76.0.tgz#07ecd835ceebe917f55f79aff26fca667b8df216"
+  integrity sha512-X1ktxKujjLjOBt8LBvfckHGDMrkHWceRt1jdsUTf0EH76ikNPP1ofSoiV0IhlduDoCBV+2YchJ8kXCDfDXfC9Q==
   dependencies:
     "@floating-ui/core" "^1.3.1"
     "@floating-ui/dom" "^1.4.5"
@@ -452,6 +464,13 @@
   integrity sha512-Q3BhV0zIytsbZo7v7EMkVtAd35rMC5gmIU9T/gVC0AMIgEaG3I5ZgG7SdydXehSXpgWjoGD4C/crVMQl4eSmrg==
   dependencies:
     quill "1.3.7"
+
+"@tinymce/tinymce-svelte@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-svelte/-/tinymce-svelte-2.0.1.tgz#4bb7b53ecc1a5c4e7f491eeccaea57d5db1bb5ae"
+  integrity sha512-hKSgvKZiYRECNNnams0WbIzpXcXGrjH0fHEFlrRv5DmNnCEhn0U/WWIlukAa79E0Pc/mkuYF3eDTqniKUbMO1A==
+  dependencies:
+    rollup-plugin-execute "^1.1.1"
 
 "@types/chai-subset@^1.3.3":
   version "1.3.5"
@@ -670,13 +689,22 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bits-ui@^0.19.5:
-  version "0.19.5"
-  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-0.19.5.tgz#61508e5367790aac478aa9ab6569499ffc5a35c1"
-  integrity sha512-jrt0pGZdixtl27VrfzLj5yJxha29CK+6nClZZSoJCL5DlXFT1sluF9NnOSMP48D3kczR5YjpArvCe0BEnGq4jA==
+bits-ui@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-0.16.0.tgz#263ceb70926f9cf9c1d3b7c5945c74f2ed7d629a"
+  integrity sha512-HEkuVDyUG9dTWtKujKpdDsGOe9GRmuYOEF9yGbjVwNazxMQDQa9deUX8vM3ofGBWaJgr1cEu88p38kP5Z5gQ8w==
   dependencies:
     "@internationalized/date" "^3.5.1"
-    "@melt-ui/svelte" "0.75.3"
+    "@melt-ui/svelte" "0.68.0"
+    nanoid "^5.0.4"
+
+bits-ui@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-0.20.0.tgz#2d29abbb314f17306d129ed98a25e6d7608787df"
+  integrity sha512-cAQHnVV4anto6zrtTHGDa/Rxjhp2sFdCL1zLoqOvQIW8cJ5iz9V0+pKvi439pi5zllALM7WosXEz2E8twA50qA==
+  dependencies:
+    "@internationalized/date" "^3.5.1"
+    "@melt-ui/svelte" "0.76.0"
     nanoid "^5.0.5"
 
 brace-expansion@^1.1.7:
@@ -751,6 +779,11 @@ caniuse-lite@^1.0.30001565, caniuse-lite@^1.0.30001578:
   version "1.0.30001579"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001579.tgz#45c065216110f46d6274311a4b3fcf6278e0852a"
   integrity sha512-u5AUVkixruKHJjw/pj9wISlcMpgFWzSrczLZbrqBSxukQixmg0SJ5sZTpvaFvxU0HoQKd4yoyAogyrAz9pzJnA==
+
+canvas-confetti@^1.6.0:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/canvas-confetti/-/canvas-confetti-1.9.2.tgz#c9f74098c7fdf66dd9d1aab5d381061cf74e48f0"
+  integrity sha512-6Xi7aHHzKwxZsem4mCKoqP6YwUG3HamaHHAlz1hTNQPCqXhARFpSXnkC9TWlahHY5CG6hSL5XexNjxK8irVErg==
 
 chai@^4.3.7:
   version "4.4.1"
@@ -2189,6 +2222,16 @@ pretty-format@^29.5.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
+prism-svelte@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/prism-svelte/-/prism-svelte-0.5.0.tgz#c4aeffeaddb179cfef213aab91ee785b66d22992"
+  integrity sha512-db91Bf3pRGKDPz1lAqLFSJXeW13mulUJxhycysFpfXV5MIK7RgWWK2E5aPAa71s8TCzQUXxF5JOV42/iOs6QkA==
+
+prismjs@^1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
+  integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
+
 proxy-from-env@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
@@ -2291,6 +2334,11 @@ rimraf@^3.0.2:
   integrity sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==
   dependencies:
     glob "^7.1.3"
+
+rollup-plugin-execute@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-execute/-/rollup-plugin-execute-1.1.1.tgz#ee7bcb293e48bc599232b66b66473763e3cb8965"
+  integrity sha512-isCNR/VrwlEfWJMwsnmt5TBRod8dW1IjVRxcXCBrxDmVTeA1IXjzeLSS3inFBmRD7KDPlo38KSb2mh5v5BoWgA==
 
 rollup@^3.27.1, rollup@^3.7.0:
   version "3.29.4"
@@ -2541,6 +2589,15 @@ svelte-keyed@^2.0.0:
   resolved "https://registry.yarnpkg.com/svelte-keyed/-/svelte-keyed-2.0.0.tgz#57131f4cfab204e9000197049f70cdb772c0e84b"
   integrity sha512-7TeEn+QbJC2OJrHiuM0T8vMBkms3DNpTE+Ir+NtnVBnBMA78aL4f1ft9t0Hn/pBbD/TnIXi4YfjFRAgtN+DZ5g==
 
+svelte-legos@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/svelte-legos/-/svelte-legos-0.2.2.tgz#de5141e56efb8a9ebbf92aaf9269ea70fb7f8f0c"
+  integrity sha512-HTVkCIqhrxdy+OpXjxGr/4xIJEGv4d2cRQwTjm0SYfLw/YF1I1l/TQR59nb2WvjccnO8TNFNTvAWP5pgXQnU+w==
+  dependencies:
+    canvas-confetti "^1.6.0"
+    prism-svelte "^0.5.0"
+    prismjs "^1.29.0"
+
 svelte-preprocess@^5.1.0:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-5.1.3.tgz#7682239fe53f724c845b53026816fdfe15d028f9"
@@ -2770,6 +2827,13 @@ util-deprecate@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
+
+vaul-svelte@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/vaul-svelte/-/vaul-svelte-0.3.0.tgz#74d5aa321538914f2eaf91aff765db7e08f29a0a"
+  integrity sha512-+PBfKDWl+xfloe8Tm1G8x3TqbCiUWoyUedU2WC5iE3v6LOYPKo8FyEtzNC5ZqFVVnUKSKNg+4Fi73nuzMkT7JA==
+  dependencies:
+    bits-ui "^0.16.0"
 
 vite-node@0.32.4:
   version "0.32.4"

@@ -1,16 +1,19 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { data } from 'autoprefixer';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
 	const getTags = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/`);
-	const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);
+	// const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);
+	const getVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/`);
 
 	// console.log(getPrimals.statusText);
-	if (getPrimals.ok && getTags.ok) {
+	if (getPrimals.ok && getTags.ok && getVendors.ok) {
 		let primals = await getPrimals.json();
 		const tags = await getTags.json();
+		let vendors = await getVendors.json();
 
 		primals.results = primals.results.map((primal) => {
 			return {
@@ -18,9 +21,16 @@ export const load: PageServerLoad = async ({ fetch }) => {
 				label: primal.name
 			};
 		});
+		vendors.results = vendors.results.map((vendor) => {
+			return {
+				value: vendor.id,
+				label: vendor.name
+			};
+		});
 		return {
 			primals: primals.results,
-			tags: tags.results
+			tags: tags.results,
+			vendors: vendors.results
 		};
 	}
 };
@@ -32,6 +42,7 @@ export const actions: Actions = {
 		const seo = formData.get('seo') as string;
 		const plu = formData.get('plu') as string;
 		const sku = formData.get('sku') as string;
+		const slug = formData.get('slug');
 		const name_en = formData.get('name_en') as string;
 		const name_nl = formData.get('name_nl') as string;
 		const name_fr = formData.get('name_fr') as string;
@@ -65,12 +76,13 @@ export const actions: Actions = {
 		const storage_requirements_fr = formData.get('storage_requirements_fr') as string;
 		const nutritional_information = formData.get('nutritional_information') as string;
 		const cooking_instructions = formData.get('cooking_instructions') as string;
+		const pairing_suggestion = formData.get('pairing_suggestion') as string;
 		const livestock_breed = formData.get('livestock_breed') as string;
 		const cut_type = formData.get('cut_type') as string;
 		const primal_quarter = formData.get('primal_quarter') as string;
 		const cut_category = formData.get('cut_category') as string;
 		const cooking_methods = formData.get('cooking_methods') as string;
-		const dry_aging_duration = formData.get('dry_ageing_duration') as string;
+		const dry_aging_duration = formData.get('dry_aging_duration') as string;
 		const sex = formData.get('sex') as string;
 		const age = formData.get('age') as string;
 		const diet = formData.get('diet') as string;
@@ -86,14 +98,15 @@ export const actions: Actions = {
 		const background_shot = formData.get('background_shot');
 		const primal = formData.get('primal');
 		const preffered_vendor = formData.get('preffered_vendor');
-		const closeup_shots = formData.get('closeup_shots') as string;
-		const lifestyle_shots = formData.get('lifestyle_shots');
+		const closeup_shots = formData.getAll('closeup_shots');
+		const lifestyle_shots = formData.getAll('lifestyle_shots');
 		const tags = formData.get('tags');
 
 		const dataToValidate = {
 			...(seo && { seo }),
 			...(plu && { plu }),
 			...(sku && { sku }),
+			...(slug && { slug }),
 			...(name_en && { name_en }),
 			...(name_nl && { name_nl }),
 			...(name_fr && { name_fr }),
@@ -152,6 +165,7 @@ export const actions: Actions = {
 			...(lifestyle_shots && { lifestyle_shots }),
 			...(tags && { tags })
 		};
+		console.log(dataToValidate);
 
 		return {
 			inputs: dataToValidate

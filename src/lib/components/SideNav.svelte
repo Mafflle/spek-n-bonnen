@@ -51,6 +51,11 @@
 					href: '/inventory/primals',
 					color: '#FF1C0D',
 					permission: 'view_primal'
+				},
+				{
+					title: 'Main groups',
+					href: '/inventory/main-groups',
+					color: '#FF1C0D'
 				}
 			]
 		},

@@ -27,7 +27,7 @@
 	}
 
 	type Option = {
-		value: string;
+		value: string | number;
 		label: string;
 	};
 
@@ -143,6 +143,8 @@
 						>
 					{/if}
 				</div>
+
+				<button>Add</button>
 			</div>
 
 			{#if searching}

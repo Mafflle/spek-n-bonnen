@@ -13,7 +13,7 @@
 	<link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
 </svelte:head>
 
-<Toaster richColors />
+<Toaster richColors closeButton />
 
 {#if $navigating}
 	<PageLoader />
