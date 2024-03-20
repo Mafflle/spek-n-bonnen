@@ -4,7 +4,18 @@ import { z } from 'zod';
 import { GroupEnum, VAT } from '$lib/stores';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 
-export const load: PageServerLoad = async () => {};
+export const load: PageServerLoad = async ({ fetch }) => {
+	const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);
+
+	if (getMainGroups.ok) {
+		const groups = await getMainGroups.json();
+		return {
+			mainGroups: groups
+		};
+	} else {
+		console.log(getMainGroups);
+	}
+};
 
 const groupSchema = z.object({
 	name: z

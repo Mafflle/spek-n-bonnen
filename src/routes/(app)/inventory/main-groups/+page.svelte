@@ -1,5 +1,12 @@
 <script lang="ts">
+	import MainGroup from '$lib/components/MainGroup.svelte';
 	import { MainGroups } from '$lib/stores';
+
+	export let data;
+
+	const { groups } = data;
+
+	$MainGroups = groups.results;
 </script>
 
 <svelte:head>
@@ -60,6 +67,27 @@
 					<span class="hidden sm:block">Create main group</span>
 				</a>
 			</div>
+		</div>
+		<div class="border rounded-xl">
+			<table class="table">
+				<thead>
+					<tr class="">
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+						<th class="bg-[#F9F9F9]">Department</th>
+						<th class="bg-[#F9F9F9]">Color</th>
+						<th class="bg-[#F9F9F9]">VAT(%)</th>
+						<th class="bg-[#F9F9F9]">Traceability</th>
+						<th class="bg-[#F9F9F9]">Traceability scenario</th>
+						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{#each $MainGroups as group (group.id)}
+						<MainGroup {group} />
+					{/each}
+				</tbody>
+			</table>
 		</div>
 	</div>
 {:else}
