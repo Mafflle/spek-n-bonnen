@@ -10,7 +10,7 @@
 	const dispatch = createEventDispatcher();
 
 	const isDesktop = mediaQuery('(min-width: 768px)');
-	$: console.log(isDesktop);
+	// $: console.log(isDesktop);
 </script>
 
 {#if $isDesktop}

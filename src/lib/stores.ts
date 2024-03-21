@@ -70,6 +70,14 @@ export type MainGroup = {
 	updated_at?: Date;
 };
 
+export type Tag = {
+	id: number;
+	slug: string;
+	name: string;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export type Vendor = {
 	id: number;
 	name: string;
@@ -159,6 +167,7 @@ export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let Batches = writable<Batch[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
+export let Tags = writable<any[]>([]);
 export let currentProvider = writable<
 	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);

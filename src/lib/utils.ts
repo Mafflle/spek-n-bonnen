@@ -11,7 +11,7 @@ import {
 } from '$lib/stores';
 
 // types
-export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'promise';
 export type Option = {
 	value: number;
 	label: string;
@@ -47,7 +47,7 @@ export type CarcassErrors = {
 };
 
 // utility functions
-export const showToast = (message: string, type: ToastType) => {
+export const showToast = (message: string, type: ToastType, promise?) => {
 	if (message) {
 		if (type === 'success') {
 			toast.success(message, {
@@ -69,6 +69,13 @@ export const showToast = (message: string, type: ToastType) => {
 			toast.info(message, {
 				position: 'top-right',
 				dismissable: true
+			});
+		} else if (type === 'promise') {
+			toast.promise(promise, {
+				loading: 'Loading...',
+				success: () => {
+					return message;
+				}
 			});
 		} else {
 			toast(message, {

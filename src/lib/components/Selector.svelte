@@ -2,6 +2,10 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import SearchInput from './SearchInput.svelte';
 	import * as Select from './ui/select';
+	import Button from './ui/button/button.svelte';
+	import { Tags } from '$lib/stores';
+	import { Item } from './ui/accordion';
+	import Label from './ui/label/label.svelte';
 
 	const dispatch = createEventDispatcher();
 	let open = false;
@@ -25,10 +29,11 @@
 	function toggle() {
 		open = !open;
 	}
-
+	$: $Tags = options;
 	type Option = {
 		value: string | number;
 		label: string;
+		slug: string;
 	};
 
 	let selected: any;
@@ -54,6 +59,16 @@
 		search = '';
 		dispatch('selected', option);
 	}
+	const addOption = (name: string) => {
+		dispatch('addoption', { name });
+	};
+	const editOption = (name: string, slug: string) => {
+		dispatch('editOption', { name, slug });
+	};
+	const deleteOption = (id: number | string) => {
+		dispatch('deleteOption', { itemId: id });
+	};
+
 	const removeSelected = (itemIndex: number) => {
 		selectedArray = selectedArray.filter((element: string, index: number) => {
 			return selected.indexOf(element) !== itemIndex;
@@ -75,10 +90,33 @@
 			// console.log(selected);
 		}
 	});
+
+	$: {
+		if (!selectMultiple) {
+			if (selected && selected.value) {
+				options.map((option) => {
+					if (option.value === selected.value && selected.label !== option.label) {
+						selected.label = option.label;
+					}
+				});
+			}
+		} else if (selectMultiple && selected) {
+			for (const item of selected) {
+				let sameOption = options.find(
+					(option) => option.value === item.value && option.label !== item.label
+				);
+				if (sameOption) {
+					item.label = sameOption.label;
+				}
+			}
+		}
+	}
+	// $: console.log(selected);
+
 	let selectedValue: string | number = selected?.value;
 </script>
 
-<Select.Root {selected} multiple={selectMultiple}>
+<Select.Root bind:selected multiple={selectMultiple}>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- <input type="text" {name} class="hidden" bind:value={selectedValue} /> -->
 	<Select.Trigger class="max-w-full w-full flex hover:border-primary-100 ">
@@ -129,7 +167,7 @@
 					{#if addUnavailable}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
-						<svg
+						<!-- <svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
 							height="24"
@@ -140,11 +178,15 @@
 								fill="#a52921"
 								d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z"
 							/></svg
-						>
+						> -->
 					{/if}
 				</div>
 
-				<button>Add</button>
+				{#if addUnavailable}
+					<button on:click={() => addOption(search)} class="flex"
+						><iconify-icon width="25" class="text-primary-red" icon="gg:add"></iconify-icon></button
+					>
+				{/if}
 			</div>
 
 			{#if searching}
@@ -157,13 +199,34 @@
 						on:click={() => onSelected(option)}
 						value={option.value}
 						label={option.label}
-						class="p-2 text-[14px] hover:bg-primary-100 cursor-pointer hover:text-white w-full flex
+						class="p-2 text-[14px] hover:bg-primary-100 cursor-pointer hover:text-white w-full items-center justify-between flex
 				{option.label === selected?.label ||
-							(selectedArray.includes(option.label) && 'bg-primary-100 text-white')} {!option.label
+							(selected?.includes(option.label) && 'bg-primary-100 text-white')} {!option.label
 							.toLowerCase()
 							.startsWith(search.toLowerCase()) && 'hidden'}"
 					>
-						{option.label}
+						<span class="mr-auto text-base font-medium">
+							{option.label}
+						</span>
+						{#if addUnavailable}
+							<div class="flex items-center gap-1 relative z-30">
+								<button
+									on:click={() => editOption(option.label, option.slug)}
+									class="text-sm font-satoshi -tracking-[0.14px] w-7 h-7 flex items-center justify-start py-1 rounded gap-2"
+								>
+									<img src="/icons/edit.svg" alt="edit icon" class="w-full h-full" />
+									<span class="text-grey-100 hidden">Edit details</span>
+								</button>
+
+								<button
+									on:click={() => deleteOption(option.slug)}
+									class="text-sm font-satoshi -tracking-[0.14px] w-7 h-7 flex items-center justify-start py-1 rounded gap-2"
+								>
+									<img src="/icons/trash.svg" class="w-full h-full" alt="trash icon" />
+									<span class="button-text text-primary-red hidden">Delete </span>
+								</button>
+							</div>
+						{/if}
 					</Select.Item>
 				{/each}
 			{/if}

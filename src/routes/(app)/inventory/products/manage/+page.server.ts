@@ -1,7 +1,8 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import type { Actions } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { data } from 'autoprefixer';
+import { z } from 'zod';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
@@ -21,6 +22,13 @@ export const load: PageServerLoad = async ({ fetch }) => {
 				label: primal.name
 			};
 		});
+		tags.results = tags.results.map((tag) => {
+			return {
+				value: tag.id,
+				label: tag.name,
+				slug: tag.slug
+			};
+		});
 		vendors.results = vendors.results.map((vendor) => {
 			return {
 				value: vendor.id,
@@ -35,6 +43,10 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	}
 };
 
+interface Errors {
+	name?: [string];
+	server?: [string];
+}
 export const actions: Actions = {
 	'manage-product': async ({ fetch, request }) => {
 		const formData = await request.formData();
@@ -170,5 +182,89 @@ export const actions: Actions = {
 		return {
 			inputs: dataToValidate
 		};
+	},
+	'manage-tag': async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const name = formData.get('name');
+		const slug = formData.get('slug');
+
+		const tagSchema = z.object({
+			name: z
+				.string({ required_error: 'Tag name is required' })
+				.min(3, { message: 'Tag name can not be less than 3 letters' })
+				.trim()
+		});
+		const dataToValidate = {
+			...(name && { name })
+		};
+		try {
+			const validatedData = tagSchema.parse(dataToValidate);
+
+			if (slug) {
+				// console.log(validatedData);
+
+				const editTag = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/${slug}/`, {
+					method: 'put',
+					body: JSON.stringify(validatedData)
+				});
+				if (editTag.ok) {
+					const tag = await editTag.json();
+
+					return {
+						edited: true,
+						editedTag: tag
+					};
+				} else {
+					const body = await editTag.json();
+					console.log(editTag.status);
+					console.log(body);
+				}
+			} else {
+				const createTag = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/`, {
+					method: 'post',
+					body: JSON.stringify(validatedData)
+				});
+
+				if (createTag.ok) {
+					let tag = await createTag.json();
+					tag = {
+						value: tag.id,
+						label: tag.name,
+						slug: tag.slug
+					};
+					return {
+						newTag: tag
+					};
+				}
+			}
+		} catch (error) {
+			const toSend = {
+				message: '',
+				errors: {} as Errors
+			};
+
+			if (error instanceof z.ZodError) {
+				toSend.message = 'Validation error';
+				toSend.errors = error.flatten().fieldErrors;
+				return fail(400, toSend);
+			}
+			toSend.errors = { server: ['Ooops something went wrong'] };
+			return fail(500, toSend);
+		}
+	},
+	'delete-tag': async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id');
+		if (id) {
+			const deleteTag = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/${id}/`, {
+				method: 'delete'
+			});
+
+			if (deleteTag.ok && deleteTag.status == 204) {
+				return { success: true };
+			}
+		}
 	}
 };
