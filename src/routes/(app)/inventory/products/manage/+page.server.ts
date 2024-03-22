@@ -88,7 +88,6 @@ export const actions: Actions = {
 		const storage_requirements_fr = formData.get('storage_requirements_fr') as string;
 		const nutritional_information = formData.get('nutritional_information') as string;
 		const cooking_instructions = formData.get('cooking_instructions') as string;
-		const pairing_suggestion = formData.get('pairing_suggestion') as string;
 		const livestock_breed = formData.get('livestock_breed') as string;
 		const cut_type = formData.get('cut_type') as string;
 		const primal_quarter = formData.get('primal_quarter') as string;
