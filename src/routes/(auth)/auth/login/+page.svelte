@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { showToast } from '$lib/utils';
+	import { getLoggedInUsers, showToast } from '$lib/utils';
 	import { slide } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
-
 	/**
 	 * @type {boolean}
 	 */
@@ -39,10 +38,25 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
+					const existingUsers = getLoggedInUsers();
+					let currentUser = result.data.currUser;
+					console.log(result);
+
+					const userData = {
+						name: `${currentUser?.first_name} ${currentUser?.last_name}`,
+						email: `${currentUser?.email}`
+					};
+					if (existingUsers.length > 0) {
+						if (!existingUsers.find((user) => user.email === userData?.email)) {
+							existingUsers.push(userData);
+						}
+					} else {
+						existingUsers.push(userData);
+					}
+					localStorage.setItem('loggedInUsers', JSON.stringify(existingUsers));
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
-						// console.log(result);
 						await goto('/');
 					}
 				} else if (result.status === 400) {

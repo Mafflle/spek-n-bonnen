@@ -233,3 +233,6 @@ export function check(permission: string, user: User) {
 		return false;
 	}
 }
+export function getLoggedInUsers() {
+	return JSON.parse(localStorage.getItem('loggedInUsers')) || [];
+}

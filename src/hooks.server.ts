@@ -81,7 +81,7 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 export const handle = async ({ event, resolve }) => {
 	const access = event.cookies.get('access');
-	if (!event.url.pathname.includes('auth')) {
+	if (access) {
 		const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 			headers: {
 				Accept: 'application/json',

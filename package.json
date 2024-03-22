@@ -40,7 +40,7 @@
 		"@internationalized/date": "^3.5.2",
 		"@tadashi/svelte-editor-quill": "^2.2.0",
 		"axios": "^1.6.2",
-		"bits-ui": "^0.19.5",
+		"bits-ui": "^0.20.0",
 		"clsx": "^2.1.0",
 		"daisyui": "^4.4.7",
 		"dayjs": "^1.11.10",
