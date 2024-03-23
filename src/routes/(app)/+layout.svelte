@@ -25,7 +25,17 @@
 	if (browser) {
 		if ($Users.length < 1) {
 			let users = getLoggedInUsers();
-			$Users = users;
+			if (users.length > 0) {
+				$Users = users;
+			} else {
+				let currUser = {
+					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
+					email: `${$currentUser?.email}`
+				};
+				users.push(currUser);
+				$Users = users;
+				localStorage.setItem('loggedInUsers', JSON.stringify(users));
+			}
 		}
 	}
 
@@ -156,7 +166,7 @@
 					<span class="text-lg font-satoshi block">Add Account</span></a
 				>
 			</div>
-		{:else}
+		{:else if userToLogin}
 			<form
 				use:enhance={submit}
 				class="w-full flex flex-col justify-center gap-8"
@@ -234,6 +244,8 @@
 					</div>
 				</div>
 			</form>
+		{:else if $Users.length < 1}
+			<div>No user added yet</div>
 		{/if}
 	</div>
 </Modal>
