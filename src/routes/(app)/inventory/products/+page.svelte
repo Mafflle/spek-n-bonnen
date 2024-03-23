@@ -148,7 +148,7 @@
 			</div>
 			<div class="button">
 				<a
-					href="carcass/manage"
+					href="products/manage"
 					class="px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1"
 				>
 					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />

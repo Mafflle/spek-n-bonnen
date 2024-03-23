@@ -14,9 +14,5 @@ export const load: LayoutServerLoad = async ({ fetch, url, cookies }) => {
 
 			throw redirect(302, `/auth/setup-admin`);
 		}
-	} else if (checkIfAdminExist.status === 401) {
-		cookies.delete('access', { path: '/' });
-		cookies.delete('refresh', { path: '/' });
-		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
 };

@@ -62,6 +62,11 @@
 					title: 'Providers',
 					href: '/inventory/providers',
 					color: '#FF1C0D'
+				},
+				{
+					title: 'Main groups',
+					href: '/inventory/main-groups',
+					color: '#FF1C0D'
 				}
 			]
 		},

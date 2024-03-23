@@ -1,17 +1,35 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import Editor from '@tinymce/tinymce-svelte';
 	import Separator from './ui/separator/separator.svelte';
-	import { Editor } from '@tadashi/svelte-editor-quill';
 
 	export let frPlaceholder: string = "Entrez le nom de l'élément en français";
 	export let enPlaceholder: string = 'Enter item name';
 	export let duPlaceholder: string = 'Voer de naam van het item in het Nederlands in';
 	export let locales = [
-		{ name: 'Eng', placeholder: enPlaceholder, flag: 'united-kingdom-flag-icon.svg', value: '' },
-		{ name: 'Dut', placeholder: duPlaceholder, flag: 'netherlands-flag-icon.svg', value: '' },
-		{ name: 'Fr', placeholder: frPlaceholder, flag: 'france-flag-icon.svg', value: '' }
+		{
+			name: 'Eng',
+			label: 'en',
+			placeholder: enPlaceholder,
+			flag: 'united-kingdom-flag-icon.svg',
+			value: ''
+		},
+		{
+			name: 'Ned',
+			label: 'nl',
+			placeholder: duPlaceholder,
+			flag: 'netherlands-flag-icon.svg',
+			value: ''
+		},
+		{
+			name: 'Fra',
+			label: 'fr',
+			placeholder: frPlaceholder,
+			flag: 'france-flag-icon.svg',
+			value: ''
+		}
 	];
+	export let inputName: string = '';
 
 	let activeLocale = locales[0];
 
@@ -27,20 +45,22 @@
 		activeLocale.value = ''; // Clear the value when changing tabs
 	};
 
+	$: currentPlaceholder = activeLocale.placeholder;
+
 	export let textarea = false;
 	export let placeholder = 'Enter translation';
 
 	const options = {
 		theme: 'snow',
 		textarea: true,
-		placeholder: activeLocale.placeholder,
+		placeholder: currentPlaceholder,
 		content: activeLocale.value,
 		modules: {
 			toolbar: [
-				['bold', 'italic', 'underline', 'strike'],
+				['bold', 'italic', 'underline'],
 				[{ list: 'ordered' }, { list: 'bullet' }],
 				[{ align: [] }],
-				['link', 'image'],
+				['link'],
 				['clean'],
 				[{ header: [1, 2, 3, 4, 5, 6, false] }]
 			]
@@ -48,15 +68,15 @@
 	};
 
 	function onTextChange(event) {
-		console.log(event.detail);
-		console.log(locales);
+		// console.log(event.detail);
+		// console.log(locales);
 		const index = locales.findIndex((locale) => locale.name === activeLocale.name);
 		if (index !== -1) {
 			locales[index].value = event.detail.html;
 		}
 	}
 
-	let content;
+	let content = '';
 
 	const setContent = (locale) => {
 		console.log(locale);
@@ -70,10 +90,13 @@
 		if (index !== -1) {
 			content = locales[index].value;
 		}
-		console.log('index', index);
+
 		content = locales[index].value;
-		console.log(content);
 	}
+	let conf = {
+		toolbar: 'undo redo italic bold',
+		menubar: false
+	};
 </script>
 
 <svelte:head>
@@ -83,11 +106,11 @@
 </svelte:head>
 
 <div class="w-full">
-	<Tabs.Root value={activeLocale.name} class="w-full border border-grey-300 p-3 rounded-xl">
+	<Tabs.Root value={activeLocale.label} class="w-full border border-grey-300 p-3 rounded-xl">
 		<Tabs.List class="bg-white mb-1.5">
 			{#each locales as locale}
 				<Tabs.Trigger
-					value={locale.name}
+					value={locale.label}
 					on:click={() => {
 						setActiveLocale(locale);
 						setContent(locales[index].value);
@@ -100,17 +123,75 @@
 			{/each}
 		</Tabs.List>
 		<Separator />
-		<Tabs.Content value={activeLocale.name} class="flex flex-col gap-3 ">
-			{#if textarea}
-				<Editor {options} on:text-change={onTextChange} bind:data={content} />
-			{:else}
-				<input
-					bind:value={activeLocale.value}
-					placeholder={activeLocale.placeholder}
-					class="input w-full focus:border-1 focus:border-\[#DA4E45\] focus:shadow-custom border-\[#D9D9D9\] rounded-\[0.5rem\]"
-				/>
-			{/if}
-		</Tabs.Content>
+		<div>
+			{#each locales as locale}
+				<Tabs.Content value={locale.label}>
+					<div class="flex flex-col gap-3">
+						{#if textarea}
+							<!-- <Editor {options} on:text-change={onTextChange} bind:data={locale.value} /> -->
+
+							<Editor
+								modelEvents="input change undo redo"
+								bind:value={locale.value}
+								apiKey="vbxsmpoh53y8sefip8hwna0x2wunt6hw8gxi8z4z1bu7lglp"
+								{conf}
+							/>
+							<textarea
+								class="hidden"
+								bind:value={locale.value}
+								name={`${inputName}_${locale.label}`}
+							></textarea>
+						{:else}
+							<input
+								name={`${inputName}_${locale.label}`}
+								bind:value={locale.value}
+								placeholder={locale.placeholder}
+								class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+							/>
+						{/if}
+					</div>
+				</Tabs.Content>
+			{/each}
+			<!-- <Tabs.Content value="english" class="">
+				<div class="flex flex-col gap-3">
+					{#if textarea}
+						<Editor {options} on:text-change={onTextChange} bind:data={content} />
+					{:else}
+						<input
+							bind:value={locales[0].value}
+							placeholder={locales[0].placeholder}
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+					{/if}
+				</div>
+			</Tabs.Content>
+			<Tabs.Content value="dutch" class="">
+				<div class="flex flex-col gap-3">
+					{#if textarea}
+						<Editor {options} on:text-change={onTextChange} bind:data={content} />
+					{:else}
+						<input
+							bind:value={locales[1].value}
+							placeholder={locales[1].placeholder}
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+					{/if}
+				</div>
+			</Tabs.Content>
+			<Tabs.Content value="french" class="">
+				<div>
+					{#if textarea}
+						<Editor {options} on:text-change={onTextChange} bind:data={content} />
+					{:else}
+						<input
+							bind:value={locales[2].value}
+							placeholder={locales[2].placeholder}
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+					{/if}
+				</div>
+			</Tabs.Content> -->
+		</div>
 	</Tabs.Root>
 </div>
 

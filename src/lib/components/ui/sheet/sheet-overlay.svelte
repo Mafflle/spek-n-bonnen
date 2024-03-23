@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils';
+	import { Dialog as SheetPrimitive } from 'bits-ui';
+	import { cn } from '$lib/utils.js';
 	import { fade } from 'svelte/transition';
 
-	type $$Props = AlertDialogPrimitive.OverlayProps;
+	type $$Props = SheetPrimitive.OverlayProps;
 
 	let className: $$Props['class'] = undefined;
 	export let transition: $$Props['transition'] = fade;
@@ -13,7 +13,7 @@
 	export { className as class };
 </script>
 
-<AlertDialogPrimitive.Overlay
+<SheetPrimitive.Overlay
 	{transition}
 	{transitionConfig}
 	class={cn('fixed inset-0 z-50 bg-[#000000CC] backdrop-blur-sm ', className)}
