@@ -130,43 +130,6 @@
 		</section>
 		{#if userToLogin}
 			<h5 class="text-primary-25 text-xl font-satoshi font-medium mb-12">Login</h5>
-		{/if}
-		{#if !userToLogin && $Users.length > 0}
-			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
-				{#each $Users as user}
-					<button
-						disabled={$currentUser?.email === user.email}
-						on:click={() => selectUserToLogin(user)}
-						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
-					>
-						<Avatar.Root class="w-10 h-10">
-							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
-							<Avatar.Fallback>
-								<span class="text-base">
-									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
-								</span>
-							</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="w-full flex items-center justify-between">
-							<span class="text-xl text-start">{user.name}</span>
-							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
-						></iconify-icon> -->
-							{#if $currentUser?.email === user.email}
-								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
-								></iconify-icon>
-							{/if}
-						</div>
-					</button>
-				{/each}
-				<a
-					href="auth/login"
-					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
-				>
-					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
-					<span class="text-lg font-satoshi block">Add Account</span></a
-				>
-			</div>
-		{:else if userToLogin}
 			<form
 				use:enhance={submit}
 				class="w-full flex flex-col justify-center gap-8"
@@ -244,6 +207,42 @@
 					</div>
 				</div>
 			</form>
+		{/if}
+		{#if !userToLogin && $Users.length > 0}
+			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
+				{#each $Users as user}
+					<button
+						disabled={$currentUser?.email === user.email}
+						on:click={() => selectUserToLogin(user)}
+						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
+					>
+						<Avatar.Root class="w-10 h-10">
+							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+							<Avatar.Fallback>
+								<span class="text-base">
+									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+								</span>
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="w-full flex items-center justify-between">
+							<span class="text-xl text-start">{user.name}</span>
+							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
+						></iconify-icon> -->
+							{#if $currentUser?.email === user.email}
+								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
+								></iconify-icon>
+							{/if}
+						</div>
+					</button>
+				{/each}
+				<a
+					href="auth/login"
+					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
+				>
+					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
+					<span class="text-lg font-satoshi block">Add Account</span></a
+				>
+			</div>
 		{:else if $Users.length < 1}
 			<div>No user added yet</div>
 		{/if}

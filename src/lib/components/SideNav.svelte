@@ -57,6 +57,11 @@
 					href: '/inventory/primals',
 					color: '#FF1C0D',
 					permission: 'view_primal'
+				},
+				{
+					title: 'Providers',
+					href: '/inventory/providers',
+					color: '#FF1C0D'
 				}
 			]
 		},
