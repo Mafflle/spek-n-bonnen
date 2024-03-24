@@ -39,7 +39,7 @@
 			class="py-2.5 px-4 rounded-2xl text-xs text-center flex text-grey-100 items-center gap-0.5 hover:bg-primary-light hover:text-primary-red bg-pGrey"
 		>
 			<span>{option.label}</span>
-			<button on:click={() => (selected = false)} type="button"
+			<!-- <button on:click={() => (selected = false)} type="button"
 				><svg
 					width="15"
 					height="15"
@@ -62,7 +62,7 @@
 						stroke-linejoin="round"
 					/>
 				</svg>
-			</button>
+			</button> -->
 		</div>
 	{:else}
 		<div

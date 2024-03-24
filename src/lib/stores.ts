@@ -47,6 +47,29 @@ export type Farm = {
 	updated_at: Date;
 };
 
+export enum GroupEnum {
+	AUTO = 'AUTO',
+	MANUAL = 'MANUAL'
+}
+export enum VAT {
+	one = 1,
+	two,
+	three,
+	four
+}
+
+export type MainGroup = {
+	id?: number;
+	name: string;
+	department: string;
+	vat: VAT;
+	color: string;
+	traceability: GroupEnum;
+	traceability_scenario: string;
+	created_at?: Date;
+	updated_at?: Date;
+};
+
 export type Vendor = {
 	id: number;
 	name: string;
@@ -129,12 +152,13 @@ export let Roles = writable<Role[]>([]);
 export let Brands = writable<Brand[]>([]);
 export let Manufacturers = writable<Manufacturer[]>([]);
 export let Primals = writable<Primal[]>([]);
-export let Users = writable<User[]>([]);
+export let Users = writable<{ name: string; email: string }[]>([]);
 export let Farms = writable<Farm[]>([]);
 export let Vendors = writable<Vendor[]>([]);
 export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let Batches = writable<Batch[]>([]);
+export let MainGroups = writable<MainGroup[]>([]);
 export let currentProvider = writable<
 	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
 >(null);

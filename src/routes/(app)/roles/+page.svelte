@@ -284,7 +284,7 @@
 		method="post"
 		use:enhance={submit}
 		slot="modal-content"
-		class="max-w-2xl w-xl px-4 md:px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
+		class="max-w-[500px] w-full px-4 md:px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
 	>
 		<section class="flex items-center justify-between mb-5">
 			<h2 class="text-xl font-medium font-satoshi text-center">

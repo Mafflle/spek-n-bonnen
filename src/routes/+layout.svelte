@@ -11,9 +11,10 @@
 	<title>Spek-N-Boonen</title>
 	<link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet" />
 	<link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
+	<link href="https://fonts.cdnfonts.com/css/poppins" rel="stylesheet" />
 </svelte:head>
 
-<Toaster richColors />
+<Toaster richColors closeButton />
 
 {#if $navigating}
 	<PageLoader />

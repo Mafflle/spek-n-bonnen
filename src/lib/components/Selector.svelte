@@ -27,10 +27,16 @@
 	}
 
 	type Option = {
-		value: string;
+		value: string | number | any;
 		label: string;
+		slug?: string;
 	};
 
+	$: {
+		if (selected && selected.length > 0) {
+			dispatch('selected', { selected });
+		}
+	}
 	let selected: any;
 	let selectedArray: any = [];
 

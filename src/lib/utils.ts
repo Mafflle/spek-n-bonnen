@@ -51,24 +51,29 @@ export const showToast = (message: string, type: ToastType) => {
 	if (message) {
 		if (type === 'success') {
 			toast.success(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'error') {
 			toast.error(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'warning') {
 			toast.warning(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'info') {
 			// Blue background with white text
 			toast.info(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else {
 			toast(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		}
 	}
@@ -232,4 +237,7 @@ export function check(permission: string, user: User) {
 	} else {
 		return false;
 	}
+}
+export function getLoggedInUsers() {
+	return JSON.parse(localStorage.getItem('loggedInUsers')) || [];
 }

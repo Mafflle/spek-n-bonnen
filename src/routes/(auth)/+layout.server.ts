@@ -1,6 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { getCurrentUser } from '$lib/user';
 
 export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 	const access = cookies.get('access');

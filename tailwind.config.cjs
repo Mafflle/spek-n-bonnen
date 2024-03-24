@@ -29,6 +29,7 @@ const config = {
 				background: 'hsl(var(--background) / <alpha-value>)',
 				foreground: 'hsl(var(--foreground) / <alpha-value>)',
 				primary: {
+					25: '#C7453C',
 					50: '#DA4E45',
 					100: '#D3443F',
 					200: '#CC3A39',
@@ -90,6 +91,7 @@ const config = {
 			},
 			fontFamily: {
 				satoshi: ['Satoshi', 'sans-serif'],
+				poppins: ['poppins', 'sans-serif'],
 				sans: ['Inter', ...fontFamily.sans]
 			}
 		}

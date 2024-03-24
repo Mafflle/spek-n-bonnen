@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { LogOut } from 'lucide-svelte';
 	import NavBarButton from './NavBarButton.svelte';
 	import { currentUser } from '$lib/user';
+	import { Separator } from './ui/separator';
+	import * as DropdownMenu from './ui/dropdown-menu';
+	import { Button } from './ui/button';
+	import { createEventDispatcher } from 'svelte';
+	import * as Avatar from './ui/avatar';
+
+	$: console.log($currentUser);
 
 	const routes = [
 		{
@@ -51,6 +57,16 @@
 					href: '/inventory/primals',
 					color: '#FF1C0D',
 					permission: 'view_primal'
+				},
+				{
+					title: 'Providers',
+					href: '/inventory/providers',
+					color: '#FF1C0D'
+				},
+				{
+					title: 'Main groups',
+					href: '/inventory/main-groups',
+					color: '#FF1C0D'
 				}
 			]
 		},
@@ -123,17 +139,19 @@
 
 		currUrl = $page.url.pathname;
 	}
+
+	const dispatch = createEventDispatcher();
 </script>
 
 <aside
 	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar hidden lg:flex flex-col gap-5 bg-black-100 text-white"
 >
 	<div class="sidebar-logo flex flex-col items-start mb-10 px-5 pt-10">
-		<h3 class="text-center text-sm font-bold text-primary-50">Spek and Bonnen</h3>
+		<h3 class="text-center text-sm font-bold text-primary-50">Spek-n-Bonnen</h3>
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem]">ERP SYSTEM</sub>
 	</div>
 	<nav class="sidebar-nav w-full h-full flex flex-col items-start justify-between gap-4 px-3 mb-4">
-		<ol class="w-full flex items-start flex-col gap-3 mb-8">
+		<ol class="w-full flex items-start flex-col gap-3">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders'}
 					<NavBarButton
@@ -147,21 +165,86 @@
 			{/each}
 		</ol>
 
-		<div class="w-full">
-			<form
-				action="/?/logout"
-				class="flex max-w-full md:w-full lg:h-full md:border-0 relative w-8 h-8 md:py-3 md:px-3 items-center text-grey-200 justify-center lg:justify-around rounded-full lg:rounded-md
-										md:hover:bg-grey-200 hover:text-white hover:shadow-inner"
-				method="post"
+		<div class="w-full mb-8 xl:mb-16">
+			<Separator />
+			<button
+				on:click={() => dispatch('showSwitch')}
+				class="hover:badge-ghost hover:text-black-100 text-grey-200 py-2 rounded w-full flex items-center gap-2 mt-5"
 			>
-				<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
-				<div
-					class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5"
-				>
-					<LogOut />
-					<button type="submit" class="w-full button-text hidden lg:flex text-sm">Logout</button>
-				</div>
-			</form>
+				<span class="w-full flex items-center gap-1.5">
+					<Avatar.Root>
+						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+						<Avatar.Fallback class="bg-white">
+							<span class="text-base font-satoshi font-medium">
+								{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}
+							</span>
+						</Avatar.Fallback>
+					</Avatar.Root>
+					<p class="w-full">
+						{$currentUser?.first_name}
+						{$currentUser?.first_name.length < 10 && $currentUser?.last_name}
+					</p>
+				</span>
+				<DropdownMenu.Root>
+					<!-- <button class=" px-1.5 flex justify-center items-center">
+					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
+				</button> -->
+
+					<DropdownMenu.Trigger asChild let:builder>
+						<Button
+							builders={[builder]}
+							class=" text-grey-200 p-0 flex justify-center items-center"
+						>
+							<iconify-icon icon="pepicons-pencil:dots-y" width="30"></iconify-icon></Button
+						>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start">
+						<DropdownMenu.Item>
+							<Button
+								on:click={() => dispatch('showSwitch')}
+								class=" text-base text-grey-100 font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							>
+								<iconify-icon icon="fluent-mdl2:switch-user" width="20"></iconify-icon>
+								<span class="">Switch accounts</span>
+							</Button>
+						</DropdownMenu.Item>
+						<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+						<form
+							action="/?/logout"
+							class=" 
+									"
+							method="post"
+						>
+							<DropdownMenu.Item>
+								<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
+								<!-- <button type="submit"
+									class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5 md:py-1 md:px-3"
+								>
+									<span class="w-full button-text hidden lg:flex text-sm"
+										>Logout</span>
+									
+							</button> -->
+								<Button
+									class="text-grey-100 font-satoshi text-base -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+									type="submit"
+								>
+									<!-- {#if loading}
+				<iconify-icon
+				class="text-primary-red"
+				width="20"
+				icon="eos-icons:three-dots-loading"
+				></iconify-icon>
+				{:else} -->
+									<iconify-icon icon="material-symbols:logout" width="20"></iconify-icon>
+
+									<span class="">Logout </span>
+									<!-- {/if} -->
+								</Button>
+							</DropdownMenu.Item>
+						</form>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</button>
 		</div>
 	</nav>
 </aside>
