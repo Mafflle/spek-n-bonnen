@@ -159,9 +159,6 @@ export let ButcherShops = writable<ButcherShop[]>([]);
 export let SlaughterHouses = writable<SlaughterHouse[]>([]);
 export let Batches = writable<Batch[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
-export let currentProvider = writable<
-	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
->(null);
 
 export const updateSelectedOptions = (option: Option) => {
 	container.update((items: Option[]) => {

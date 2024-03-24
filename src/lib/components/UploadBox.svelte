@@ -13,6 +13,10 @@
 
 	export let error: string | undefined = '';
 	export let small: boolean = false;
+	export let defaultValue:
+		| { id: number; title: string; image: string; updated_at: Date; created_at: Date }
+		| undefined
+		| number;
 	export let smallText: string = '';
 	export let maximumImages: number = 10;
 	export let inputName: string = 'images';
@@ -28,6 +32,9 @@
 		}
 	};
 
+	if (defaultValue) {
+		previewImage = defaultValue;
+	}
 	$: {
 		if (files.length > 0) {
 			previewImage = files[0].image;
@@ -71,6 +78,8 @@
 			}
 		}
 	}
+
+	$: console.log(defaultValue);
 
 	let showMediaManager: boolean = false;
 
@@ -129,6 +138,8 @@
 					{#if small}
 						<Avatar.Root class="w-14 h-14">
 							<Avatar.Image src={previewImage} class="w-full h-full object-cover"></Avatar.Image>
+
+							<Avatar.Fallback>IM</Avatar.Fallback>
 						</Avatar.Root>
 					{:else}
 						<div class=" h-full w-full relative top-0">

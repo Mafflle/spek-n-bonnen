@@ -1,15 +1,28 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
+	import ProviderCard from '$lib/components/ProviderCard.svelte';
 	import Selector from '$lib/components/Selector.svelte';
 	import UploadBox from '$lib/components/UploadBox.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
-	import { ProviderType, Providers } from '$lib/stores/providers.stores';
+	import {
+		ProviderType,
+		Providers,
+		currentProvider,
+		type Provider
+	} from '$lib/stores/providers.stores';
 	import { showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import dayjs from 'dayjs';
 	import { slide } from 'svelte/transition';
+	export let data;
+
+	let { allProviders } = data;
+	$Providers = allProviders.results;
+
+	$: console.log($Providers);
 
 	const providerTypes = [
 		{ value: ProviderType.Brand, label: 'Brand' },
@@ -19,8 +32,6 @@
 		{ value: ProviderType.Manufacturer, label: 'Manufacturer' },
 		{ value: ProviderType.SlaughterHouse, label: 'SlaughterHouse' }
 	];
-
-	let toggleTypeModal = false;
 	let showProviderModal = false;
 	let isProcessingProvider = false;
 	let validationErrors: {
@@ -30,27 +41,54 @@
 		phone_number?: [string];
 		image?: string;
 	};
+	let currProviderName: string = '';
+	let currentProviderAddress: string = '';
+	let currProviderNumber: string = '';
 
-	function toggleModal() {
-		toggleTypeModal = !toggleTypeModal;
+	function toggleEditModal(param?: Provider) {
+		if (param) {
+			$currentProvider = param;
+			currProviderName = $currentProvider.name;
+			currProviderNumber = $currentProvider.phone_number;
+			currentProviderAddress = $currentProvider.address;
+		} else {
+			$currentProvider = null;
+			currProviderName = '';
+			currProviderNumber = '';
+			currentProviderAddress = '';
+		}
+
+		toggleModal();
 	}
-	function toggleProviderModal() {
+	function toggleModal() {
 		showProviderModal = !showProviderModal;
 	}
-	const submit: SubmitFunction = async () => {
+	const submit: SubmitFunction = async ({ formData }) => {
 		isProcessingProvider = true;
+
+		if ($currentProvider?.slug) {
+			formData.append('slug', `${$currentProvider.slug}`);
+			formData.append('image', `${$currentProvider.image}`);
+		}
 
 		return async ({ update, result }) => {
 			try {
 				if (result.status === 200) {
 					if (result.data.edited) {
-						console.log(result);
+						const editedProvider = result.data.editedProvider;
+						$Providers = $Providers.map((provider) => {
+							if (provider.id === editedProvider.id) {
+								provider = editedProvider;
+							}
+							return provider;
+						});
+						showToast('Provider edited successfully', 'success');
 					} else {
 						const newProvider = result.data.newProvider;
 						$Providers = [newProvider, ...$Providers];
 						showToast('Provider added successfully', 'success');
 					}
-					toggleProviderModal();
+					toggleEditModal();
 				} else if (result.status === 400) {
 					console.log(result.data);
 
@@ -66,7 +104,7 @@
 </script>
 
 <svelte:head>
-	<title>Providers - Spek-n-Boonen</title>
+	<title>{$currentProvider ? `Edit ${$currentProvider.slug}` : 'Provider'} - Spek-n-Boonen</title>
 </svelte:head>
 
 {#if $Providers.length < 1}
@@ -85,7 +123,7 @@
 			</div>
 			<div class="button">
 				<button
-					on:click={toggleProviderModal}
+					on:click={toggleModal}
 					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
 			hover:bg-[#C7453C]
 			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
@@ -133,8 +171,19 @@
 							/>
 						</svg>
 					</span>
-					<input type="text" placeholder="Type here" class=" py-2 flex-auto outline-none" />
+					<input type="text" placeholder="Search...." class=" py-2 flex-auto outline-none" />
 				</div>
+				<button
+					on:click={toggleModal}
+					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+			hover:bg-[#C7453C]
+			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
+				>
+					<div class="w-5 h-5 relative">
+						<img src="/icons/plus.svg" alt="user-plus" />
+					</div>
+					<p class="text-white text-sm font-bold">Add provider</p>
+				</button>
 			</div>
 		</div>
 		<!-- render if page is empty -->
@@ -143,24 +192,27 @@
 		<div class="border rounded-xl">
 			<table class="table">
 				<thead>
-					<tr class="">
-						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-						<th class="bg-[#F9F9F9]">Type</th>
-
+					<tr class="font-satoshi font-medium text-grey-200">
+						<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Provider Name</th>
 						<th class="bg-[#F9F9F9]">Address</th>
+
+						<th class="bg-[#F9F9F9]">Type</th>
+						<th class="bg-[#F9F9F9]">Date</th>
 						<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
 					</tr>
 				</thead>
 
 				<tbody>
-					<!-- {#each  as primal}{/each} -->
+					{#each $Providers as provider}
+						<ProviderCard on:edit={(e) => toggleEditModal(e.detail)} {provider} />
+					{/each}
 				</tbody>
 			</table>
 		</div>
 	</div>
 {/if}
 
-<Modal showModal={showProviderModal} on:close={toggleProviderModal} mode="sheet">
+<Modal showModal={showProviderModal} on:close={() => toggleEditModal()} mode="sheet">
 	<form
 		use:enhance={submit}
 		method="post"
@@ -175,11 +227,11 @@
 						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
 					>
 						<img src="/icons/UserWithEclipse.svg" alt="user icon " />
-						<span>Add Provider</span>
+						<span>{$currentProvider ? 'Edit' : 'Add'} Provider</span>
 					</Sheet.Title>
 					<button
 						type="button"
-						on:click={toggleProviderModal}
+						on:click={() => toggleEditModal()}
 						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
 					>
 						<img src="/icons/close.svg" alt="close icon" />
@@ -194,6 +246,7 @@
 
 				<div class="flex flex-col gap-4 px-4 w-full">
 					<UploadBox
+						defaultValue={$currentProvider?.image}
 						inputName="image"
 						error={validationErrors?.image}
 						small={true}
@@ -206,6 +259,7 @@
 							type="text"
 							name="name"
 							id="name"
+							bind:value={currProviderName}
 							placeholder="Enter name"
 							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
@@ -222,6 +276,7 @@
 							type="text"
 							name="address"
 							id="address"
+							bind:value={currentProviderAddress}
 							placeholder="Enter address"
 							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
@@ -240,6 +295,7 @@
 							type="text"
 							name="phone_number"
 							id="phone_number"
+							bind:value={currProviderNumber}
 							placeholder="Enter phone number"
 							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 						/>
@@ -255,7 +311,14 @@
 						<label for="provider-type" class="font-satoshi text-sm font-medium mb-2"
 							>Provider type</label
 						>
-						<Selector options={providerTypes} placeholder="Select provider type" inputName="type" />
+						<Selector
+							prop={providerTypes[
+								providerTypes.findIndex((provider) => $currentProvider?.type === provider.value)
+							]}
+							options={providerTypes}
+							placeholder="Select provider type"
+							inputName="type"
+						/>
 						{#if validationErrors?.type}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
@@ -263,17 +326,26 @@
 							>
 						{/if}
 					</div>
+					{#if $currentProvider}
+						<div class="form-group w-full">
+							<span class="font-satoshi text-sm font-medium mb-2">Date Added</span>
+							<p>{dayjs($currentProvider?.created_at).format('DD/MM/YYYY')}</p>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</section>
 		<Sheet.Footer class="w-full px-3 self-end">
 			<div class="w-full px-4">
 				<Button
+					disabled={isProcessingProvider}
 					type="submit"
 					class="flex w-full bg-primary-red gap-2 items-center font-satoshi text-sm font-bold text-white py-2.5 px-3 rounded-md hover:bg-primary-100"
 				>
 					{#if isProcessingProvider}
 						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else if $currentProvider}
+						<span>Update</span>
 					{:else}
 						<span> Proceed </span>
 
@@ -284,3 +356,6 @@
 		</Sheet.Footer>
 	</form>
 </Modal>
+
+<style>
+</style>

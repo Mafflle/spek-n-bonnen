@@ -52,12 +52,7 @@
 					href: '/inventory/products',
 					color: '#FF1C0D'
 				},
-				{
-					title: 'Primals',
-					href: '/inventory/primals',
-					color: '#FF1C0D',
-					permission: 'view_primal'
-				},
+
 				{
 					title: 'Providers',
 					href: '/inventory/providers',
@@ -70,51 +65,7 @@
 				}
 			]
 		},
-		{
-			href: '',
-			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"  xmlns="http://www.w3.org/2000/svg"><path d="M9.99996 1.66675L1.66663 5.83341L9.99996 10.0001L18.3333 5.83341L9.99996 1.66675Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66663 14.1667L9.99996 18.3334L18.3333 14.1667" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66663 10L9.99996 14.1667L18.3333 10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			activeIcon:
-				'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.99996 1.66675L1.66663 5.83341L9.99996 10.0001L18.3333 5.83341L9.99996 1.66675Z" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66663 14.1667L9.99996 18.3334L18.3333 14.1667" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.66663 10L9.99996 14.1667L18.3333 10" stroke="#DA4E45" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			pageTitle: 'Providers',
-			children: [
-				{
-					title: 'Brands',
-					href: '/providers/brands',
-					color: '#CFB53B',
-					permission: 'view_brand'
-				},
-				{
-					title: 'Vendors',
-					href: '/providers/vendors',
-					color: '#41AA00',
-					permission: 'view_vendor'
-				},
-				{
-					title: 'Manufacturers',
-					href: '/providers/manufacturers',
-					color: '#FF1C0D',
-					permission: 'view_manufacturer'
-				},
-				{
-					title: 'Farms',
-					href: '/providers/farms',
-					color: '#FF1C0D',
-					permission: 'view_farm'
-				},
-				{
-					title: 'Butcher shops',
-					href: '/providers/butcher-shops',
-					color: '#FF1C0D',
-					permission: 'view_butchershop'
-				},
-				{
-					title: 'Slaughter houses',
-					href: '/providers/slaughter-houses',
-					color: '#FF1C0D',
-					permission: 'view_slaughterhouse'
-				}
-			]
-		},
+
 		{
 			href: '/staffs',
 			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1667 17.5V15.8333C14.1667 14.9493 13.8155 14.1014 13.1904 13.4763C12.5653 12.8512 11.7174 12.5 10.8334 12.5H4.16671C3.28265 12.5 2.43481 12.8512 1.80968 13.4763C1.18456 14.1014 0.833374 14.9493 0.833374 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.49996 9.16667C9.34091 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34091 2.5 7.49996 2.5C5.65901 2.5 4.16663 3.99238 4.16663 5.83333C4.16663 7.67428 5.65901 9.16667 7.49996 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.1666 17.5001V15.8334C19.1661 15.0948 18.9203 14.3774 18.4678 13.7937C18.0153 13.2099 17.3817 12.793 16.6666 12.6084" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3334 2.6084C14.0504 2.79198 14.6859 3.20898 15.1397 3.79366C15.5936 4.37833 15.8399 5.09742 15.8399 5.83757C15.8399 6.57771 15.5936 7.2968 15.1397 7.88147C14.6859 8.46615 14.0504 8.88315 13.3334 9.06673" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -165,7 +116,7 @@
 			{/each}
 		</ol>
 
-		<div class="w-full mb-8 xl:mb-16">
+		<div class="w-full mb-5">
 			<Separator />
 			<button
 				on:click={() => dispatch('showSwitch')}
@@ -173,7 +124,7 @@
 			>
 				<span class="w-full flex items-center gap-1.5">
 					<Avatar.Root>
-						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+						<Avatar.Image class="w-full h-full" src="/icons/human.jpg" alt="user icon" />
 						<Avatar.Fallback class="bg-white">
 							<span class="text-base font-satoshi font-medium">
 								{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}

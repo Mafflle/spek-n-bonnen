@@ -95,8 +95,6 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
-
-	$: console.log(loading);
 </script>
 
 <div class="max-w-screen flex bg-[#F9F9F9]">
