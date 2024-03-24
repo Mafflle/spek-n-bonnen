@@ -20,11 +20,7 @@
 			</Dialog.Content>
 		</Dialog.Root>
 	{:else if mode === 'sheet'}
-		<Sheet.Root
-			onOutsideClick={() => dispatch('close')}
-			bind:open={showModal}
-			onOpenChange={() => dispatch('close')}
-		>
+		<Sheet.Root bind:open={showModal} onOpenChange={() => dispatch('close')}>
 			<Sheet.Content class="p-0">
 				<slot name="modal-content" class="w-full" />
 			</Sheet.Content>

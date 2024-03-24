@@ -1,11 +1,15 @@
 import { writable } from 'svelte/store';
 
 export type Provider = {
+	id?: number;
+	slug?: string;
 	name: string;
 	address?: string;
 	phone_number?: string;
 	type: ProviderType;
-	image?: number;
+	image?: { id: number; title: string; image: string; updated_at: Date; created_at: Date };
+	updated_at?: Date;
+	created_at?: Date;
 };
 
 export enum ProviderType {
@@ -18,3 +22,4 @@ export enum ProviderType {
 }
 
 export let Providers = writable<Provider[]>([]);
+export let currentProvider = writable<Provider | null>(null);

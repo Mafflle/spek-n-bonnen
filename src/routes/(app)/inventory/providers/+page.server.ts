@@ -2,6 +2,7 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { ProviderType } from '$lib/stores/providers.stores';
 import { fail, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
+import type { PageServerLoad } from './$types';
 
 const providerSchema = z.object({
 	name: z
@@ -41,6 +42,19 @@ interface Errors {
 	image?: [string];
 	server?: [string];
 }
+
+export const load: PageServerLoad = async ({ fetch }) => {
+	const getAllProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers`);
+
+	if (getAllProvider.ok) {
+		const allProviders = await getAllProvider.json();
+
+		return {
+			allProviders
+		};
+	}
+};
+
 export const actions: Actions = {
 	'manage-providers': async ({ fetch, request }) => {
 		const formData = await request.formData();
@@ -50,6 +64,7 @@ export const actions: Actions = {
 		const type = formData.get('type');
 		const address = formData.get('address') as string;
 		const phone_number = formData.get('phone_number') as string;
+		const slug = formData.get('slug') as string;
 
 		const dataToValidate = {
 			...(name && { name }),
@@ -60,17 +75,30 @@ export const actions: Actions = {
 		};
 		try {
 			const validatedData = providerSchema.parse(dataToValidate);
+			if (slug) {
+				const editProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/${slug}/`, {
+					method: 'put',
+					body: JSON.stringify(validatedData)
+				});
 
-			const createProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/`, {
-				method: 'post',
-				body: JSON.stringify(validatedData)
-			});
-
-			if (createProvider.ok) {
-				const newProvider = await createProvider.json();
-				return { newProvider, edited: false };
+				if (editProvider.ok) {
+					const editedProvider = await editProvider.json();
+					return { editedProvider, edited: true };
+				} else {
+					console.log(editProvider.status, editProvider);
+				}
 			} else {
-				console.log(createProvider.status, createProvider);
+				const createProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/`, {
+					method: 'post',
+					body: JSON.stringify(validatedData)
+				});
+
+				if (createProvider.ok) {
+					const newProvider = await createProvider.json();
+					return { newProvider, edited: false };
+				} else {
+					console.log(createProvider.status, createProvider);
+				}
 			}
 		} catch (error) {
 			const toSend = { message: '', errors: {} as Errors };
@@ -80,6 +108,20 @@ export const actions: Actions = {
 				toSend.errors = error.flatten().fieldErrors;
 				return fail(400, toSend);
 			}
+		}
+	},
+	delete: async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const slug = formData.get('slug') as string;
+
+		const deleteProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/${slug}/`, {
+			method: 'delete'
+		});
+		if (deleteProvider.ok) {
+			return { success: true };
+		} else {
+			console.log(deleteProvider);
 		}
 	}
 };
