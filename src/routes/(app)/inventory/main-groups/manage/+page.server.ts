@@ -1,8 +1,8 @@
 import { fail, type Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
 import { GroupEnum, VAT } from '$lib/stores';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);

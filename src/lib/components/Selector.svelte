@@ -149,8 +149,6 @@
 						>
 					{/if}
 				</div>
-
-				<button>Add</button>
 			</div>
 
 			{#if searching}

@@ -1,8 +1,15 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import Selector from '$lib/components/Selector.svelte';
-	import Label from '$lib/components/ui/label/label.svelte';
+	import UploadBox from '$lib/components/UploadBox.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { ProviderType, Providers } from '$lib/stores/providers.stores';
+	import { showToast } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { slide } from 'svelte/transition';
 
 	const providerTypes = [
 		{ value: ProviderType.Brand, label: 'Brand' },
@@ -13,20 +20,49 @@
 		{ value: ProviderType.SlaughterHouse, label: 'SlaughterHouse' }
 	];
 
-	let toggleTypeModal = true;
+	let toggleTypeModal = false;
 	let showProviderModal = false;
-	let currentProviderType: ProviderType | null = null;
+	let isProcessingProvider = false;
+	let validationErrors: {
+		name?: [string];
+		type?: [string];
+		address?: [string];
+		phone_number?: [string];
+		image?: string;
+	};
 
 	function toggleModal() {
 		toggleTypeModal = !toggleTypeModal;
 	}
 	function toggleProviderModal() {
-		if (currentProviderType) {
-			showProviderModal = !showProviderModal;
-		} else {
-			showProviderModal = false;
-		}
+		showProviderModal = !showProviderModal;
 	}
+	const submit: SubmitFunction = async () => {
+		isProcessingProvider = true;
+
+		return async ({ update, result }) => {
+			try {
+				if (result.status === 200) {
+					if (result.data.edited) {
+						console.log(result);
+					} else {
+						const newProvider = result.data.newProvider;
+						$Providers = [newProvider, ...$Providers];
+						showToast('Provider added successfully', 'success');
+					}
+					toggleProviderModal();
+				} else if (result.status === 400) {
+					console.log(result.data);
+
+					validationErrors = result.data.errors;
+					showToast('Validation errors', 'error');
+				}
+			} finally {
+				update();
+				isProcessingProvider = false;
+			}
+		};
+	};
 </script>
 
 <svelte:head>
@@ -49,7 +85,7 @@
 			</div>
 			<div class="button">
 				<button
-					on:click={toggleModal}
+					on:click={toggleProviderModal}
 					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
 			hover:bg-[#C7453C]
 			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
@@ -124,42 +160,127 @@
 	</div>
 {/if}
 
-<Modal showModal={toggleTypeModal}>
-	<div
+<Modal showModal={showProviderModal} on:close={toggleProviderModal} mode="sheet">
+	<form
+		use:enhance={submit}
+		method="post"
+		action="?/manage-providers"
 		slot="modal-content"
-		class="flex flex-col gap-6 md:p-5 w-full px-3 overflow-hidden py-5 md:min-w-[450px] rounded-2xl items-center"
+		class="flex flex-col md:gap-16 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
 	>
-		<section class="w-full items-center flex justify-between mb-10">
-			<h4 class="font-satoshi font-medium text-primary-red">Select Provider type</h4>
-			<button
-				on:click={() => {
-					toggleModal();
-				}}
-				class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
-			>
-				<img src="/icons/close.svg" alt="close icon" />
-			</button>
-		</section>
+		<section class="h-screen">
+			<Sheet.Header class="flex flex-col w-full gap-2 py-4 sticky top-0 bg-white z-30 ">
+				<div class="w-full px-3 flex flex-row justify-between items-center">
+					<Sheet.Title
+						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
+					>
+						<img src="/icons/UserWithEclipse.svg" alt="user icon " />
+						<span>Add Provider</span>
+					</Sheet.Title>
+					<button
+						type="button"
+						on:click={toggleProviderModal}
+						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
+					>
+						<img src="/icons/close.svg" alt="close icon" />
+					</button>
+				</div>
+				<Separator />
+			</Sheet.Header>
+			<div class="w-full items-start flex flex-col px-3 mt-8 gap-8">
+				<span class="font-satoshi text-sm"
+					>Kindly fill the form below with the appropriate information</span
+				>
 
-		<div class="w-full flex mb-3">
-			<div class="form-group w-full">
-				<label for="provider-type">Provider type</label>
-				<Selector
-					on:selected={(e) => (currentProviderType = e.detail.value)}
-					options={providerTypes}
-					placeholder="Select provider type"
-					inputName="provider-type"
-				/>
+				<div class="flex flex-col gap-4 px-4 w-full">
+					<UploadBox
+						inputName="image"
+						error={validationErrors?.image}
+						small={true}
+						smallText="Upload provider img"
+					/>
+
+					<div class="form-group w-full">
+						<label for="name" class="font-satoshi text-sm font-medium mb-1">Provider name</label>
+						<input
+							type="text"
+							name="name"
+							id="name"
+							placeholder="Enter name"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+						{#if validationErrors?.name}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+							>
+						{/if}
+					</div>
+					<div class="form-group w-full">
+						<label for="address" class="font-satoshi text-sm font-medium mb-1">Address</label>
+						<input
+							type="text"
+							name="address"
+							id="address"
+							placeholder="Enter address"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+						{#if validationErrors?.address}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.address}</sub
+							>
+						{/if}
+					</div>
+					<div class="form-group w-full">
+						<label for="phone_number" class="font-satoshi text-sm font-medium mb-1"
+							>Phone number</label
+						>
+						<input
+							type="text"
+							name="phone_number"
+							id="phone_number"
+							placeholder="Enter phone number"
+							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						/>
+						{#if validationErrors?.phone_number}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.phone_number}</sub
+							>
+						{/if}
+					</div>
+					<div class="form-group w-full">
+						<label for="provider-type" class="font-satoshi text-sm font-medium mb-2"
+							>Provider type</label
+						>
+						<Selector options={providerTypes} placeholder="Select provider type" inputName="type" />
+						{#if validationErrors?.type}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.type}</sub
+							>
+						{/if}
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="w-full flex items-center justify-end mb-3">
-			<button
-				disabled={!currentProviderType}
-				class="flex gap-1 bg-primary-50 items-center text-white px-3 py-1.5 rounded"
-			>
-				<span>Next</span>
-				<iconify-icon width="20" icon="mingcute:right-line"></iconify-icon>
-			</button>
-		</div>
-	</div>
+		</section>
+		<Sheet.Footer class="w-full px-3 self-end">
+			<div class="w-full px-4">
+				<Button
+					type="submit"
+					class="flex w-full bg-primary-red gap-2 items-center font-satoshi text-sm font-bold text-white py-2.5 px-3 rounded-md hover:bg-primary-100"
+				>
+					{#if isProcessingProvider}
+						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else}
+						<span> Proceed </span>
+
+						<iconify-icon icon="ep:right" width="15"></iconify-icon>
+					{/if}
+				</Button>
+			</div>
+		</Sheet.Footer>
+	</form>
 </Modal>

@@ -91,6 +91,7 @@ const config = {
 			},
 			fontFamily: {
 				satoshi: ['Satoshi', 'sans-serif'],
+				poppins: ['poppins', 'sans-serif'],
 				sans: ['Inter', ...fontFamily.sans]
 			}
 		}
