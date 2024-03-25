@@ -9,6 +9,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import PageLoader from './PageLoader.svelte';
+	import DeleteConfirmation from './DeleteConfirmation.svelte';
 
 	export let name: string;
 	export let id: number;
@@ -100,45 +101,23 @@
 					></iconify-icon></Button
 				>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
-				<DropdownMenu.Item>
-					<Button
-						on:click={edit}
-						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
-					>
-						<img src="/icons/edit.svg" alt="edit icon" />
-						<span class="text-grey-100">Edit</span>
-					</Button>
+			<DropdownMenu.Content class="py-3 flex flex-col justify-start gap-1	">
+				<DropdownMenu.Item
+					on:click={edit}
+					class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-2 rounded gap-2"
+				>
+					<img src="/icons/edit.svg" alt="edit icon" />
+					<span class="text-grey-100">Edit</span>
 				</DropdownMenu.Item>
 				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
-				<DropdownMenu.Item>
-					<!-- <Button
-						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
-					> -->
-					<AlertDialog.Root>
-						<AlertDialog.Trigger class="flex items-center justify-start gap-2">
-							<img src="/icons/trash.svg" alt="trash icon" />
-							<span class="button-text text-primary-red">Delete </span></AlertDialog.Trigger
-						>
-						<AlertDialog.Content>
-							<AlertDialog.Header>
-								<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
-								<AlertDialog.Description>
-									This action cannot be undone. This will permanently delete your account and remove
-									your data from our servers.
-								</AlertDialog.Description>
-							</AlertDialog.Header>
-							<AlertDialog.Footer>
-								<form method="post" use:enhance={deleteRole} class="">
-									<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
-									<AlertDialog.Action type="submit">Continue</AlertDialog.Action>
-								</form>
-							</AlertDialog.Footer>
-						</AlertDialog.Content>
-					</AlertDialog.Root>
-					<!-- </Button> -->
+				<DropdownMenu.Item
+					class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-2  rounded gap-2"
+				>
+					<img src="/icons/trash.svg" class="h-4 w-4" alt="trash icon" />
+					<span class="button-text text-primary-red">Delete </span>
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</td>
 </tr>
+<DeleteConfirmation />

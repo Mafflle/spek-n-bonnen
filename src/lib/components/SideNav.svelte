@@ -101,8 +101,8 @@
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek-n-Bonnen</h3>
 		<sub class=" text-center text-[0.5rem] tracking-[0.125rem]">ERP SYSTEM</sub>
 	</div>
-	<nav class="sidebar-nav w-full h-full flex flex-col items-start justify-between gap-4 px-3 mb-4">
-		<ol class="w-full flex items-start flex-col gap-3">
+	<nav class="sidebar-nav w-full h-full flex flex-col items-start justify-between gap-4 mb-4">
+		<ol class="w-full flex items-start flex-col gap-3 px-3">
 			{#each routes as route}
 				{#if route.pageTitle !== 'Orders'}
 					<NavBarButton
@@ -118,84 +118,82 @@
 
 		<div class="w-full mb-5">
 			<Separator />
-			<button
-				on:click={() => dispatch('showSwitch')}
-				class="hover:badge-ghost hover:text-black-100 text-grey-200 py-2 rounded w-full flex items-center gap-2 mt-5"
-			>
-				<span class="w-full flex items-center gap-1.5">
-					<Avatar.Root>
-						<Avatar.Image class="w-full h-full" src="/icons/human.jpg" alt="user icon" />
-						<Avatar.Fallback class="bg-white">
-							<span class="text-base font-satoshi font-medium">
-								{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}
-							</span>
-						</Avatar.Fallback>
-					</Avatar.Root>
-					<p class="w-full">
-						{$currentUser?.first_name}
-						{$currentUser?.first_name.length < 10 && $currentUser?.last_name}
-					</p>
-				</span>
-				<DropdownMenu.Root>
-					<!-- <button class=" px-1.5 flex justify-center items-center">
-					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
-				</button> -->
+			<section class="w-full px-1">
+				<div
+					class="hover:bg-white/20 cursor-default hover:text-white text-grey-200 py-2 rounded px-2 w-full flex items-center mt-5"
+				>
+					<button
+						on:click={() => dispatch('showSwitch')}
+						class="w-full flex items-center gap-1.5 mr-auto"
+					>
+						<Avatar.Root>
+							<Avatar.Image class="w-full h-full" src="/icons/human.jpg" alt="user icon" />
+							<Avatar.Fallback class="bg-white">
+								<span class="text-base font-satoshi font-medium">
+									{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}
+								</span>
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<p class="w-full">
+							{$currentUser?.first_name}
+							{$currentUser?.first_name.length < 10 && $currentUser?.last_name}
+						</p>
+					</button>
+					<DropdownMenu.Root>
+						<!-- <button class=" px-1.5 flex justify-center items-center">
+						<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
+					</button> -->
 
-					<DropdownMenu.Trigger asChild let:builder>
-						<Button
-							builders={[builder]}
-							class=" text-grey-200 p-0 flex justify-center items-center"
-						>
-							<iconify-icon icon="pepicons-pencil:dots-y" width="30"></iconify-icon></Button
-						>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start">
-						<DropdownMenu.Item>
+						<DropdownMenu.Trigger asChild let:builder>
 							<Button
+								builders={[builder]}
+								class=" text-grey-200 p-0 flex justify-center items-center"
+							>
+								<iconify-icon icon="pepicons-pencil:dots-y" width="30"></iconify-icon></Button
+							>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="py-3 px-1 gap-2 flex flex-col justify-start">
+							<DropdownMenu.Item
 								on:click={() => dispatch('showSwitch')}
-								class=" text-base text-grey-100 font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+								class="w-full text-grey-100 font-satoshi cursor-pointer -tracking-[0.14px]  flex items-center justify-start py-2 h-auto rounded gap-2"
 							>
 								<iconify-icon icon="fluent-mdl2:switch-user" width="20"></iconify-icon>
 								<span class="">Switch accounts</span>
-							</Button>
-						</DropdownMenu.Item>
-						<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
-						<form
-							action="/?/logout"
-							class=" 
-									"
-							method="post"
-						>
-							<DropdownMenu.Item>
-								<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
-								<!-- <button type="submit"
-									class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5 md:py-1 md:px-3"
-								>
-									<span class="w-full button-text hidden lg:flex text-sm"
-										>Logout</span>
-									
-							</button> -->
-								<Button
-									class="text-grey-100 font-satoshi text-base -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
-									type="submit"
-								>
-									<!-- {#if loading}
-				<iconify-icon
-				class="text-primary-red"
-				width="20"
-				icon="eos-icons:three-dots-loading"
-				></iconify-icon>
-				{:else} -->
-									<iconify-icon icon="material-symbols:logout" width="20"></iconify-icon>
-
-									<span class="">Logout </span>
-									<!-- {/if} -->
-								</Button>
 							</DropdownMenu.Item>
-						</form>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-			</button>
+							<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
+							<form action="/?/logout" class="" method="post">
+								<DropdownMenu.Item
+									type="submit"
+									class="text-grey-100 cursor-pointer font-satoshi  -tracking-[0.14px]  flex items-center justify-start py-2 rounded gap-2"
+								>
+									<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
+									<!-- <button type="submit"
+										class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5 md:py-1 md:px-3"
+									>
+										<span class="w-full button-text hidden lg:flex text-sm"
+											>Logout</span>
+										
+								</button> -->
+
+									<!-- {#if loading}
+					<iconify-icon
+					class="text-primary-red"
+					width="20"
+					icon="eos-icons:three-dots-loading"
+					></iconify-icon>
+					{:else} -->
+									<button class="flex items-center gap-2">
+										<iconify-icon icon="material-symbols:logout" width="20"></iconify-icon>
+
+										<span class="">Logout </span>
+									</button>
+									<!-- {/if} -->
+								</DropdownMenu.Item>
+							</form>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</div>
+			</section>
 		</div>
 	</nav>
 </aside>

@@ -4,6 +4,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import PillSelector from '$lib/components/PillSelector.svelte';
 	import Role from '$lib/components/Role.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { Roles, container } from '$lib/stores.js';
 	import { debounce, showToast, type Option } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -172,7 +175,7 @@
 		</div>
 		<div class="filters flex items-center w-full gap-2 md:gap-0 justify-between">
 			<div
-				class="flex items-center sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
+				class="flex gap-1 items-center sm:w-[24em] border rounded-md border-[#D9D9D9] text-[#232222] px-2"
 			>
 				<span>
 					<svg
@@ -198,7 +201,7 @@
 						/>
 					</svg>
 				</span>
-				<input type="text" placeholder="Type here" class="w-full py-2 flex-auto outline-none" />
+				<input type="text" placeholder="Search" class="w-full py-2 flex-auto outline-none" />
 			</div>
 
 			<div class="filter-buttons flex items-start">
@@ -208,8 +211,8 @@
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
 				>
-					<iconify-icon icon="mdi:key-add" width="23"></iconify-icon>
-					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create role</span>
+					<img src="icons/plus.svg" alt="plus icon to represent add" />
+					<span class=" hidden sm:block text-sm font-bold font-['Satoshi']">Create new role</span>
 				</button>
 			</div>
 		</div>
@@ -278,86 +281,112 @@
 </div>
 .
 
-<Modal {showModal} on:close={() => (showModal = false)}>
+<Modal mode="sheet" {showModal} on:close={() => (showModal = false)}>
 	<form
 		action="?/create"
 		method="post"
 		use:enhance={submit}
 		slot="modal-content"
-		class="max-w-[500px] w-full px-4 md:px-8 py-6 grid grid-cols-1 gap-4 bg-white rounded-lg"
+		class=" w-full py-6 grid grid-cols-1 gap-4 bg-white rounded-lg max-h-full overflow-y-scroll no-scrollbar"
 	>
-		<section class="flex items-center justify-between mb-5">
-			<h2 class="text-xl font-medium font-satoshi text-center">
-				{currRoleId ? 'Edit role' : 'Create role'}
-			</h2>
-			<button
-				disabled={loading}
-				type="submit"
-				class="{isFilled
-					? 'bg-primary-red text-white'
-					: 'bg-sGray'} text-sm py-2 px-4 rounded flex items-center"
-			>
-				{#if loading}
-					<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
-				{:else}
-					Submit
-				{/if}
-			</button>
-		</section>
-		<div class="w-full flex flex-col gap-4 items-start justify-center">
-			<div class="name w-full flex flex-col items-start mb-3">
-				<label for="name" class="block mb-2 text-[0.875rem]">Name:</label>
-				<input
-					type="text"
-					name="name"
-					id="name"
-					bind:value={name}
-					disabled={loading}
-					placeholder="Enter role name"
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-primary-100 focus:outline-primary-100 border-[#D9D9D9] rounded-[0.5rem]"
-				/>
-				{#if validationErrors?.name}
-					<sub
-						transition:slide={{ delay: 250, duration: 300 }}
-						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
-					>
-				{/if}
+		<section class="h-[90vh]">
+			<div class="flex sticky top-0 z-10 items-center justify-between mb-5">
+				<Sheet.Header class="flex flex-col w-full gap-2 sticky top-0 bg-white z-30 ">
+					<div class="w-full px-3 flex flex-row justify-between items-center">
+						<Sheet.Title
+							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
+						>
+							<img src="/icons/UserWithEclipse.svg" alt="user icon " />
+							<span>Create Role</span>
+						</Sheet.Title>
+						<button
+							type="button"
+							on:click={() => toggleEditModal()}
+							class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
+						>
+							<img src="/icons/close.svg" alt="close icon" />
+						</button>
+					</div>
+					<Separator />
+				</Sheet.Header>
 			</div>
-			<div class="max-w-full w-full">
-				<div class=" w-full mb-3">
+			<div class="w-full flex flex-col gap-6 px-4 items-start justify-center">
+				<span class="font-satoshi text-sm mb-6">Kindly input role name and select permisssions</span
+				>
+
+				<div class="name w-full px-3 flex flex-col items-start mb-3">
+					<label for="name" class="block mb-1 font-satoshi font-medium text-sm">Role name</label>
 					<input
 						type="text"
-						name="search"
-						id="search"
-						placeholder="Search permissions"
-						on:input={(e) => searchPermissions(e?.target?.value)}
+						name="name"
+						id="name"
+						bind:value={name}
 						disabled={loading}
-						class="w-full px-2 focus:border-primary-100 focus:outline-none border-[#D9D9D9] border-b"
+						placeholder="Enter role name"
+						class="input w-full focus:border-1 focus:border-primary-100 focus:outline-primary-100 border-[#D9D9D9] rounded-[0.5rem]"
 					/>
-					{#if validationErrors?.search}
-						<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
-							>{validationErrors.search}</sub
+					{#if validationErrors?.name}
+						<sub
+							transition:slide={{ delay: 250, duration: 300 }}
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
 						>
 					{/if}
 				</div>
-				{#if searching}
-					<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
-						<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
+				<div class="max-w-full px-3 w-full">
+					<div class=" w-full mb-10">
+						<input
+							type="text"
+							name="search"
+							id="search"
+							placeholder="Search permissions"
+							on:input={(e) => searchPermissions(e?.target?.value)}
+							disabled={loading}
+							class="w-full px-2 placeholder-shown:px-0 placeholder-shown:py-1 focus:border-primary-100 focus:outline-none border-[#D9D9D9] border-b"
+						/>
+						{#if validationErrors?.search}
+							<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
+								>{validationErrors.search}</sub
+							>
+						{/if}
 					</div>
-				{:else if permissions.count > 0}
-					<div class="max-w-full w-full">
-						<label for="name" class="block text-[0.875rem] mb-3">Select permissions:</label>
+					{#if searching}
+						<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
+							<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
+						</div>
+					{:else if permissions.count > 0}
+						<div class="max-w-full w-full">
+							<label for="name" class="block text-sm font-satoshi mb-3">Select permissions:</label>
 
-						<PillSelector options={permissions.results} disableOptions={loading} />
-						<div class="hidden" id="permissions"></div>
-					</div>
-				{:else}
-					<div class="flex item-center justify-center w-full gap-2 text-primary-100 py-5">
-						<iconify-icon icon="nonicons:not-found-16" width="20"></iconify-icon>
-						<p>No results found</p>
-					</div>
-				{/if}
+							<PillSelector options={permissions.results} disableOptions={loading} />
+							<div class="hidden" id="permissions"></div>
+						</div>
+					{:else}
+						<div class="flex item-center justify-center w-full gap-2 text-primary-100 py-5">
+							<iconify-icon icon="nonicons:not-found-16" width="20"></iconify-icon>
+							<p>No results found</p>
+						</div>
+					{/if}
+				</div>
 			</div>
-		</div>
+		</section>
+		<Sheet.Footer class="w-full px-3 self-end mb-8">
+			<div class="w-full px-4">
+				<Button
+					disabled={loading}
+					type="submit"
+					class="flex w-full bg-primary-red gap-2 items-center font-satoshi text-sm font-bold text-white py-2.5 px-3 rounded-md hover:bg-primary-100"
+				>
+					{#if loading}
+						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else if currRoleId}
+						<span>Update</span>
+					{:else}
+						<span> Create Role </span>
+
+						<iconify-icon icon="ep:right" width="15"></iconify-icon>
+					{/if}
+				</Button>
+			</div>
+		</Sheet.Footer>
 	</form>
 </Modal>
