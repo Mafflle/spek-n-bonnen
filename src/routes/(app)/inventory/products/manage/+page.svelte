@@ -16,10 +16,16 @@
 	import { cut_categories } from '$lib/stores/cuts.stores.js';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import Modal from '$lib/components/Modal.svelte';
+	import { showToast } from '$lib/utils.js';
+	import { Tags } from '$lib/stores.js';
+	import { Result } from 'postcss';
+	import DeleteModal from '$lib/components/DeleteModal.svelte';
+	import { optional } from 'zod';
 
 	export let data;
 
-	const { tags, primals, vendors } = data;
+	let { tags, primals, vendors } = data;
 
 	// temp for UI
 	let carcassToEdit: {
@@ -65,8 +71,28 @@
 	const allTabs = ['physical-info', 'nutrition', 'traceability', 'finance'];
 	let currentTab: string = 'physical-info';
 	let currentTabInfo;
+	let currTagName: string | undefined;
+	let currTag: string | undefined;
 
 	let loading: boolean = false;
+	let isProcessingTag: boolean = false;
+	let checked: boolean = false;
+	let showTagsModal: boolean = false;
+
+	const toggle = () => {
+		showTagsModal = !showTagsModal;
+	};
+
+	const toggleEditModal = (tagName?, slug?) => {
+		if (tagName) {
+			currTagName = tagName;
+		}
+
+		if (slug) {
+			currTag = slug;
+		}
+		toggle();
+	};
 
 	const switchTabs = (direction: string) => {
 		const currTab = allTabs.findIndex((item) => item === currentTab);
@@ -104,6 +130,49 @@
 			} finally {
 				await update({ reset: false });
 				loading = false;
+			}
+		};
+	};
+	const manageTag: SubmitFunction = async ({ formData }) => {
+		isProcessingTag = true;
+
+		if (currTag) {
+			formData.append('slug', `${currTag}`);
+		}
+
+		return async ({ update, result }) => {
+			try {
+				if (result.status === 200 && result.data) {
+					if (result.data.edited) {
+						let editedTag = result.data.editedTag;
+						console.log(editedTag);
+
+						const updatedTags = tags.map((tag) => {
+							if (tag.value === editedTag.id) {
+								tag.label = editedTag.name;
+							}
+							return tag;
+						});
+
+						tags = updatedTags;
+						showToast('Tag edited successfully', 'success');
+					} else {
+						const newTag = result.data.newTag;
+						tags = [newTag, ...tags];
+						showToast('Tag created successfully', 'success');
+					}
+					currTag = undefined;
+					currTagName = undefined;
+					toggle();
+				} else if (result.status === 400) {
+					validationErrors = result.data.errors;
+					showToast('Validation error', 'error');
+				} else if (result.status === 500) {
+					showToast(`${result.data.errors.server[0]}`, 'error');
+				}
+			} finally {
+				update();
+				isProcessingTag = false;
 			}
 		};
 	};
@@ -164,6 +233,8 @@
 		// }
 	});
 
+	// $: console.log(showTagsModal);
+
 	let action_shot: number;
 	let background_shot: number;
 	let closeup_shot: number;
@@ -194,7 +265,36 @@
 		{ value: 'fore', label: 'Forequarter' }
 	];
 
-	let checked = false;
+	let showDeleteModal: boolean = false;
+	let isDeleting: boolean = false;
+	let itemId;
+	function toggleDelete() {
+		showDeleteModal = !showDeleteModal;
+	}
+	const deleteTag: SubmitFunction = ({ formData }) => {
+		isDeleting = true;
+
+		return async ({ result, update }) => {
+			try {
+				if (result.status === 200) {
+					tags = tags.filter((tag) => tag.slug !== itemId);
+					itemId = undefined;
+					showToast('Tag deleted successfully', 'success');
+					toggleDelete();
+				} else {
+					showToast('Ooops something went wrong', 'error');
+				}
+			} finally {
+				isDeleting = false;
+				update();
+			}
+		};
+	};
+
+	function toggleDeleteModal(id) {
+		itemId = id;
+		toggleDelete();
+	}
 </script>
 
 <svelte:head>
@@ -731,7 +831,7 @@
 									/>
 								</div>
 								<div class="form-group">
-									<label for="tag" class="form-label">Preffered vendor</label>
+									<label for="preffered_vendor" class="form-label">Preffered vendor</label>
 									<Selector
 										inputName="preffered_vendor"
 										options={vendors}
@@ -739,12 +839,16 @@
 									/>
 								</div>
 								<div class="form-group">
-									<label for="tag" class="form-label">Tag</label>
-									<input
-										name="tag"
-										type="text"
-										placeholder="Create and choose tag"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									<label for="tags" class="form-label">Tag</label>
+									<Selector
+										on:addoption={(e) => toggleEditModal(e.detail.name)}
+										on:editOption={(e) => toggleEditModal(e.detail.name, e.detail.slug)}
+										on:deleteOption={(e) => toggleDeleteModal(e.detail.itemId)}
+										addUnavailable={true}
+										options={tags}
+										selectMultiple={true}
+										placeholder="Select tags"
+										inputName="tags"
 									/>
 								</div>
 							</div>
@@ -892,3 +996,72 @@
 		</section>
 	</form>
 </div>
+
+<Modal showModal={showTagsModal} on:close={toggleEditModal}>
+	<div slot="modal-content" class="w-full">
+		<!-- Your modal content goes here -->
+		<form
+			use:enhance={manageTag}
+			action="?/manage-tag"
+			method="post"
+			class="md:max-w-2xl w-full md:w-[450px] flex flex-col items-center px-4 py-8 md:p-6 gap-8 bg-white rounded-md"
+		>
+			<div class="modal-title flex items-center gap-3 self-stretch">
+				<div class="title-text flex-[1 0 0] text-lg font-medium tracking-[-0.18px] w-11/12">
+					{currTag ? 'Edit tag' : 'Add tag'}
+				</div>
+				<button
+					type="button"
+					class="close-button flex justify-center items-center w-1/12"
+					on:click={toggleEditModal}
+				>
+					<img src="/icons/close.svg" alt="close icon" />
+				</button>
+			</div>
+
+			<div class="modal-input w-full">
+				<!-- <input type="text" class="hidden" bind:value={imageId} name="manufacturer-logo" /> -->
+				<input
+					type="text"
+					name="name"
+					id="name"
+					placeholder="Enter tag name"
+					bind:value={currTagName}
+					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+				/>
+				{#if validationErrors?.name}
+					<sub
+						transition:slide={{ delay: 250, duration: 300 }}
+						class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					>
+				{/if}
+			</div>
+			<div class="modal-submit">
+				<button
+					class="bg-primary-50 py-1.5 md:py-2.5 px-4 rounded-[8px] w-full md:w-[25rem]
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+					focus:shadow-custom text-white font-bold flex items-center justify-center
+					"
+					type="submit"
+					disabled={isProcessingTag}
+				>
+					{#if isProcessingTag}
+						<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
+					{:else}
+						<span class="button-text">{currTag ? 'Edit tag' : 'Add tag'} </span>
+					{/if}
+				</button>
+			</div>
+		</form>
+	</div>
+</Modal>
+<DeleteModal
+	{toggleDelete}
+	{showDeleteModal}
+	deleteItem={deleteTag}
+	id={itemId}
+	endPoint="delete-tag"
+	{isDeleting}
+	mainNameForHeader="Tag"
+	mainNameForSub="tag"
+/>

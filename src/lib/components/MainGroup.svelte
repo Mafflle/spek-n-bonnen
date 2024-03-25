@@ -30,7 +30,7 @@
 				if (result.status === 200) {
 					const id = group.id;
 					MainGroups.update((groups) => groups.filter((group) => group.id !== id));
-					showToast('Carcass deleted successfully', 'success');
+					showToast('Group deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -140,7 +140,7 @@
 					</div>
 					<h3 class="text-primary-red text-2xl font-medium font-[poppins]">Delete Main Group</h3>
 					<span class="text-center max-w-[280px] text-clip">
-						This action means this main group will be permanently be removed.
+						This action means this main group will be permanently removed.
 					</span>
 				</Dialog.Description>
 			</Dialog.Header>
