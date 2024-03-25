@@ -16,7 +16,7 @@
 
 <Dialog.Root onOutsideClick={toggleDelete} bind:open={showDeleteModal} onOpenChange={toggleDelete}>
 	<Dialog.Content>
-		<div class="w-[500px]">
+		<div class="w-[400px]">
 			<Dialog.Header class="py-5">
 				<Dialog.Title class="text-sm font-medium px-3 mb-2 flex justify-between items-center">
 					<span>Confirm Request</span>
@@ -30,18 +30,18 @@
 				<Separator class="my-8 md:block hidden" />
 
 				<Dialog.Description class="pt-8 px-3  gap-3 flex flex-col items-center justify-center">
-					<div class="w-full mb-3 flex justify-center">
+					<div class="w-full h-[80px] flex justify-center">
 						<img src="/icons/warning-2.svg" alt="A warning icon" />
 					</div>
-					<h3 class="text-primary-red text-2xl font-medium font-[poppins]">
+					<h3 class="text-primary-red text-xl font-medium font-[poppins]">
 						Delete {mainNameForHeader}
 					</h3>
-					<span class="text-center max-w-[280px] text-clip">
+					<span class="text-center text-sm max-w-[280px] text-clip">
 						This action means this {mainNameForSub} will be permanently removed.
 					</span>
 				</Dialog.Description>
 			</Dialog.Header>
-			<Dialog.Footer class="pb-6 mt-3">
+			<Dialog.Footer class="pb-6 w-full">
 				<form
 					class="w-full flex justify-center"
 					action="?/{endPoint}"

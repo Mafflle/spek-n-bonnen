@@ -8,34 +8,28 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Users } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
-	import { getLoggedInUsers, showToast, type ToastType } from '$lib/utils.js';
+	import { getLoggedInUsers, showToast, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
 	export let data;
 	const { permissions, user } = data;
 
-	interface loggedInUser {
-		name: string;
-		email: string;
-	}
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
 
 	if (browser) {
-		if ($Users.length < 1) {
-			let users = getLoggedInUsers();
-			if (users.length > 0) {
-				$Users = users;
-			} else {
-				let currUser = {
-					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
-					email: `${$currentUser?.email}`
-				};
-				users.push(currUser);
-				$Users = users;
-				localStorage.setItem('loggedInUsers', JSON.stringify(users));
-			}
+		let users = getLoggedInUsers();
+		if (users.length > 0) {
+			$Users = users;
+		} else {
+			let currUser = {
+				name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
+				email: `${$currentUser?.email}`
+			};
+			users.push(currUser);
+			$Users = users;
+			localStorage.setItem('loggedInUsers', JSON.stringify(users));
 		}
 	}
 
@@ -77,7 +71,11 @@
 					showToast('Login successful', 'success');
 					toggleModal();
 					userToLogin = null;
-					await goto('/');
+					if ($page.url.pathname !== '/') {
+						await goto('/');
+					} else {
+						location.reload();
+					}
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 				} else if (result.status === 401) {
@@ -131,7 +129,7 @@
 			<form
 				use:enhance={submit}
 				class="w-full flex flex-col justify-center gap-8"
-				action="?/login"
+				action="/?/login"
 				method="post"
 			>
 				<div class="flex flex-col items-center gap-2">
@@ -233,13 +231,15 @@
 						</div>
 					</button>
 				{/each}
-				<a
-					href="auth/login"
-					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
-				>
-					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
-					<span class="text-lg font-satoshi block">Add Account</span></a
-				>
+				<form action="?/logout" method="post" class="w-full">
+					<button
+						type="submit"
+						class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
+					>
+						<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
+						<span class="text-lg font-satoshi block">Add Account</span></button
+					>
+				</form>
 			</div>
 		{:else if $Users.length < 1}
 			<div>No user added yet</div>

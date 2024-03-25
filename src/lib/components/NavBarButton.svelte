@@ -39,8 +39,9 @@
 		hidden = false;
 	}
 
-	function check(permission: string, userPermissions = $currentUser?.groups) {
-		if (permission && !$currentUser?.is_superuser) {
+	function check(permission: string, userPermissions?) {
+		if ($currentUser?.groups && permission && !$currentUser?.is_superuser) {
+			userPermissions = $currentUser?.groups;
 			for (let i = 0; i < userPermissions.length; i++) {
 				let currRole = userPermissions[i];
 				for (let x = 0; x < currRole?.permissions.length; x++) {
@@ -54,6 +55,10 @@
 		} else {
 			return false;
 		}
+	}
+
+	$: {
+		check(route.permission);
 	}
 	checkIfChildActive();
 </script>

@@ -15,6 +15,7 @@ export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'p
 export type Option = {
 	value: number;
 	label: string;
+	slug: string;
 };
 export type CarcassErrors = {
 	purchase_price?: [string];
@@ -86,6 +87,20 @@ export const showToast = (message: string, type: ToastType, promise?) => {
 	}
 };
 
+export function getRandomColor() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+		color += letters[Math.round(Math.random() * 15)];
+	}
+	return color;
+}
+
+export type loggedInUser = {
+	name: string;
+	email: string;
+	color: string;
+};
 export const client = axios.create({
 	//axios client
 	baseURL: PUBLIC_API_ENDPOINT,
@@ -147,8 +162,12 @@ export const debounce = (cb: Function, delay = 1000) => {
 	};
 };
 
-export const isEqual = (obj1: Option, obj2: Option) => {
-	return obj1.value === obj2.value && obj1.label === obj2.label;
+export const isEqual = (obj1, obj2) => {
+	if (obj1.value) {
+		return obj1.value === obj2.value && obj1.label === obj2.label;
+	} else {
+		return obj1.id === obj2.id && obj1.code_name === obj2.code_name;
+	}
 };
 
 import { type ClassValue, clsx } from 'clsx';

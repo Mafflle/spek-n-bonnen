@@ -90,6 +90,8 @@ export const handle = async ({ event, resolve }) => {
 		console.log(maxAttempts, attempt);
 
 		try {
+			console.log('refreshing');
+
 			const refreshToken = event.cookies.get('refresh');
 			// refreshes tokens
 			const refreshTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {

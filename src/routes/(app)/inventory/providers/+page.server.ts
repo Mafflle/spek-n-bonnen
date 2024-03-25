@@ -9,7 +9,7 @@ const providerSchema = z.object({
 		.string({ required_error: 'Provider name is required' })
 		.min(3, { message: 'Provider name should be at least 3 characters' })
 		.trim(),
-	image: z.number().optional(),
+	image_id: z.number().optional(),
 	type: z.nativeEnum(ProviderType, {
 		errorMap: (issue, _ctx) => {
 			switch (issue.code) {
@@ -39,7 +39,7 @@ interface Errors {
 	type?: [string];
 	address?: [string];
 	phone_number?: [string];
-	image?: [string];
+	image_id?: [string];
 	server?: [string];
 }
 
@@ -60,7 +60,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const name = formData.get('name') as string;
-		const image = parseInt(formData.get('image') as string);
+		const image_id = parseInt(formData.get('image_id') as string);
 		const type = formData.get('type');
 		const address = formData.get('address') as string;
 		const phone_number = formData.get('phone_number') as string;
@@ -68,7 +68,7 @@ export const actions: Actions = {
 
 		const dataToValidate = {
 			...(name && { name }),
-			...(image && { image }),
+			...(image_id && { image_id }),
 			...(type && { type }),
 			...(address && { address }),
 			...(phone_number && { phone_number })

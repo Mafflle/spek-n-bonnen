@@ -72,10 +72,11 @@
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
-	const toggleEditModal = (role?) => {
+	const toggleEditModal = (role?: Role) => {
 		if (role) {
 			name = role.name;
 			currRoleId = role.id;
+			// console.log(role);
 
 			container.set(role.permissions);
 		} else {
@@ -114,7 +115,7 @@
 		if (currRoleId) formData.append('role-id', `${currRoleId}`);
 
 		$container.map((item) => {
-			formData.append('permission', `${item.value}`);
+			formData.append('permission', `${item.id}`);
 		});
 
 		return async ({ result, update }) => {
@@ -148,7 +149,7 @@
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 					showToast(`${result.data.message}`, 'error');
-				} else if (result.status == 500) {
+				} else if (result.status === 500) {
 					showToast('Ooops something went wrong', 'error');
 				}
 			} finally {
@@ -230,12 +231,7 @@
 			{#if $Roles.length > 0}
 				<tbody class="table-row-group">
 					{#each $Roles as role}
-						<Role
-							on:edit={(e) => toggleEditModal(e.detail)}
-							name={role.name}
-							id={role.id}
-							permissions={role.permissions}
-						/>
+						<Role on:edit={(e) => toggleEditModal(e.detail)} {role} />
 					{/each}
 				</tbody>{/if}
 		</table>
@@ -287,9 +283,9 @@
 		method="post"
 		use:enhance={submit}
 		slot="modal-content"
-		class=" w-full py-6 grid grid-cols-1 gap-4 bg-white rounded-lg max-h-full overflow-y-scroll no-scrollbar"
+		class=" w-full py-6 flex flex-col justify-between h-full gap-4 bg-white rounded-lg"
 	>
-		<section class="h-[90vh]">
+		<section class="">
 			<div class="flex sticky top-0 z-10 items-center justify-between mb-5">
 				<Sheet.Header class="flex flex-col w-full gap-2 sticky top-0 bg-white z-30 ">
 					<div class="w-full px-3 flex flex-row justify-between items-center">
@@ -297,7 +293,7 @@
 							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
 						>
 							<img src="/icons/UserWithEclipse.svg" alt="user icon " />
-							<span>Create Role</span>
+							<span>{currRoleId ? 'Edit' : 'Create'} Role</span>
 						</Sheet.Title>
 						<button
 							type="button"
@@ -369,7 +365,7 @@
 				</div>
 			</div>
 		</section>
-		<Sheet.Footer class="w-full px-3 self-end mb-8">
+		<Sheet.Footer class="w-full sticky bottom-0 px-3 self-end mb-8">
 			<div class="w-full px-4">
 				<Button
 					disabled={loading}
@@ -379,7 +375,8 @@
 					{#if loading}
 						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
 					{:else if currRoleId}
-						<span>Update</span>
+						<span>Proceed</span>
+						<iconify-icon icon="ep:right" width="15"></iconify-icon>
 					{:else}
 						<span> Create Role </span>
 

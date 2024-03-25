@@ -39,7 +39,7 @@
 		type?: [string];
 		address?: [string];
 		phone_number?: [string];
-		image?: string;
+		image_id?: string;
 	};
 	let currProviderName: string = '';
 	let currentProviderAddress: string = '';
@@ -247,8 +247,8 @@
 				<div class="flex flex-col gap-4 px-4 w-full">
 					<UploadBox
 						defaultValue={$currentProvider?.image}
-						inputName="image"
-						error={validationErrors?.image}
+						inputName="image_id"
+						error={validationErrors?.image_id}
 						small={true}
 						smallText="Upload provider img"
 					/>

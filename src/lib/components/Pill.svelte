@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { container } from '$lib/stores';
+	import { container, type Permission } from '$lib/stores';
 	import { debounce, isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	export let option: Option;
+	export let option: Permission;
 
 	export let selected: boolean = false;
 	const dispatch = createEventDispatcher();
@@ -12,14 +12,14 @@
 		container.update((items) => {
 			if (items.some((item) => isEqual(item, option))) {
 				const updatedItems = items.filter((item) => {
-					return item.value !== option.value;
+					return item.id !== option.id;
 				});
 				return updatedItems;
 			} else return [option, ...items];
 		});
 		dispatch('selected', option);
 		selected = !selected;
-		console.log(selected);
+		// console.log(selected);
 	};
 	let hovering: boolean = false;
 
@@ -38,7 +38,7 @@
 			class:active={selected}
 			class="py-2.5 px-4 rounded-2xl text-xs text-center flex text-grey-100 items-center gap-0.5 hover:bg-primary-light hover:text-primary-red bg-pGrey"
 		>
-			<span>{option.label}</span>
+			<span>{option.codename}</span>
 			<!-- <button on:click={() => (selected = false)} type="button"
 				><svg
 					width="15"
@@ -68,7 +68,7 @@
 		<div
 			class="py-2.5 px-4 rounded-2xl text-xs text-center flex text-grey-100 items-center gap-0.5 hover:bg-primary-light hover:text-primary-red bg-pGrey"
 		>
-			<span>{option.label}</span>
+			<span>{option.codename}</span>
 		</div>
 	{/if}
 </button>

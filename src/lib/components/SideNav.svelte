@@ -8,7 +8,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
 
-	$: console.log($currentUser);
+	// $: console.log($currentUser);
 
 	const routes = [
 		{
@@ -56,12 +56,8 @@
 				{
 					title: 'Providers',
 					href: '/inventory/providers',
-					color: '#FF1C0D'
-				},
-				{
-					title: 'Main groups',
-					href: '/inventory/main-groups',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					permission: 'view_provider'
 				}
 			]
 		},
@@ -124,7 +120,7 @@
 				>
 					<button
 						on:click={() => dispatch('showSwitch')}
-						class="w-full flex items-center gap-1.5 mr-auto"
+						class="w-full flex gap-2 items-center mr-auto"
 					>
 						<Avatar.Root>
 							<Avatar.Image class="w-full h-full" src="/icons/human.jpg" alt="user icon" />
@@ -134,9 +130,8 @@
 								</span>
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<p class="w-full">
+						<p class="">
 							{$currentUser?.first_name}
-							{$currentUser?.first_name.length < 10 && $currentUser?.last_name}
 						</p>
 					</button>
 					<DropdownMenu.Root>

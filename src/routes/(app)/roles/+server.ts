@@ -15,12 +15,6 @@ export const GET = async ({ request, url }) => {
 
 	if (res.ok) {
 		const filteredPerms = await res.json();
-		filteredPerms.results = filteredPerms.results.map((perm) => {
-			return {
-				value: perm.id,
-				label: perm.codename
-			};
-		});
 
 		return new Response(JSON.stringify(filteredPerms), { status: 200 });
 	} else {

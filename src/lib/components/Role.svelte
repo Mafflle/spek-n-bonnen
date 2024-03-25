@@ -5,28 +5,33 @@
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
-	import { Roles } from '$lib/stores';
+	import { Roles, type Role } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import PageLoader from './PageLoader.svelte';
 	import DeleteConfirmation from './DeleteConfirmation.svelte';
+	import DeleteModal from './DeleteModal.svelte';
 
-	export let name: string;
-	export let id: number;
-	export let permissions: { codename: string; content_type: number; id: number; name: string }[];
+	export let role: Role;
 
 	const dispatch = createEventDispatcher();
 
 	let loading: boolean = false;
+	let showModal: boolean = false;
+
+	function toggleDelete() {
+		showModal = !showModal;
+	}
 
 	const deleteRole: SubmitFunction = ({ formData }) => {
 		loading = true;
-		formData.append('id', `${id}`);
+		formData.append('id', `${role.id}`);
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
-					Roles.update((roles) => roles.filter((role) => role.id !== id));
+					Roles.update((roles) => roles.filter((storeRole) => storeRole.id !== role.id));
 					showToast('Role deleted successfully', 'success');
+					toggleDelete();
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
@@ -38,28 +43,15 @@
 	};
 
 	const edit = () => {
-		let perms = permissions.map((perm) => {
-			return {
-				value: perm.id,
-				label: perm.codename
-			};
-		});
-		// console.log(perms);
-
-		const role = { id, name, permissions: perms };
 		dispatch('edit', role);
 	};
 </script>
-
-{#if loading}
-	<PageLoader />
-{/if}
 
 <tr class="border-b border-[#D9D9D9] table-row">
 	<td class="table-cell">
 		<!-- <div class=" px-2 py-1 bg-stone-50 rounded-[20px] flex items-center justify-center w-full"> -->
 		<span class=" text-right text-[#6B6B6B] text-[13px] font-medium">
-			{name}
+			{role.name}
 		</span>
 		<!-- </div> -->
 	</td>
@@ -79,10 +71,10 @@
 			</p> -->
 			<Tooltip.Root>
 				<Tooltip.Trigger>
-					<p>{permissions.length}</p>
+					<p>{role.permissions.length}</p>
 				</Tooltip.Trigger>
 				<Tooltip.Content class="flex flex-col gap-4 px-3 py-2">
-					{#each permissions as permission}
+					{#each role.permissions as permission}
 						<p class="text-xs text-grey-100">{permission.name}</p>
 					{/each}
 				</Tooltip.Content>
@@ -104,14 +96,15 @@
 			<DropdownMenu.Content class="py-3 flex flex-col justify-start gap-1	">
 				<DropdownMenu.Item
 					on:click={edit}
-					class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-2 rounded gap-2"
+					class="text-sm  cursor-pointer font-satoshi -tracking-[0.14px]  flex items-center justify-start py-2 rounded gap-2"
 				>
 					<img src="/icons/edit.svg" alt="edit icon" />
 					<span class="text-grey-100">Edit</span>
 				</DropdownMenu.Item>
 				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
 				<DropdownMenu.Item
-					class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-2  rounded gap-2"
+					on:click={toggleDelete}
+					class="text-sm font-satoshi cursor-pointer -tracking-[0.14px]  flex items-center justify-start py-2  rounded gap-2"
 				>
 					<img src="/icons/trash.svg" class="h-4 w-4" alt="trash icon" />
 					<span class="button-text text-primary-red">Delete </span>
@@ -120,4 +113,13 @@
 		</DropdownMenu.Root>
 	</td>
 </tr>
-<DeleteConfirmation />
+<DeleteModal
+	deleteItem={deleteRole}
+	id={role.id}
+	{toggleDelete}
+	endPoint="delete"
+	isDeleting={loading}
+	mainNameForHeader="Role"
+	mainNameForSub="role"
+	showDeleteModal={showModal}
+/>

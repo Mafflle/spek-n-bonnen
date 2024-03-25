@@ -1,5 +1,5 @@
 <div
-	class="h-screen w-screen fixed top-0 left-0 z-50 bg-[#000000CC] flex items-center justify-center"
+	class="h-screen w-screen fixed top-0 left-0 z-[1000] bg-[#000000CC] flex items-center justify-center"
 >
 	<div class="flex items-center justify-center relative animate-pulse">
 		<div
