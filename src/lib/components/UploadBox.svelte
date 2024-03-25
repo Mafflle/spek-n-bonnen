@@ -11,6 +11,8 @@
 	export let files: any[] = [];
 	let previewImage: any | undefined = undefined;
 
+	$: console.log(previewImage);
+
 	export let error: string | undefined = '';
 	export let small: boolean = false;
 	export let defaultValue:
@@ -88,13 +90,15 @@
 	let fileInputName = isFileInput ? inputName : 'preview-image';
 </script>
 
-<div class="w-full">
+<div
+	class=" {small ? 'h-[85px] ' : ' min-h-[200px] min-w-full '} {previewImage
+		? 'w-[85px] '
+		: 'w-[230px]'}"
+>
 	<div
-		class=" relative h-full {small
-			? 'h-[80px] '
-			: ' min-h-[200px] min-w-full justify-center '} {previewImage && small
-			? 'w-[75px] h-[75px] px-1 justify-center rounded-full '
-			: 'w-[230px] rounded-2xl'} flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
+		class=" relative w-full h-full {small ?? 'justify-center '} {previewImage && small
+			? ' px-1 justify-center rounded-full '
+			: 'rounded-2xl'} flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
 			? 'border-primary-softPink-50 border-2'
 			: 'border-grey-300 border-2'} hover:border-primary-red border-dashed"
 	>
