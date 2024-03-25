@@ -9,6 +9,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import PageLoader from './PageLoader.svelte';
+	import DeleteConfirmation from './DeleteConfirmation.svelte';
 
 	export let name: string;
 	export let id: number;
@@ -119,3 +120,4 @@
 		</DropdownMenu.Root>
 	</td>
 </tr>
+<DeleteConfirmation />
