@@ -16,13 +16,14 @@
 	import { showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import dayjs from 'dayjs';
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	export let data;
 
 	let { allProviders } = data;
 	$Providers = allProviders.results;
 
-	$: console.log($Providers);
+	// $: console.log($Providers);
 
 	const providerTypes = [
 		{ value: ProviderType.Brand, label: 'Brand' },
@@ -101,6 +102,9 @@
 			}
 		};
 	};
+	onMount(() => {
+		showToast('Welcome to the ERP', 'success');
+	});
 </script>
 
 <svelte:head>
@@ -182,14 +186,14 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="user-plus" />
 					</div>
-					<p class="text-white text-sm font-bold">Add provider</p>
+					<p class="text-white text-sm font-bold hidden sm:block">Add provider</p>
 				</button>
 			</div>
 		</div>
 		<!-- render if page is empty -->
 
 		<!-- If grid is true, render the table -->
-		<div class="border rounded-xl">
+		<div class="border rounded-xl overflow-x-scroll no-scrollbar max-w-full">
 			<table class="table">
 				<thead>
 					<tr class="font-satoshi font-medium text-grey-200">
@@ -202,7 +206,7 @@
 					</tr>
 				</thead>
 
-				<tbody>
+				<tbody class="w-full">
 					{#each $Providers as provider}
 						<ProviderCard on:edit={(e) => toggleEditModal(e.detail)} {provider} />
 					{/each}
@@ -218,10 +222,10 @@
 		method="post"
 		action="?/manage-providers"
 		slot="modal-content"
-		class="flex flex-col md:gap-16 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
+		class="flex flex-col md:gap-16 gap-8 py-6 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
 	>
-		<section class="h-screen">
-			<Sheet.Header class="flex flex-col w-full gap-2 py-4 sticky top-0 bg-white z-30 ">
+		<section class="w-full md:h-full">
+			<Sheet.Header class="flex flex-col w-full gap-2 py-4 md:sticky top-0 bg-white z-30 ">
 				<div class="w-full px-3 flex flex-row justify-between items-center">
 					<Sheet.Title
 						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"

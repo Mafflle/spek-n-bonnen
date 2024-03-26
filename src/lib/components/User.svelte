@@ -4,13 +4,11 @@
 	import { Button } from './ui/button';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
-	import { Users } from '$lib/stores';
+	import { LoggedinUser } from '$lib/stores';
+	import type { User } from '$lib/user';
+	import dayjs from 'dayjs';
 
-	export let name: string;
-	export let role: string;
-	export let email: string;
-	export let permissions: string;
-	export let id: number;
+	export let user: User;
 
 	let loading: boolean = false;
 
@@ -19,7 +17,7 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
-					Users.update((users) => users.filter((user) => user.id !== id));
+					LoggedinUser.update((users) => users.filter((user) => user.id !== id));
 					showToast('User deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');
@@ -36,21 +34,36 @@
 	<td>
 		<div class="   justify-start items-center gap-3 inline-flex">
 			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
-				{name}
+				{user.first_name}
+				{user.last_name}
 			</span>
 		</div>
 	</td>
+	<td class="text-[#9C9C9C]">{user.email}</td>
 	<td>
 		<div
 			class="w-[124px] h-6 px-1 bg-stone-50 rounded-[20px] justify-start items-center gap-2.5 inline-flex"
 		>
-			<span class="grow shrink basis-0 text-center text-[#6B6B6B] text-[13px] font-medium">
-				{role}
+			<span
+				class="grow shrink basis-0 text-center {user?.groups[0]?.name ??
+					'italic text-grey-200'} text-[#6B6B6B] text-[13px] font-medium"
+			>
+				{user?.groups[0]?.name ?? 'No roles assigned'}
 			</span>
 		</div>
 	</td>
-	<td class="text-[#9C9C9C]">{email}</td>
-	<td class="text-[#9C9C9C]">{permissions}</td>
+	<td class="text-[#9C9C9C]">
+		<span class="min-w-max">
+			{dayjs(user.date_joined).format('DD MMM YYYY')}
+		</span>
+	</td>
+	<td class="text-[#9C9C9C]">
+		<span
+			class="font-satoshi font-medium {user.is_active ? 'text-active-green' : 'text-primary-50'}"
+		>
+			{user.is_active ? 'Active' : 'Inactive'}
+		</span>
+	</td>
 	<td>
 		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">

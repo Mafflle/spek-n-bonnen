@@ -32,7 +32,7 @@
 		bind:open={showModal}
 		onOpenChange={() => dispatch('close')}
 	>
-		<Drawer.Content class="max-h-[50vh]">
+		<Drawer.Content class="max-h-[80vh]">
 			<slot name="modal-content" class="" />
 		</Drawer.Content>
 	</Drawer.Root>

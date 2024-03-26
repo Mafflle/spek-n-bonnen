@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { container, type Permission } from '$lib/stores';
+	import { container, type Permission, type Role } from '$lib/stores';
 	import { debounce, isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	export let option: Permission;
+	export let option: Permission | Role;
 
 	export let selected: boolean = false;
 	const dispatch = createEventDispatcher();
@@ -38,7 +38,7 @@
 			class:active={selected}
 			class="py-2.5 px-4 rounded-2xl text-xs text-center flex text-grey-100 items-center gap-0.5 hover:bg-primary-light hover:text-primary-red bg-pGrey"
 		>
-			<span>{option.codename}</span>
+			<span>{option.codename ? option.codename : option.name}</span>
 			<!-- <button on:click={() => (selected = false)} type="button"
 				><svg
 					width="15"
@@ -68,7 +68,7 @@
 		<div
 			class="py-2.5 px-4 rounded-2xl text-xs text-center flex text-grey-100 items-center gap-0.5 hover:bg-primary-light hover:text-primary-red bg-pGrey"
 		>
-			<span>{option.codename}</span>
+			<span>{option.codename ? option.codename : option.name}</span>
 		</div>
 	{/if}
 </button>

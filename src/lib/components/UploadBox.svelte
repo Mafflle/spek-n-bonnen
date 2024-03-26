@@ -11,8 +11,6 @@
 	export let files: any[] = [];
 	let previewImage: any | undefined = undefined;
 
-	$: console.log(previewImage);
-
 	export let error: string | undefined = '';
 	export let small: boolean = false;
 	export let defaultValue:
@@ -29,13 +27,11 @@
 			previewImage = URL.createObjectURL(image);
 		} else {
 			previewImage = image.image;
-			console.log('previewImage', previewImage);
-			console.log('image', image);
 		}
 	};
 
 	if (defaultValue) {
-		previewImage = defaultValue;
+		previewImage = defaultValue.image;
 	}
 	$: {
 		if (files.length > 0) {
@@ -81,7 +77,7 @@
 		}
 	}
 
-	$: console.log(defaultValue);
+	// $: console.log(defaultValue);
 
 	let showMediaManager: boolean = false;
 

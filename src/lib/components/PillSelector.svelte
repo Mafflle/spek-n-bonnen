@@ -2,10 +2,10 @@
 	import { isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import Pill from './Pill.svelte';
-	import { container, updateSelectedOptions, type Permission } from '$lib/stores';
-	export let options: Permission[];
+	import { container, updateSelectedOptions, type Permission, type Role } from '$lib/stores';
+	export let options: (Permission | Role)[];
 	export let disableOptions: boolean = false;
-	let selectedArray: Permission[] = [];
+	let selectedArray: (Permission | Role)[] = [];
 
 	const dispatch = createEventDispatcher();
 	const onSelected = (option) => {

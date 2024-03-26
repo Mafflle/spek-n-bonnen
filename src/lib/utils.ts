@@ -54,6 +54,11 @@ export const showToast = (message: string, type: ToastType, promise?) => {
 			toast.success(message, {
 				position: 'top-right',
 				dismissable: true
+				// class: 'h-[80px] md:w-[468px] w-[200px]  text-white',
+				// classes: {
+				// 	title: 'text-white',
+				// 	success: 'bg-green-main text-white'
+				// }
 			});
 		} else if (type === 'error') {
 			toast.error(message, {
@@ -165,8 +170,10 @@ export const debounce = (cb: Function, delay = 1000) => {
 export const isEqual = (obj1, obj2) => {
 	if (obj1.value) {
 		return obj1.value === obj2.value && obj1.label === obj2.label;
-	} else {
+	} else if (obj1.code_name) {
 		return obj1.id === obj2.id && obj1.code_name === obj2.code_name;
+	} else {
+		return obj1.id === obj2.id && obj1.name === obj2.name;
 	}
 };
 
@@ -264,6 +271,6 @@ export function check(permission: string, user: User) {
 		return false;
 	}
 }
-export function getLoggedInUsers() {
-	return JSON.parse(localStorage.getItem('loggedInUsers')) || [];
+export function getLoggedInLoggedinUser() {
+	return JSON.parse(localStorage.getItem('loggedInLoggedinUser')) || [];
 }

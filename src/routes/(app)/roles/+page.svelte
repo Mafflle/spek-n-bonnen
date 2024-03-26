@@ -286,8 +286,8 @@
 		class=" w-full py-6 flex flex-col justify-between h-full gap-4 bg-white rounded-lg"
 	>
 		<section class="">
-			<div class="flex sticky top-0 z-10 items-center justify-between mb-5">
-				<Sheet.Header class="flex flex-col w-full gap-2 sticky top-0 bg-white z-30 ">
+			<div class="flex md:sticky top-0 z-10 items-center justify-between mb-5">
+				<Sheet.Header class="flex flex-col w-full gap-2 md:sticky top-0 bg-white z-30 ">
 					<div class="w-full px-3 flex flex-row justify-between items-center">
 						<Sheet.Title
 							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
@@ -365,7 +365,7 @@
 				</div>
 			</div>
 		</section>
-		<Sheet.Footer class="w-full sticky bottom-0 px-3 self-end mb-8">
+		<Sheet.Footer class="w-full  px-3 self-end mb-8">
 			<div class="w-full px-4">
 				<Button
 					disabled={loading}

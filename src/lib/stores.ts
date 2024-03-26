@@ -97,16 +97,16 @@ export type CarcassType = {
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
-export const container = writable<Permission[]>([]);
+export const container = writable<(Permission | Role)[]>([]);
 export let Roles = writable<Role[]>([]);
 export let Primals = writable<Primal[]>([]);
-export let Users = writable<{ name: string; email: string; color: string }[]>([]);
+export let LoggedinUser = writable<{ name: string; email: string; color: string }[]>([]);
 export let Batches = writable<Batch[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
 export let Tags = writable<any[]>([]);
 
-export const updateSelectedOptions = (option: Permission) => {
-	container.update((items: Permission[]) => {
+export const updateSelectedOptions = (option: Permission | Role) => {
+	container.update((items) => {
 		if (items.length > 0) {
 			for (const perms of items) {
 				if (isEqual(perms, option)) {

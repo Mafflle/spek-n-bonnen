@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { getLoggedInUsers, showToast, type loggedInUser, getRandomColor } from '$lib/utils';
+	import {
+		getLoggedInLoggedinUser,
+		showToast,
+		type loggedInUser,
+		getRandomColor
+	} from '$lib/utils';
 	import { slide } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -8,7 +13,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { currentUser } from '$lib/user';
 
-	import { Users } from '$lib/stores';
+	import { LoggedinUser } from '$lib/stores';
 	import { browser } from '$app/environment';
 	import Modal from '$lib/components/Modal.svelte';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -16,18 +21,18 @@
 
 	let loading: boolean = false;
 	if (browser) {
-		if ($Users.length < 1) {
-			let users = getLoggedInUsers();
+		if ($LoggedinUser.length < 1) {
+			let users = getLoggedInLoggedinUser();
 			if (users.length > 0) {
-				$Users = users;
+				$LoggedinUser = users;
 			} else {
 				let currUser = {
 					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
 					email: `${$currentUser?.email}`
 				};
 				users.push(currUser);
-				$Users = users;
-				localStorage.setItem('loggedInUsers', JSON.stringify(users));
+				$LoggedinUser = users;
+				localStorage.setItem('loggedInLoggedinUser', JSON.stringify(users));
 			}
 		}
 	}
@@ -65,7 +70,7 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					const existingUsers = getLoggedInUsers();
+					const existingLoggedinUser = getLoggedInLoggedinUser();
 					let currentUser = result.data.currUser;
 					console.log(result);
 
@@ -74,14 +79,14 @@
 						email: `${currentUser?.email}`,
 						color: getRandomColor()
 					};
-					if (existingUsers.length > 0) {
-						if (!existingUsers.find((user) => user.email === userData?.email)) {
-							existingUsers.push(userData);
+					if (existingLoggedinUser.length > 0) {
+						if (!existingLoggedinUser.find((user) => user.email === userData?.email)) {
+							existingLoggedinUser.push(userData);
 						}
 					} else {
-						existingUsers.push(userData);
+						existingLoggedinUser.push(userData);
 					}
-					localStorage.setItem('loggedInUsers', JSON.stringify(existingUsers));
+					localStorage.setItem('loggedInLoggedinUser', JSON.stringify(existingLoggedinUser));
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
@@ -205,16 +210,18 @@
 								<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
 								<Avatar.Fallback>
 									<span class="text-base">
-										{$Users[0]?.name.split(' ')[0][0]}{$Users[0]?.name.split(' ')[1][0]}
+										{$LoggedinUser[0]?.name.split(' ')[0][0]}{$LoggedinUser[0]?.name.split(
+											' '
+										)[1][0]}
 									</span>
 								</Avatar.Fallback>
 							</Avatar.Root>
 							<span>
-								{$Users[0]?.name}
+								{$LoggedinUser[0]?.name}
 							</span>
 						</div>
 						<Collapsible.Content>
-							{#each $Users as user}
+							{#each $LoggedinUser as user}
 								<div class="rounded-md border px-4 py-3 font-mono text-sm">
 									<button
 										type="button"

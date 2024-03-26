@@ -6,9 +6,14 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Users } from '$lib/stores.js';
+	import { LoggedinUser } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
-	import { getLoggedInUsers, showToast, type loggedInUser, type ToastType } from '$lib/utils.js';
+	import {
+		getLoggedInLoggedinUser,
+		showToast,
+		type loggedInUser,
+		type ToastType
+	} from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
@@ -19,17 +24,17 @@
 	let messageType = $page.url.searchParams.get('type') as ToastType;
 
 	if (browser) {
-		let users = getLoggedInUsers();
+		let users = getLoggedInLoggedinUser();
 		if (users.length > 0) {
-			$Users = users;
+			$LoggedinUser = users;
 		} else {
 			let currUser = {
 				name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
 				email: `${$currentUser?.email}`
 			};
 			users.push(currUser);
-			$Users = users;
-			localStorage.setItem('loggedInUsers', JSON.stringify(users));
+			$LoggedinUser = users;
+			localStorage.setItem('loggedInLoggedinUser', JSON.stringify(users));
 		}
 	}
 
@@ -204,9 +209,9 @@
 				</div>
 			</form>
 		{/if}
-		{#if !userToLogin && $Users.length > 0}
+		{#if !userToLogin && $LoggedinUser.length > 0}
 			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
-				{#each $Users as user}
+				{#each $LoggedinUser as user}
 					<button
 						disabled={$currentUser?.email === user.email}
 						on:click={() => selectUserToLogin(user)}
@@ -241,7 +246,7 @@
 					>
 				</form>
 			</div>
-		{:else if $Users.length < 1}
+		{:else if $LoggedinUser.length < 1}
 			<div>No user added yet</div>
 		{/if}
 	</div>

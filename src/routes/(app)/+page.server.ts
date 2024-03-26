@@ -184,7 +184,7 @@ export const actions: Actions = {
 				return fail(401, { message: 'Invalid email or password' });
 			} else {
 				console.log(res.status);
-				console.log(await res.json());
+				// console.log(await res.json());
 			}
 		} catch (error) {
 			const toSend = {

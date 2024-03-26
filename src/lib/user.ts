@@ -9,9 +9,11 @@ export type User = {
 	is_superuser: boolean;
 	is_active: boolean;
 	is_staff: boolean;
-	createdAt: Date;
-	updatedAt: Date;
+	is_pro_user: boolean;
+	date_joined: Date;
 	groups: Role[];
 };
 
 export const currentUser = writable<User | undefined>(); //current user store
+
+export const Users = writable<User[]>([]);

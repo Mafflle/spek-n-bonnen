@@ -63,16 +63,18 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
 	}
 	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups?limit=10`);
-	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users?limit=10`);
+	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users?limit=10&&ordering=is_staff`);
 
 	if (groups.ok && staffs.ok) {
 		const data = await groups.json();
-		const users = await staffs.json();
+		let users = await staffs.json();
+
+		// console.log(users);
 
 		return {
 			access,
-			groups: data.results,
-			users: users.results
+			groups: data,
+			users: users
 		};
 	}
 };

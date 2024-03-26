@@ -19,7 +19,7 @@ export const actions: Actions = {
 	search: async ({ cookies, request }) => {
 		console.log('searching');
 		const data = await request.formData();
-		console.log(data);
+		// console.log(data);
 		const search = data.get('search');
 
 		const response = await fetch(

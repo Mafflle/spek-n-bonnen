@@ -44,7 +44,7 @@ interface Errors {
 }
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const getAllProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers`);
+	const getAllProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/`);
 
 	if (getAllProvider.ok) {
 		const allProviders = await getAllProvider.json();
