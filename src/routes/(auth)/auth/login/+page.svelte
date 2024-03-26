@@ -16,8 +16,6 @@
 	import { LoggedinUser } from '$lib/stores';
 	import { browser } from '$app/environment';
 	import Modal from '$lib/components/Modal.svelte';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import Button from '$lib/components/ui/button/button.svelte';
 
 	let loading: boolean = false;
 	if (browser) {
@@ -44,7 +42,6 @@
 	}
 	function selectUserToLogin(user: loggedInUser) {
 		userToLogin = user;
-		toggleModal();
 	}
 
 	let validationErrors: { email?: string; password?: string };
@@ -72,7 +69,6 @@
 				if (result.status === 200) {
 					const existingLoggedinUser = getLoggedInLoggedinUser();
 					let currentUser = result.data.currUser;
-					console.log(result);
 
 					const userData = {
 						name: `${currentUser?.first_name} ${currentUser?.last_name}`,
@@ -87,6 +83,7 @@
 						existingLoggedinUser.push(userData);
 					}
 					localStorage.setItem('loggedInLoggedinUser', JSON.stringify(existingLoggedinUser));
+					toggleModal();
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
@@ -110,7 +107,7 @@
 <svelte:head>
 	<title>Login - Spek-n-Boonen</title>
 </svelte:head>
-<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
+<div class="h-screen w-screen flex flex-col gap-5 justify-center items-center bg-[#F2F2F2]">
 	<form action="?/login" method="post" use:enhance={submit}>
 		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
@@ -194,59 +191,7 @@
 						<span class="button-text">Log in </span>
 					{/if}
 				</button>
-				<div class="flex flex-col gap-2 justify-center items-center">
-					<Collapsible.Root>
-						<div class="flex items-center justify-between space-x-4 px-4">
-							<Collapsible.Trigger asChild let:builder>
-								<h4 class="text-sm font-semibold">Choose an account:</h4>
-								<Button builders={[builder]} variant="ghost" size="sm" class="w-9 p-0">
-									<iconify-icon icon="ph:caret-down" class="h-4 w-4"></iconify-icon>
-									<span class="sr-only">Toggle</span>
-								</Button>
-							</Collapsible.Trigger>
-						</div>
-						<div class="rounded-md border px-4 py-3 font-mono text-sm flex items-center gap-2">
-							<Avatar.Root class="w-8 h-8">
-								<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
-								<Avatar.Fallback>
-									<span class="text-base">
-										{$LoggedinUser[0]?.name.split(' ')[0][0]}{$LoggedinUser[0]?.name.split(
-											' '
-										)[1][0]}
-									</span>
-								</Avatar.Fallback>
-							</Avatar.Root>
-							<span>
-								{$LoggedinUser[0]?.name}
-							</span>
-						</div>
-						<Collapsible.Content>
-							{#each $LoggedinUser as user}
-								<div class="rounded-md border px-4 py-3 font-mono text-sm">
-									<button
-										type="button"
-										on:click={() => selectUserToLogin(user)}
-										disabled={$currentUser?.email === user.email}
-										class="flex items-center gap-2 transition-all rounded-full"
-									>
-										<Avatar.Root class="w-8 h-8">
-											<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
-											<Avatar.Fallback>
-												<span class="text-base">
-													{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
-												</span>
-											</Avatar.Fallback>
-										</Avatar.Root>
-										<div class="w-full flex items-center justify-center">
-											<span class="font-satoshi font-medium text-center">{user.name}</span>
-										</div>
-									</button>
-								</div>
-							{/each}
-						</Collapsible.Content>
-					</Collapsible.Root>
-					<div class="flex items-center justify-center gap-3 w-full"></div>
-				</div>
+
 				<div class="forgot-password">
 					<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
 						<div class="text-[#9C9C9C]">Forgotten password?</div>
@@ -256,6 +201,27 @@
 			</div>
 		</div>
 	</form>
+	<button
+		on:click={toggleModal}
+		class="flex justify-between items-center min-w-[22rem] lg:min-w-[28.25rem] bg-white hover:bg-white/60 p-4 rounded-[16px]"
+	>
+		<section class=" w-full flex gap-3 items-center">
+			<div class="flex items-center -space-x-3">
+				{#each $LoggedinUser as user}
+					<Avatar.Root class="w-12 h-12 shadow">
+						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+						<Avatar.Fallback>
+							<span class="text-base">
+								{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+							</span>
+						</Avatar.Fallback>
+					</Avatar.Root>
+				{/each}
+			</div>
+			<span class="font-satoshi text-primary-red">Switch Accounts</span>
+		</section>
+		<iconify-icon class="text-primary-red" width="30" icon="ph:caret-right-thin"></iconify-icon>
+	</button>
 </div>
 
 <Modal {showModal}>
@@ -263,7 +229,12 @@
 		class="flex flex-col gap-2 md:p-5 w-full px-3 overflow-hidden py-5 md:min-w-[400px] rounded-2xl items-center"
 		slot="modal-content"
 	>
-		<section class="w-full items-center flex justify-end">
+		<section class="w-full items-center flex {userToLogin ? 'justify-between' : 'justify-end'}">
+			{#if userToLogin}
+				<button on:click={() => (userToLogin = null)}>
+					<iconify-icon class="text-grey-100" width="25" icon="mingcute:left-line"></iconify-icon>
+				</button>
+			{/if}
 			<button
 				on:click={() => {
 					userToLogin = null;
@@ -353,6 +324,46 @@
 					</div>
 				</div>
 			</form>
+		{/if}
+		{#if !userToLogin && $LoggedinUser.length > 0}
+			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
+				{#each $LoggedinUser as user}
+					<button
+						disabled={$currentUser?.email === user.email}
+						on:click={() => selectUserToLogin(user)}
+						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
+					>
+						<Avatar.Root class="w-10 h-10">
+							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+							<Avatar.Fallback>
+								<span class="text-base">
+									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+								</span>
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="w-full flex items-center justify-between">
+							<span class="text-xl text-start">{user.name}</span>
+							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
+						></iconify-icon> -->
+							{#if $currentUser?.email === user.email}
+								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
+								></iconify-icon>
+							{/if}
+						</div>
+					</button>
+				{/each}
+				<form action="?/logout" method="post" class="w-full">
+					<button
+						type="submit"
+						class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
+					>
+						<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
+						<span class="text-lg font-satoshi block">Add Account</span></button
+					>
+				</form>
+			</div>
+		{:else if $LoggedinUser.length < 1}
+			<div>No user added yet</div>
 		{/if}
 	</div>
 </Modal>

@@ -192,7 +192,7 @@
 				<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
 					<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
 				</div>
-			{:else}
+			{:else if options.length > 0}
 				{#each options as option}
 					<Select.Item
 						on:click={() => onSelected(option)}
@@ -228,6 +228,8 @@
 						{/if}
 					</Select.Item>
 				{/each}
+			{:else}
+				<p class="text-center mb-2">No options available yet</p>
 			{/if}
 		</Select.Group>
 	</Select.Content>

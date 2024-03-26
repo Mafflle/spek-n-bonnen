@@ -40,7 +40,7 @@
 	}
 
 	function check(permission: string, userPermissions?) {
-		if ($currentUser?.groups && permission && !$currentUser?.is_superuser) {
+		if ($currentUser?.groups?.length > 0 && permission && !$currentUser?.is_superuser) {
 			userPermissions = $currentUser?.groups;
 			for (let i = 0; i < userPermissions.length; i++) {
 				let currRole = userPermissions[i];

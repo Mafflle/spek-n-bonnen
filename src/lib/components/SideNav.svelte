@@ -8,7 +8,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
 
-	// $: console.log($currentUser);
+	$: console.log($currentUser);
 
 	const routes = [
 		{

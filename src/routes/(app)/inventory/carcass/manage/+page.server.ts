@@ -90,12 +90,16 @@ const manageSchema = z.object({
 });
 
 export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
-	const getFarms = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/farms/`);
-	const getSlaughterHouses = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/slaughter_houses/`);
-	const getShops = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/butcher_shops/`);
-	const getBrands = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/brands/`);
-	const getVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/`);
-	const getManufacturers = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/manufacturers/`);
+	const getFarms = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=farm`);
+	const getSlaughterHouses = await fetch(
+		`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=slaughter_house`
+	);
+	const getShops = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=butcher_shop`);
+	const getBrands = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=brand`);
+	const getVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=vendor`);
+	const getManufacturers = await fetch(
+		`${PUBLIC_API_ENDPOINT}api/inventory/providers?type=manufacturer`
+	);
 
 	let carcassToEditId = url.searchParams.get('editing');
 	let carcassToEdit;
@@ -174,12 +178,12 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
 			carcassToEdit: carcass
 		};
 	} else {
-		console.log('farms', getFarms.status, getFarms.statusText);
-		console.log('slaughterHouse', getSlaughterHouses.status, getSlaughterHouses.statusText);
-		console.log('butchers', getShops.status, getShops.statusText);
-		console.log('brands', getBrands.status, getBrands.statusText);
-		console.log('vendors', getVendors.status, getVendors.statusText);
-		console.log('manufacturers', getManufacturers.status, getManufacturers.statusText);
+		console.log('farms', await getFarms.json(), getFarms.statusText);
+		console.log('slaughterHouse', await getSlaughterHouses.json(), getSlaughterHouses.statusText);
+		console.log('butchers', await getShops.json(), getShops.statusText);
+		console.log('brands', await getBrands.json(), getBrands.statusText);
+		console.log('vendors', await getVendors.json(), getVendors.statusText);
+		console.log('manufacturers', await getManufacturers.json(), getManufacturers.statusText);
 	}
 };
 
