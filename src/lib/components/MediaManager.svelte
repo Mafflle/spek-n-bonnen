@@ -18,7 +18,7 @@
 	let showModal: boolean = false;
 	let showDeleteModal: boolean = false;
 	let loading: boolean = false;
-	let validationErrors: { name?: [string]; logo?: [string] };
+	let validationErrors: { title?: [string]; image?: [string] };
 	let imageValidationError: string;
 	let selectedItems = [];
 	let imageCount: number;
@@ -203,12 +203,14 @@
 			return async ({ update, result }) => {
 				try {
 					if (result.status === 200) {
+						images = [result.data.newMedia, ...images];
 						showToast('New media uploaded successfully', 'success');
+
 						toggleModal();
 					} else if (result.status === 400) {
 						validationErrors = result.data.errors;
-						if (validationErrors && validationErrors.logo) {
-							imageValidationError = validationErrors.logo[0];
+						if (validationErrors && validationErrors?.image) {
+							imageValidationError = validationErrors.image[0];
 						}
 					} else {
 						showToast('Ooops something went wrong!!', 'error');
@@ -232,10 +234,10 @@
 				placeholder="Media name"
 				class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 			/>
-			{#if validationErrors?.name}
+			{#if validationErrors?.title}
 				<sub
 					transition:slide={{ delay: 250, duration: 300 }}
-					class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.title}</sub
 				>
 			{/if}
 		</div>
