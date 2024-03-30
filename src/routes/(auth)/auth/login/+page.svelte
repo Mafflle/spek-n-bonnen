@@ -201,27 +201,29 @@
 			</div>
 		</div>
 	</form>
-	<button
-		on:click={toggleModal}
-		class="flex justify-between items-center min-w-[22rem] lg:min-w-[28.25rem] bg-white hover:bg-white/60 p-4 rounded-[16px]"
-	>
-		<section class=" w-full flex gap-3 items-center">
-			<div class="flex items-center -space-x-3">
-				{#each $LoggedinUser as user}
-					<Avatar.Root class="w-12 h-12 shadow">
-						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
-						<Avatar.Fallback>
-							<span class="text-base">
-								{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
-							</span>
-						</Avatar.Fallback>
-					</Avatar.Root>
-				{/each}
-			</div>
-			<span class="font-satoshi text-primary-red">Switch Accounts</span>
-		</section>
-		<iconify-icon class="text-primary-red" width="30" icon="ph:caret-right-thin"></iconify-icon>
-	</button>
+	{#if $LoggedinUser.length > 0}
+		<button
+			on:click={toggleModal}
+			class="flex justify-between items-center min-w-[22rem] lg:min-w-[28.25rem] bg-white hover:bg-white/60 p-4 rounded-[16px]"
+		>
+			<section class=" w-full flex gap-3 items-center">
+				<div class="flex items-center -space-x-3">
+					{#each $LoggedinUser as user}
+						<Avatar.Root class="w-12 h-12 shadow">
+							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+							<Avatar.Fallback>
+								<span class="text-base">
+									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+								</span>
+							</Avatar.Fallback>
+						</Avatar.Root>
+					{/each}
+				</div>
+				<span class="font-satoshi text-primary-red">Switch Accounts</span>
+			</section>
+			<iconify-icon class="text-primary-red" width="30" icon="ph:caret-right-thin"></iconify-icon>
+		</button>
+	{/if}
 </div>
 
 <Modal {showModal}>

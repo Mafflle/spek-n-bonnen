@@ -8,7 +8,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
 
-	$: console.log($currentUser);
+	// $: console.log($currentUser);
 
 	const routes = [
 		{
@@ -123,15 +123,20 @@
 						class="w-full flex gap-2 items-center mr-auto"
 					>
 						<Avatar.Root>
-							<Avatar.Image class="w-full h-full" src="/icons/human.jpg" alt="user icon" />
+							<Avatar.Image
+								class="w-full h-full object-cover"
+								src={$currentUser?.profile_picture?.image}
+								alt="user icon"
+							/>
 							<Avatar.Fallback class="bg-white">
 								<span class="text-base font-satoshi font-medium">
 									{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}
 								</span>
 							</Avatar.Fallback>
 						</Avatar.Root>
-						<p class="">
+						<p class="text-sm">
 							{$currentUser?.first_name}
+							{$currentUser?.last_name.length > 10 ? '...' : $currentUser?.last_name}
 						</p>
 					</button>
 					<DropdownMenu.Root>

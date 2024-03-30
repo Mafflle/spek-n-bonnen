@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import type { HandleFetch } from '@sveltejs/kit';
+import { redirect, type HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
@@ -118,6 +118,10 @@ export const handle = async ({ event, resolve }) => {
 					sameSite: 'lax',
 					path: '/'
 				});
+			} else {
+				event.cookies.delete('access', { path: '/' });
+				event.cookies.delete('refresh', { path: '/' });
+				throw redirect(302, '/auth/login');
 			}
 		} catch (error) {
 			console.error('Error refreshing token:', error);

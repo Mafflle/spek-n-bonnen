@@ -15,8 +15,8 @@
 	export let small: boolean = false;
 	export let defaultValue:
 		| { id: number; title: string; image: string; updated_at: Date; created_at: Date }
-		| undefined
-		| number;
+		| null
+		| number = null;
 	export let smallText: string = '';
 	export let maximumImages: number = 10;
 	export let inputName: string = 'images';
@@ -87,8 +87,8 @@
 </script>
 
 <div
-	class=" {small ? 'h-[85px] ' : ' min-h-[200px] min-w-full '} {previewImage
-		? 'w-[85px] '
+	class=" {small ? 'h-[90px] ' : ' min-h-[200px] min-w-full '} {previewImage
+		? 'w-[90px] '
 		: 'w-[230px]'}"
 >
 	<div
