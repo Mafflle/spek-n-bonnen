@@ -102,9 +102,22 @@
 			}
 		};
 	};
-	onMount(() => {
-		showToast('Welcome to the ERP', 'success');
-	});
+	// onMount(() => {
+	// 	showToast('Welcome to the ERP', 'success');
+	// });
+
+	function test(param: boolean) {
+		function innerTest(param1: boolean) {
+			if (param && param1) {
+				param = false;
+			} else {
+				param = true;
+			}
+		}
+		innerTest(param);
+	}
+
+	const click = test(showProviderModal);
 </script>
 
 <svelte:head>
@@ -225,7 +238,9 @@
 		class="flex flex-col md:gap-16 gap-8 py-6 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
 	>
 		<section class="w-full md:h-full">
-			<Sheet.Header class="flex flex-col w-full gap-2 py-4 md:sticky top-0 bg-white z-30 ">
+			<Sheet.Header
+				class="flex flex-col w-full gap-2 py-4 sticky bg-white -top-7 max-xsm:py-2 z-30 "
+			>
 				<div class="w-full px-3 flex flex-row justify-between items-center">
 					<Sheet.Title
 						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
@@ -233,6 +248,7 @@
 						<img src="/icons/UserWithEclipse.svg" alt="user icon " />
 						<span>{$currentProvider ? 'Edit' : 'Add'} Provider</span>
 					</Sheet.Title>
+
 					<button
 						type="button"
 						on:click={() => toggleEditModal()}

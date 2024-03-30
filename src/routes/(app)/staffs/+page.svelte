@@ -197,12 +197,14 @@
 		action="?/invite_staff"
 		method="post"
 		use:enhance={submit}
-		class="w-full max-xsm:py-4 py-6 max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
+		class="w-full max-xsm:pb-4 py-6 max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
 		slot="modal-content"
 	>
 		<section class="md:h-full w-full">
-			<div class="flex w-full md:sticky top-0 z-10 items-center justify-between mb-10">
-				<Sheet.Header class="flex flex-col w-full gap-2 md:sticky top-0 bg-white z-30 ">
+			<div
+				class="flex w-full sticky bg-white -top-7 min-h-16 max-xsm:py-2 z-30 items-center justify-between mb-10"
+			>
+				<Sheet.Header class="flex flex-col w-full gap-2  z-10  ">
 					<div class="w-full px-3 flex flex-row justify-between items-center">
 						<Sheet.Title
 							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"

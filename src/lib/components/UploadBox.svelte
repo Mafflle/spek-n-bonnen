@@ -113,6 +113,7 @@
 				if (!isFileInput) {
 					e.preventDefault();
 					showMediaManager = true;
+					dispatch('click');
 				} else {
 					images = e.dataTransfer?.files;
 				}
@@ -216,7 +217,7 @@
 		on:selected={(e) => {
 			files = e.detail;
 			showMediaManager = false;
-			dispatch('imageSelected', { imageId: e.detail.id });
+			dispatch('close');
 		}}
 	/>
 </Modal>

@@ -168,7 +168,7 @@
 			>
 				<Menubar.Menu>
 					<Menubar.Trigger
-						class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
+						class="flex md:w-full items-center text-grey-200  w-8 h-8  justify-around rounded-full
 		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
 							'bg-primary-light text-primary-red'}
 		"

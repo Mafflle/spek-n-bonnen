@@ -6,7 +6,7 @@
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Batches, type Batch, currentProvider } from '$lib/stores.js';
+	import { Batches, type Batch, currentCarcass } from '$lib/stores.js';
 
 	import { showToast } from '$lib/utils.js';
 	import { browser } from '$app/environment';
@@ -19,7 +19,7 @@
 	export let data;
 	let { carcass, primals, access } = data;
 
-	currentProvider.set(null);
+	currentCarcass.set(null);
 	let { batches } = data;
 
 	console.log(batches);
@@ -69,8 +69,8 @@
 
 	function toggleModal(batch?: Batch) {
 		showModal = !showModal;
-		if (batch && !$currentProvider) {
-		} else if (batch && $currentProvider) {
+		if (batch && !$currentCarcass) {
+		} else if (batch && $currentCarcass) {
 			console.log('editing');
 			edit = true;
 		}
@@ -87,8 +87,8 @@
 	const toggleEditModal = (batch?: Batch) => {
 		console.log('curbdata', batch);
 		batch_id = batch?.id;
-		if (batch && !$currentProvider) {
-			currentProvider.set(batch);
+		if (batch && !$currentCarcass) {
+			currentCarcass.set(batch);
 			currentBatchData = {
 				primal_id: batch.primal.id,
 				carcass_id: batch.carcass.id,
@@ -109,15 +109,15 @@
 				quantity: 0,
 				expiry_date: ''
 			};
-			currentProvider.set(null);
+			currentCarcass.set(null);
 		}
 		toggleModal();
 	};
 
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		if ($currentProvider) {
-			// formData.append('batch_id', `${$currentProvider?.id}`);
+		if ($currentCarcass) {
+			// formData.append('batch_id', `${$currentCarcass?.id}`);
 		}
 		return async ({ result, update }) => {
 			try {
@@ -170,9 +170,9 @@
 		}
 	}
 
-	const unsubscribe = currentProvider.subscribe((curr) => curr);
+	const unsubscribe = currentCarcass.subscribe((curr) => curr);
 	onDestroy(() => {
-		currentProvider.set(null);
+		currentCarcass.set(null);
 		unsubscribe;
 	});
 </script>
@@ -194,7 +194,7 @@
 				<h3
 					class="title-text flex-[1 0 0] text-lg font-satoshi font-medium tracking-[-0.18px] w-full"
 				>
-					{$currentProvider?.id ? 'Edit' : 'Fill the form below to add'} batch
+					{$currentCarcass?.id ? 'Edit' : 'Fill the form below to add'} batch
 				</h3>
 				<button
 					type="button"
@@ -309,7 +309,7 @@
 						{#if loading}
 							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 						{:else}
-							<span class="button-text">{$currentProvider?.id ? 'Edit' : 'Add'} batch</span>
+							<span class="button-text">{$currentCarcass?.id ? 'Edit' : 'Add'} batch</span>
 						{/if}
 					</button>
 				</div>
@@ -518,8 +518,7 @@
 				<tbody>
 					{#each $Batches as batch (batch?.id)}
 						{#if batch.carcass.id === carcass.id}
-							<BatchCard {batch} on:edit={() => toggleEditModal(batch)}/>
-						
+							<BatchCard {batch} on:edit={() => toggleEditModal(batch)} />
 						{/if}
 					{/each}
 				</tbody>

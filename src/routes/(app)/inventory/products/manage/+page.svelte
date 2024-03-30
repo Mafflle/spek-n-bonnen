@@ -17,11 +17,8 @@
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Modal from '$lib/components/Modal.svelte';
-	import { showToast } from '$lib/utils.js';
-	import { Tags } from '$lib/stores.js';
-	import { Result } from 'postcss';
+	import { showToast, type CarcassErrors } from '$lib/utils.js';
 	import DeleteModal from '$lib/components/DeleteModal.svelte';
-	import { optional } from 'zod';
 
 	export let data;
 

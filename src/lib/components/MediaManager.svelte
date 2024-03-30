@@ -130,12 +130,14 @@
 				><span>Select mulitple</span> <input class="p-0" type="radio" /></Button
 			>
 		</div> -->
-		<div class="grid grid-cols-3 md:grid-cols-4 gap-10 overflow-scroll no-scrollbar max-h-96">
+		<div
+			class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10 overflow-scroll no-scrollbar max-h-96"
+		>
 			{#each images as image}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					on:click={() => selectMedia(image)}
+					on:click|preventDefault={() => selectMedia(image)}
 					class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
 				>
 					<div

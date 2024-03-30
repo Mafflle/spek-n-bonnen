@@ -4,6 +4,7 @@
 	import * as Sheet from './ui/sheet';
 	import * as Drawer from './ui/drawer';
 	import { mediaQuery } from 'svelte-legos';
+	import { slide } from 'svelte/transition';
 	export let showModal: boolean = false;
 	export let mode: string = 'dialog';
 	const dispatch = createEventDispatcher();
@@ -28,9 +29,11 @@
 	{/if}
 {:else}
 	<Drawer.Root
-		onOutsideClick={() => dispatch('close')}
 		bind:open={showModal}
-		onOpenChange={() => dispatch('close')}
+		onOpenChange={() => {
+			showModal = false;
+			dispatch('close');
+		}}
 	>
 		<Drawer.Content class="max-h-[80vh]">
 			<slot name="modal-content" class="" />

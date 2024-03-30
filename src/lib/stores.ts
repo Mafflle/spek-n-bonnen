@@ -104,6 +104,7 @@ export let LoggedinUser = writable<{ name: string; email: string; color: string 
 export let Batches = writable<Batch[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
 export let Tags = writable<any[]>([]);
+export let currentCarcass = writable<CarcassType | null>(null);
 
 export const updateSelectedOptions = (option: Permission | Role) => {
 	container.update((items) => {
