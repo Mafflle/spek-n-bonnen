@@ -86,7 +86,7 @@
 					>
 						<span class="side-nav-button w-full text-inherit flex items-center justify-between">
 							<div class="button-content flex items-center gap-2.5 self-stretch">
-								<span class="test-inherit">{@html active ? route.activeIcon : route.icon}</span>
+								<span class="text-inherit">{@html active ? route.activeIcon : route.icon}</span>
 								<span
 									class="button-text {active &&
 										'text-primary-red'} hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
@@ -168,8 +168,10 @@
 			>
 				<Menubar.Menu>
 					<Menubar.Trigger
-						class="p-0 space-x-0 w-full flex items-center justify-center rounded-full {active &&
-							'bg-primary-light text-primary-red'} w-8 h-8"
+						class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
+		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
+							'bg-primary-light text-primary-red'}
+		"
 					>
 						<a
 							on:mouseenter={() => {

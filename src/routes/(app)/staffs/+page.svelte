@@ -20,7 +20,7 @@
 
 	let { groups, access, users } = data;
 	let loading: boolean = false;
-	let showModal: boolean = true;
+	let showModal: boolean = false;
 	let searching: boolean = false;
 	let validationErrors: {
 		email?: [string];

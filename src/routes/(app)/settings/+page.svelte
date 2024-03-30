@@ -234,7 +234,9 @@
 								</div>
 							</section>
 						</div>
-						<div class="grid grid-cols-3 m gap-10 overflow-scroll no-scrollbar max-h-96">
+						<div
+							class="grid grid-cols-2 md: grid-cols-3 m gap-10 overflow-scroll no-scrollbar max-h-96"
+						>
 							{#each images.results as image}
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<!-- svelte-ignore a11y-no-static-element-interactions -->
