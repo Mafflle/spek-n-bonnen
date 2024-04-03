@@ -272,5 +272,5 @@ export function check(permission: string, user: User) {
 	}
 }
 export function getLoggedInLoggedinUser() {
-	return JSON.parse(localStorage.getItem('loggedInLoggedinUser')) || [];
+	return JSON.parse(localStorage.getItem('loggedinUsers')) || [];
 }

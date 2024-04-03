@@ -19,7 +19,7 @@
 
 	let loading: boolean = false;
 	if (browser) {
-		if ($LoggedinUser.length < 1) {
+		if ($LoggedinUser.length < 1 && $currentUser) {
 			let users = getLoggedInLoggedinUser();
 			if (users.length > 0) {
 				$LoggedinUser = users;
@@ -30,7 +30,7 @@
 				};
 				users.push(currUser);
 				$LoggedinUser = users;
-				localStorage.setItem('loggedInLoggedinUser', JSON.stringify(users));
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
 			}
 		}
 	}

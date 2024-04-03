@@ -51,6 +51,7 @@
 	let userToLogin: loggedInUser | null;
 
 	const unsubscribe = currentUser.subscribe((currUser) => currUser);
+	const unsubscribeLoggedInUsers = LoggedinUser.subscribe((users) => users);
 	let showModal: boolean = false;
 	let loading: boolean = false;
 
@@ -97,6 +98,7 @@
 
 	onDestroy(() => {
 		unsubscribe();
+		unsubscribeLoggedInUsers();
 	});
 </script>
 
