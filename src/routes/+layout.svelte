@@ -4,7 +4,6 @@
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
-	import { showToast, type ToastType } from '$lib/utils';
 </script>
 
 <svelte:head>

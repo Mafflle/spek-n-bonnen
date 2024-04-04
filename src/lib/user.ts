@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Permission, Role } from './stores';
+import type { Role } from './stores';
 import { z } from 'zod';
 
 export type User = {

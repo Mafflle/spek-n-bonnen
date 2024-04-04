@@ -4,17 +4,14 @@
 	import Button from './ui/button/button.svelte';
 	import * as Menubar from '$lib/components/ui/menubar';
 	import { currentUser } from '$lib/user';
+	import type { Role } from '$lib/stores';
 
-	export let hidden: boolean;
+	export let hidden: boolean = true;
 	export let route: any;
 	export let alert: boolean = false;
 	export let active: boolean = false;
 	let childActive: boolean = false;
 	let showChildren: boolean = false;
-
-	const toggleChildren = () => {
-		showChildren = !showChildren;
-	};
 
 	let keepOpen = false;
 
@@ -39,10 +36,9 @@
 		hidden = false;
 	}
 
-	function check(permission: string, userPermissions?) {
-		if ($currentUser?.groups?.length > 0 && permission && !$currentUser?.is_superuser) {
-			userPermissions = $currentUser?.groups;
-			for (let i = 0; i < userPermissions.length; i++) {
+	function check(permission: string, userPermissions?: Role[]) {
+		if (userPermissions?.length > 0 && permission) {
+			for (let i = 0; i < userPermissions?.length; i++) {
 				let currRole = userPermissions[i];
 				for (let x = 0; x < currRole?.permissions.length; x++) {
 					let currPermission = currRole?.permissions[x];
@@ -52,19 +48,23 @@
 				}
 			}
 			return true;
-		} else {
+		} else if ($currentUser?.is_superuser) {
 			return false;
+		} else if (!permission) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
 	$: {
-		check(route.permission);
+		check(route.permission, $currentUser?.groups);
 	}
 	checkIfChildActive();
 </script>
 
 {#if route}
-	<li class=" {check(route.permission) ? 'hidden' : 'w-full'}">
+	<li class=" {check(route.permission, $currentUser?.groups) ? 'hidden' : 'w-full'}">
 		{#if route.children && route.children.length > 0}
 			<Collapsible.Root
 				onOpenChange={checkIfChildActive}
@@ -150,7 +150,7 @@
 									<a
 										class=" py-2 w-full text-grey-200 {$page.url.pathname === child.href &&
 											'bg-primary-light text-primary-red shadow-inner'}
-											 px-3 rounded-sm {check(child.permission)
+											 px-3 rounded-sm {check(child.permission, $currentUser?.groups)
 											? 'hidden'
 											: 'flex'} gap-3 hover:bg-primary-light hover:text-primary-red"
 										href={child.href}
@@ -212,7 +212,8 @@
 							{#if child.childRoutes}
 								<Menubar.Sub>
 									<Menubar.SubTrigger
-										class="{check(child.permission) && !$currentUser?.is_superuser
+										class="{check(child.permission, $currentUser?.groups) &&
+										!$currentUser?.is_superuser
 											? 'hidden'
 											: 'block'} text-xs font-semibold"
 									>

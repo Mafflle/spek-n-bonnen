@@ -28,13 +28,15 @@
 		if (users.length > 0) {
 			$LoggedinUser = users;
 		} else {
-			let currUser = {
-				name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
-				email: `${$currentUser?.email}`
-			};
-			users.push(currUser);
-			$LoggedinUser = users;
-			localStorage.setItem('loggedInLoggedinUser', JSON.stringify(users));
+			if ($currentUser) {
+				let currUser = {
+					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
+					email: `${$currentUser?.email}`
+				};
+				users.push(currUser);
+				$LoggedinUser = users;
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
+			}
 		}
 	}
 
@@ -77,11 +79,6 @@
 					showToast('Login successful', 'success');
 					toggleModal();
 					userToLogin = null;
-					if ($page.url.pathname !== '/') {
-						await goto('/');
-					} else {
-						location.reload();
-					}
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 				} else if (result.status === 401) {
@@ -238,7 +235,7 @@
 						</div>
 					</button>
 				{/each}
-				<form action="?/logout" method="post" class="w-full">
+				<form action="/?/logout" method="post" class="w-full">
 					<button
 						type="submit"
 						class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"

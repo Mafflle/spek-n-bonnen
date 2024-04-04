@@ -19,18 +19,10 @@
 
 	let loading: boolean = false;
 	if (browser) {
-		if ($LoggedinUser.length < 1 && $currentUser) {
+		if ($LoggedinUser.length < 1) {
 			let users = getLoggedInLoggedinUser();
 			if (users.length > 0) {
 				$LoggedinUser = users;
-			} else {
-				let currUser = {
-					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
-					email: `${$currentUser?.email}`
-				};
-				users.push(currUser);
-				$LoggedinUser = users;
-				localStorage.setItem('loggedinUsers', JSON.stringify(users));
 			}
 		}
 	}
@@ -82,8 +74,8 @@
 					} else {
 						existingLoggedinUser.push(userData);
 					}
-					localStorage.setItem('loggedInLoggedinUser', JSON.stringify(existingLoggedinUser));
-					toggleModal();
+					localStorage.setItem('loggedinUsers', JSON.stringify(existingLoggedinUser));
+					showModal = false;
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
@@ -326,8 +318,7 @@
 					</div>
 				</div>
 			</form>
-		{/if}
-		{#if !userToLogin && $LoggedinUser.length > 0}
+		{:else if !userToLogin}
 			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
 				{#each $LoggedinUser as user}
 					<button
@@ -354,15 +345,13 @@
 						</div>
 					</button>
 				{/each}
-				<form action="?/logout" method="post" class="w-full">
-					<button
-						type="submit"
-						class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
-					>
-						<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
-						<span class="text-lg font-satoshi block">Add Account</span></button
-					>
-				</form>
+				<button
+					on:click={() => toggleModal()}
+					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
+				>
+					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
+					<span class="text-lg font-satoshi block">Add Account</span></button
+				>
 			</div>
 		{:else if $LoggedinUser.length < 1}
 			<div>No user added yet</div>

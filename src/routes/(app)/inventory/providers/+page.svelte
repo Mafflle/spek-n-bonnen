@@ -235,7 +235,7 @@
 		method="post"
 		action="?/manage-providers"
 		slot="modal-content"
-		class="flex flex-col md:gap-16 gap-8 py-6 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
+		class="flex flex-col gap-8 py-6 justify-between md:pb-4 w-full max-h-full overflow-y-scroll no-scrollbar rounded-2xl items-center"
 	>
 		<section class="w-full md:h-full">
 			<Sheet.Header
