@@ -197,15 +197,18 @@
 		action="?/invite_staff"
 		method="post"
 		use:enhance={submit}
-		class="w-full max-xsm:pb-4 py-6 max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
+		class="w-full max-xsm:pb-4 pb-6 max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
 		slot="modal-content"
 	>
 		<section class="md:h-full w-full">
 			<div
-				class="flex w-full sticky bg-white -top-7 min-h-16 max-xsm:py-2 z-30 items-center justify-between mb-10"
+				class="flex w-full sticky bg-white top-0 h-16 max-xsm:py-2 z-30 items-center justify-center mb-5"
 			>
-				<Sheet.Header class="flex flex-col w-full gap-2  z-10  ">
-					<div class="w-full px-3 flex flex-row justify-between items-center">
+				<Sheet.Header
+					is="text"
+					class="flex flex-col h-full items-center justify-center w-full   z-10  "
+				>
+					<div class="w-full h-full px-3 flex flex-row justify-between items-center">
 						<Sheet.Title
 							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
 						>
@@ -225,7 +228,7 @@
 					<Separator />
 				</Sheet.Header>
 			</div>
-			<div class="form-group flex flex-col gap-10 items-start justify-center w-full px-4">
+			<div class="form-group py-6 flex flex-col gap-10 items-start justify-center w-full px-4">
 				<span class="font-satoshi text-sm">Kindly input user details and select user role</span>
 				<section class="w-full px-3 flex flex-col gap-5">
 					<div class="form-item w-full flex flex-col">
@@ -280,7 +283,9 @@
 					</div>
 					<div class="flex flex-col gap-4 justify-between items-center w-full">
 						<div class="form-item w-full flex flex-col gap-1">
-							<label for="password" class="text-sm mb-1 font-medium font-satoshi">Password</label>
+							<label for="password" class="text-sm mb-1 font-medium font-satoshi"
+								>Create user password</label
+							>
 							<div class="w-full relative flex items-center px-0">
 								<input
 									type={currInputType}
@@ -313,7 +318,7 @@
 
 						<div class="form-item w-full flex flex-col gap-1">
 							<label for="confirm-password" class="text-sm mb-1 font-medium font-satoshi"
-								>Confirm Password</label
+								>Confirm password</label
 							>
 							<div class="w-full relative flex items-center px-0">
 								<input
@@ -382,6 +387,42 @@
 							</div>
 							<div class="hidden" id="rolesContainer"></div>
 						{/if}
+					</div>
+					<div class="form-item w-full flex flex-col gap-1">
+						<label for="work_hours" class="text-sm mb-1 font-medium font-satoshi"
+							>Set weekly work hours</label
+						>
+						<input
+							type="number"
+							name="work_hours"
+							id="work_hours"
+							placeholder="Set weekly work hours"
+							disabled={loading}
+							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
+						/>
+						<!-- {#if validationErrors?.email}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+							>
+						{/if} -->
+					</div>
+					<div class="form-item w-full flex flex-col gap-1">
+						<label for="date" class="text-sm mb-1 font-medium font-satoshi">Date Hired</label>
+						<input
+							type="date"
+							name="date"
+							id="date"
+							placeholder="Select date"
+							disabled={loading}
+							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
+						/>
+						<!-- {#if validationErrors?.email}
+							<sub
+								transition:slide={{ delay: 250, duration: 300 }}
+								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+							>
+						{/if} -->
 					</div>
 				</section>
 			</div>

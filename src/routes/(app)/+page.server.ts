@@ -157,13 +157,15 @@ export const actions: Actions = {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 				cookies.set('refresh', tokens.refresh, {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 				const access = cookies.get('access');
 				const getLoggedInUser = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {

@@ -6,7 +6,7 @@
 	import { mediaQuery } from 'svelte-legos';
 	import { slide } from 'svelte/transition';
 	export let showModal: boolean = false;
-	export let mode: string = 'dialog';
+	export let mode: 'sheet' | 'dialog' = 'dialog';
 	const dispatch = createEventDispatcher();
 
 	const isDesktop = mediaQuery('(min-width: 768px)');
