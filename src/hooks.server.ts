@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { redirect, type HandleFetch } from '@sveltejs/kit';
+import type { HandleFetch } from '@sveltejs/kit';
 
 import type { Cookies } from '@sveltejs/kit';
 
@@ -22,7 +22,11 @@ async function refreshTokens(cookies: Cookies): Promise<boolean> {
 	});
 
 	if (!response.ok) {
-		throw new Error('Failed to refresh tokens');
+		console.log(response.statusText);
+
+		const errorbody = await response.json();
+		console.log(errorbody);
+		return false;
 	}
 
 	const tokens = await response.json();
@@ -67,7 +71,6 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		if (await refreshTokens(event.cookies)) {
 			const res = await fetch(request.clone());
 			return res;
-		} else {
 		}
 
 		// const newAccessToken: string | undefined = event.cookies.get('access');
@@ -107,27 +110,6 @@ export const handle = async ({ event, resolve }) => {
 	if (!access) {
 		return await resolve(event);
 	}
-	// const retryRequest = async (attempt = 1) => {
-	// 	const maxAttempts = 4; // Adjust as needed
-	// 	const delay = Math.pow(2, attempt - 1) * 1000;
-	// 	console.log(maxAttempts, attempt);
-
-	// 	if (!(await refreshTokens(event.cookies))) {
-	// 		console.error('Error refreshing token');
-
-	// 		if (attempt < maxAttempts) {
-	// 			await new Promise((resolve) => setTimeout(resolve, delay));
-	// 			//  console.log(refreshTokens.status, refreshTokens.statusText);
-	// 			//  console.log('errorbody', errorBody);
-
-	// 			//when refresh fails, it tries again for confirmation
-	// 			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
-	// 			// wait for a bit before refreshing
-	// 			// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
-	// 			await retryRequest(attempt + 1);
-	// 		}
-	// 	}
-	// };
 
 	if (!event.url.pathname.includes('auth')) {
 		const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
@@ -138,29 +120,55 @@ export const handle = async ({ event, resolve }) => {
 			}
 		});
 
+		const retryRequest = async (attempt = 1) => {
+			const maxAttempts = 4; // Adjust as needed
+			const delay = Math.pow(2, attempt - 1) * 1000;
+			console.log(maxAttempts, attempt);
+
+			if (await refreshTokens(event.cookies)) {
+				const newAccessToken: string | undefined = event.cookies.get('access');
+				const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${newAccessToken}`
+					}
+				});
+				console.log('here we go');
+
+				if (res.ok) {
+					const user = await res.json();
+					event.locals.user = user;
+					return await resolve(event);
+				}
+			}
+
+			if (attempt < maxAttempts) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+				//  console.log(refreshTokens.status, refreshTokens.statusText);
+				//  console.log('errorbody', errorBody);
+
+				//when refresh fails, it tries again for confirmation
+				console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
+				// wait for a bit before refreshing
+				// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
+				await retryRequest(attempt + 1);
+			} else if (attempt >= maxAttempts) {
+				console.log(attempt, 'attempts exceeded');
+
+				event.cookies.delete('access', { path: '/' });
+				event.cookies.delete('refresh', { path: '/' });
+			}
+		};
+
 		if (res.ok) {
 			const user = await res.json();
 			event.locals.user = user;
 		} else if (!res.ok) {
-			try {
-				await resolve(event);
-			} finally {
-				const newAccessToken: string | undefined = event.cookies.get('access');
-				if (newAccessToken) {
-					const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
-						headers: {
-							Accept: 'application/json',
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${access}`
-						}
-					});
+			console.log(res.status);
 
-					if (res.ok) {
-						const user = await res.json();
-						event.locals.user = user;
-					}
-				}
-			}
+			await retryRequest();
+			return await resolve(event);
 		}
 	}
 
