@@ -7,6 +7,7 @@
 	import { slide } from 'svelte/transition';
 	export let showModal: boolean = false;
 	export let mode: 'sheet' | 'dialog' = 'dialog';
+	export let lock: boolean = false;
 	const dispatch = createEventDispatcher();
 
 	const isDesktop = mediaQuery('(min-width: 768px)');
@@ -21,7 +22,12 @@
 			</Dialog.Content>
 		</Dialog.Root>
 	{:else if mode === 'sheet'}
-		<Sheet.Root bind:open={showModal} onOpenChange={() => dispatch('close')}>
+		<Sheet.Root
+			bind:open={showModal}
+			closeOnOutsideClick={!lock}
+			closeOnEscape={!lock}
+			onOpenChange={() => dispatch('close')}
+		>
 			<Sheet.Content class="p-0">
 				<slot name="modal-content" class="w-full" />
 			</Sheet.Content>

@@ -8,7 +8,13 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
 
-	// $: console.log($currentUser);
+	function shortenName(name: string, maxLength: number = 10): string {
+		if (name.length > maxLength) {
+			return name.substring(0, maxLength); // Extract the first 10 characters
+		} else {
+			return name;
+		}
+	}
 
 	const routes = [
 		{
@@ -82,8 +88,6 @@
 	let currUrl = $page.url.pathname;
 
 	$: {
-		// console.log($page.url.pathname);
-
 		currUrl = $page.url.pathname;
 	}
 
@@ -125,18 +129,22 @@
 						<Avatar.Root>
 							<Avatar.Image
 								class="w-full h-full object-cover"
-								src={$currentUser?.profile_picture?.image}
+								loading="eager"
+								src={$currentUser?.staff_profile?.profile_picture.image ?? '/icons/human.jpg'}
 								alt="user icon"
 							/>
-							<Avatar.Fallback class="bg-white">
+							<!-- <Avatar.Fallback class="bg-white">
 								<span class="text-base font-satoshi font-medium">
 									{`${$currentUser?.first_name[0]}${$currentUser?.last_name[0]}`}
 								</span>
-							</Avatar.Fallback>
+							</Avatar.Fallback> -->
 						</Avatar.Root>
 						<p class="text-sm">
-							{$currentUser?.first_name}
-							{$currentUser?.last_name.length > 10 ? '...' : $currentUser?.last_name}
+							{#if $currentUser?.staff_profile}
+								{shortenName($currentUser.staff_profile.preferred_name)}
+							{:else}
+								{$currentUser?.email}
+							{/if}
 						</p>
 					</button>
 					<DropdownMenu.Root>

@@ -8,8 +8,6 @@
 
 	let validationErrors: {
 		email?: [string];
-		first_name?: [string];
-		last_name?: [string];
 		password?: [string];
 		password2?: [string];
 	};
@@ -85,43 +83,6 @@
 				</div>
 			</div>
 			<div class=" flex flex-col gap-[1.28rem] w-full">
-				<div class="name flex flex-col gap-4 md:flex-row w-full md:gap-6">
-					<div class="first-name flex flex-col w-full">
-						<label for="first-name" class="block mb-2 text-[ 0.875rem]">First name</label>
-						<input
-							type="text"
-							id="first-name"
-							name="first-name"
-							placeholder="First name"
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						/>
-
-						{#if validationErrors?.first_name}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]"
-								>{validationErrors.first_name[0]}</sub
-							>
-						{/if}
-					</div>
-					<div class="last-name flex flex-col w-full">
-						<label for="last-name" class="block mb-2 text-[ 0.875rem]">Last name</label>
-						<input
-							type="text"
-							id="last-name"
-							name="last-name"
-							placeholder="Last name"
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						/>
-						{#if validationErrors?.last_name}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]"
-								>{validationErrors.last_name[0]}</sub
-							>
-						{/if}
-					</div>
-				</div>
 				<div class="email flex flex-col w-full">
 					<label for="email" class="block mb-2 text-[ 0.875rem]">Email</label>
 					<input

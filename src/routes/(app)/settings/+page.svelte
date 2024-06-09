@@ -3,74 +3,98 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import Modal from '$lib/components/Modal.svelte';
-	import UploadBox from '$lib/components/UploadBox.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { currentUser, type profileErrors } from '$lib/user';
+	import { currentUser, type User, type staffProfileErrors } from '$lib/user';
 	import { showToast } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import dayjs from 'dayjs';
 	import { slide } from 'svelte/transition';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
+
+	import CustomTabs from '$lib/components/customs/TabContainer.svelte';
+	import { page } from '$app/stores';
+	import UploadBox from '$lib/components/UploadBox.svelte';
+	import Profile from '$lib/components/HRM/Profile.svelte';
+	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
+	import ClockInOut from '$lib/components/HRM/ClockInOut.svelte';
+	import Vacation from '$lib/components/HRM/Vacation.svelte';
 	export let data;
 
 	dayjs.extend(relativeTime);
-	let { images } = data;
 
 	let showModal: boolean = false;
 	let showProfileModal: boolean = false;
 
-	let firstName: string = $currentUser?.first_name ?? '';
-	let lastName: string = $currentUser?.last_name ?? '';
-	let email: string = $currentUser?.email ?? '';
+	let staff_profile = $page.url.searchParams.get('staff_profile');
+
+	if (staff_profile || $currentUser?.staff_profile === null) {
+		showProfileModal = true;
+	}
 
 	let loading: boolean = false;
-	let validationErrors: {
-		first_name?: [string];
-		last_name?: [string];
-		email?: [string];
-		profile_picture_id?: [string];
-		title?: [string];
-		image?: [string];
-	};
-
-	let imageCount: number;
-
-	$: {
-		imageCount = images.results.length;
-	}
+	let validationErrors: staffProfileErrors = {};
 
 	const toggleModal = (state: boolean) => {
 		state = !state;
 	};
+
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		const profile_picture_id = formData.get('profile_picture_id');
-		if (profile_picture_id === $currentUser?.profile_picture) {
-			formData.delete('profile_picture_id');
-		}
+		const hasExistingProfile =
+			$currentUser?.staff_profile !== undefined && $currentUser?.staff_profile !== null;
+
+		formData.append('hasExistingProfile', hasExistingProfile.toString());
 
 		return async ({ update, result }) => {
 			try {
 				if (result.status === 200) {
-					const editedProfile = result.data.updatedProfile;
+					if (result.data.edit) {
+						const editedProfile = result.data.updatedStaffProfile as User;
 
-					$currentUser = editedProfile;
+						currentUser.update((current) => {
+							return { ...current, staff_profile: editedProfile } as User;
+						});
 
-					showToast('Profile update successful', 'success');
+						showToast('Profile edited successfully', 'success');
+					} else {
+						const newProfile = result.data.newStaffProfile as User;
+						currentUser.update((currentValue) => {
+							return { ...currentValue, staff_profile: newProfile } as User;
+						});
+						showToast('Profile completed successfully', 'success');
+					}
+
+					showProfileModal = false;
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}
 			} finally {
-				update({ invalidateAll: false, reset: false });
+				await update();
 				loading = false;
 			}
 		};
 	};
 
-	let imageValidationError: string;
+	let firstName = $currentUser?.staff_profile?.first_name;
+	let lastName = $currentUser?.staff_profile?.last_name;
+	let emergencyContactName = `${$currentUser?.staff_profile?.emergency_contact_name}`;
+	let emergencyContactNumber = $currentUser?.staff_profile?.emergency_contact_number;
+	let emergencyContactRelationship = $currentUser?.staff_profile?.emergency_contact_relationship;
+	let address = $currentUser?.staff_profile?.address;
+	let dateOfBirth = $currentUser?.staff_profile?.date_of_birth;
+	let phoneNumber = $currentUser?.staff_profile?.phone_number;
+
+	let preferred_name = $currentUser?.staff_profile?.preferred_name;
+	let email = $currentUser?.email;
+
+	let tabs = [
+		{ title: 'Profile', id: 'staff_profile', component: Profile },
+		{ title: 'Work Schedule', id: 'work-schedule', component: WorkSchedule },
+		{ title: 'Clock (in/out)', id: 'clock-in-out', component: ClockInOut },
+		{ title: 'Vacation', id: 'vacation', component: Vacation }
+	];
 </script>
 
 <svelte:head>
@@ -84,291 +108,43 @@
 			<sub class="font-satoshi font-medium text-grey-100 text-sm"> Edit and update details.</sub>
 		</div>
 	</div>
-	<div class="w-full flex flex-col">
-		<section
-			class="max-w-[969px] flex flex-col justify-end w-full p-5 h-[110px] relative bg-primary-softPink-100 rounded"
-		>
-			<div class="absolute -top-5 w-fit h-fit left-10">
-				<img src="/icons/Bell icon.svg" class="w-[50px] h-[50px]" alt="Bell icon" />
-			</div>
-			<div class="flex items-center gap-4">
-				<p class="font-satoshi text-sm text-primary-red">
-					Your profile information is essential for compliance and unlocks a tailored experience.
-					Update your details to ensure access to all company resources and personalized benefits
-				</p>
-				<Button
-					on:click={() => (showProfileModal = true)}
-					class="bg-primary-red max-h-[35px] rounded-[6px] text-white text-sm font-satoshi font-medium"
-					>Complete Profile</Button
-				>
-			</div>
-		</section>
-		<section class="max-w-[550px] px-4 md:px-8 w-full">
-			<Tabs.Root value="profile">
-				<section
-					class="md:sticky hidden top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
-				>
-					<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
-						<Tabs.Trigger
-							class="w-full hidden data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow  "
-							value="profile">Profile</Tabs.Trigger
-						>
-
-						<Tabs.Trigger
-							class="w-full hidden data-[state=active]:font-bold data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow"
-							value="media-manager">Media manager</Tabs.Trigger
-						>
-					</Tabs.List>
-				</section>
-				<section>
-					<Tabs.Content value="profile">
-						<form
-							action="?/manage-profile"
-							use:enhance={submit}
-							enctype="multipart/form-data"
-							method="post"
-							class="flex flex-col gap-8 py-5 md:max-w-[80%]"
-						>
-							<div class="form-group">
-								<label for="profile_picture_id" class="form-label mb-4 sr-only"
-									>Profile picture</label
-								>
-								<UploadBox
-									small={true}
-									smallText="Upload profile image"
-									inputName="profile_picture_id"
-									defaultValue={$currentUser?.profile_picture}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="first_name" class="form-label mb-4">First Name</label>
-								<input
-									name="first_name"
-									type="text"
-									bind:value={firstName}
-									placeholder="Enter first name"
-									class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-								/>
-								{#if validationErrors?.first_name}
-									<sub
-										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs tracking-[-0.0075rem]"
-										>{validationErrors.first_name}</sub
-									>
-								{/if}
-							</div>
-							<div class="form-group">
-								<label for="last_name" class="form-label mb-4">Last Name</label>
-								<input
-									name="last_name"
-									bind:value={lastName}
-									type="text"
-									placeholder="Enter last name"
-									class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-								/>
-								{#if validationErrors?.last_name}
-									<sub
-										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs tracking-[-0.0075rem]"
-										>{validationErrors.last_name}</sub
-									>
-								{/if}
-							</div>
-							<div class="form-group">
-								<label for="email" class="form-label mb-4">Email</label>
-								<input
-									bind:value={email}
-									name="email"
-									type="text"
-									placeholder="Enter email"
-									class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-								/>
-								{#if validationErrors?.email}
-									<sub
-										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs tracking-[-0.0075rem]"
-										>{validationErrors.email}</sub
-									>
-								{/if}
-							</div>
-							<div class="w-full">
-								<button
-									type="submit"
-									class="flex w-full bg-primary-red gap-2 items-center justify-center font-satoshi text-sm font-bold text-white py-3.5 px-3 rounded-md hover:bg-primary-100"
-								>
-									{#if loading}
-										<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
-									{:else}
-										<span> Update </span>
-
-										<iconify-icon icon="ep:right" width="15"></iconify-icon>
-									{/if}
-								</button>
-							</div>
-						</form>
-					</Tabs.Content>
-					<Tabs.Content value="media-manager">
-						<div class="flex-1 flex flex-col gap-5 w-full">
-							<div class="mb-6 flex flex-col gap-4 w-full">
-								<p>Gallery ({imageCount})</p>
-								<section class=" flex justify-between items-center w-full">
-									<div
-										class="flex items-center sm:w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
-									>
-										<span>
-											<svg
-												width="20x"
-												height="18"
-												viewBox="0 0 24 24"
-												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
-											>
-												<path
-													d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-													stroke="#A9A9A9"
-													stroke-width="1.5"
-													stroke-linecap="round"
-													stroke-linejoin="round"
-												/>
-												<path
-													d="M21 20.9999L16.65 16.6499"
-													stroke="#A9A9A9"
-													stroke-width="1.5"
-													stroke-linecap="round"
-													stroke-linejoin="round"
-												/>
-											</svg>
-										</span>
-										<input
-											type="text"
-											placeholder="Type here"
-											class=" py-0.5 flex-auto outline-none placeholder:text-xs"
-										/>
-									</div>
-									<div class="flex items-center gap-3">
-										<button
-											on:click={() => toggleModal(showModal)}
-											class="bg-primary-100 py-1.5 px-4 flex items-center gap-1 text-sm rounded-3xl text-white"
-										>
-											<iconify-icon icon="mingcute:upload-3-fill" width="22	"></iconify-icon>
-											<!-- <span>
-								<img src="/icons/plus.svg" alt="plus" />
-							<!-- </span>  -->
-											<span class="hidden sm:block">Upload</span>
-										</button>
-									</div>
-								</section>
-							</div>
-							<div
-								class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 m gap-10 overflow-scroll no-scrollbar max-h-96"
-							>
-								{#each images.results as image}
-									<!-- svelte-ignore a11y-click-events-have-key-events -->
-									<!-- svelte-ignore a11y-no-static-element-interactions -->
-									<div
-										class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
-									>
-										<div
-											class="brand-image overflow-hidden cursor-pointer relative h-32 self-stretch bg-[#f9f9f9]"
-										>
-											<img
-												class="h-full w-full object-cover aspect-[16/9] object-center rounded-lg"
-												src={image.image}
-												alt={image.title}
-											/>
-										</div>
-										<div class="media-info flex w-full flex-col items-start gap-2 flex-[1 0 0]">
-											<div class="media-name text-base font-medium">{image.title}</div>
-											<div class="date-added flex items-center gap-2 self-stretch">
-												<div class="date-icon">
-													<img src="/icons/clock.svg" alt="clock icon" />
-												</div>
-												<div class="date text-xs text-grey-100 flex-[1 0 0]">
-													Added {dayjs(image.updated_at).fromNow()}
-												</div>
-											</div>
-										</div>
-									</div>
-								{/each}
-							</div>
-						</div>
-					</Tabs.Content>
-				</section>
-			</Tabs.Root>
+	<div class="w-full flex flex-col mb-8">
+		{#if $currentUser?.staff_profile === null}
+			<section
+				class="max-w-[969px] flex flex-col justify-end w-full p-5 h-[110px] relative bg-primary-softPink-100 rounded"
+			>
+				<div class="absolute -top-5 w-fit h-fit left-10">
+					<img src="/icons/Bell icon.svg" class="w-[50px] h-[50px]" alt="Bell icon" />
+				</div>
+				<div class="flex items-center gap-4">
+					<p class="font-satoshi text-sm text-primary-red">
+						Your profile information is essential for compliance and unlocks a tailored experience.
+						Update your details to ensure access to all company resources and personalized benefits
+					</p>
+					<Button
+						on:click={() => (showProfileModal = true)}
+						class="bg-primary-red max-h-[35px] rounded-[6px] text-white text-sm font-satoshi font-medium"
+						>Complete Profile</Button
+					>
+				</div>
+			</section>
+		{/if}
+		<section class="w-full">
+			<CustomTabs on:editProfile={() => (showProfileModal = true)} {tabs} />
 		</section>
 	</div>
 </div>
 
-<Modal {showModal} on:close={() => (showModal = false)}>
-	<form
-		action="/?/upload"
-		method="post"
-		use:enhance={() => {
-			loading = true;
-
-			return async ({ update, result }) => {
-				try {
-					if (result.status === 200) {
-						images.results = [result.data.newMedia, ...images.results];
-						showToast('New media uploaded successfully', 'success');
-
-						toggleModal(showModal);
-					} else if (result.status === 400) {
-						validationErrors = result.data.errors;
-						if (validationErrors && validationErrors?.image) {
-							imageValidationError = validationErrors.image[0];
-						}
-					} else {
-						showToast('Ooops something went wrong!!', 'error');
-					}
-				} finally {
-					loading = false;
-					update();
-				}
-			};
-		}}
-		enctype="multipart/form-data"
-		slot="modal-content"
-		class="max-w-md w-full px-6 py-8 flex flex-col gap-5 rounded-md bg-white"
-	>
-		<UploadBox error={imageValidationError} isFileInput={true} inputName="image" />
-		<div class="modal-input">
-			<input
-				type="text"
-				name="image-title"
-				id="image-title"
-				placeholder="Media name"
-				class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-			/>
-			{#if validationErrors?.title}
-				<sub
-					transition:slide={{ delay: 250, duration: 300 }}
-					class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.title}</sub
-				>
-			{/if}
-		</div>
-		<div class="modal-submit">
-			<button
-				class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
-					hover:bg-[#C7453C] hover:rounded-[0.625rem]
-					focus:shadow-custom text-white font-bold text-sm max-h-12 flex items-center justify-center
-					"
-				type="submit"
-			>
-				{#if loading}
-					<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
-				{:else}
-					<span class="button-text">Upload media</span>
-				{/if}
-			</button>
-		</div>
-	</form>
-</Modal>
-
-<Modal mode="sheet" showModal={showProfileModal} on:close={() => (showProfileModal = false)}>
+<Modal
+	mode="sheet"
+	showModal={showProfileModal}
+	lock={$currentUser?.staff_profile === null}
+	on:close={() => (showProfileModal = false)}
+>
 	<form
 		slot="modal-content"
-		action="?/invite_staff"
+		action="?/manage-staff-profile"
+		use:enhance={submit}
 		method="post"
 		class="w-full max-xsm:pb-4 pb-6 h-fit max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
 	>
@@ -399,13 +175,22 @@
 					>Kindly fill information below to complete your profile.</span
 				>
 				<section class="w-full px-3 flex flex-col gap-5">
+					<div class="form-item w-full flex flex-col mb-5">
+						<UploadBox
+							inputName="profile_picture_id"
+							small={true}
+							defaultValue={$currentUser?.staff_profile?.profile_picture}
+							smallText="Upload profile picture"
+						/>
+					</div>
 					<div class="form-item w-full flex flex-col">
-						<label for="first-name" class="text-sm mb-1 font-medium font-satoshi">First name</label>
+						<label for="first_name" class="text-sm mb-1 font-medium font-satoshi">First name</label>
 						<input
 							type="text"
-							name="first-name"
+							name="first_name"
 							disabled={loading}
-							id="first-name"
+							bind:value={firstName}
+							id="first_name"
 							placeholder="First name"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
@@ -416,11 +201,12 @@
 						{/if}
 					</div>
 					<div class="form-item w-full flex flex-col">
-						<label for="last-name" class="text-sm mb-1 font-medium font-satoshi">Last name</label>
+						<label for="last_name" class="text-sm mb-1 font-medium font-satoshi">Last name</label>
 						<input
 							type="text"
-							name="last-name"
-							id="last-name"
+							name="last_name"
+							bind:value={lastName}
+							id="last_name"
 							disabled={loading}
 							placeholder="Last name"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
@@ -433,54 +219,43 @@
 					</div>
 
 					<div class="form-item w-full flex flex-col gap-1">
-						<label for="preferred-name" class="text-sm mb-1 font-medium font-satoshi"
+						<label for="preferred_name" class="text-sm mb-1 font-medium font-satoshi"
 							>Preferred Name</label
 						>
 						<input
 							type="text"
-							name="preferred-name"
-							id="preferred-name"
+							name="preferred_name"
+							bind:value={preferred_name}
+							id="preferred_name"
 							placeholder="Enter preferred name"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
-						{#if validationErrors?.email}
+						{#if validationErrors?.preferred_name}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.preferred_name[0]}</sub
 							>
 						{/if}
 					</div>
+
 					<div class="form-item w-full flex flex-col gap-1">
-						<label for="email" class="text-sm mb-1 font-medium font-satoshi">Email Address</label>
-						<input
-							type="email"
-							name="email_address"
-							id="email_address"
-							placeholder="Enter email address"
-							disabled
-							value={$currentUser?.email}
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						{#if validationErrors?.email}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
-							>
-						{/if}
-					</div>
-					<div class="form-item w-full flex flex-col gap-1">
-						<label for="email" class="text-sm mb-1 font-medium font-satoshi">Phone Number</label>
+						<label for="phone_number" class="text-sm mb-1 font-medium font-satoshi"
+							>Phone Number</label
+						>
 						<input
 							type="text"
 							name="phone_number"
+							bind:value={phoneNumber}
 							id="phone_number"
 							placeholder="Enter phone number"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
-						{#if validationErrors?.email}
+						{#if validationErrors?.phone_number}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.phone_number[0]}</sub
 							>
 						{/if}
 					</div>
@@ -489,14 +264,16 @@
 						<input
 							type="text"
 							name="address"
+							bind:value={address}
 							id="address"
 							placeholder="Enter address"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
-						{#if validationErrors?.email}
+						{#if validationErrors?.address}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.address[0]}</sub
 							>
 						{/if}
 					</div>
@@ -507,14 +284,16 @@
 						<input
 							type="date"
 							name="date_of_birth"
+							bind:value={dateOfBirth}
 							id="date_of_birth"
 							placeholder="Enter phone number"
 							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
-						{#if validationErrors?.email}
+						{#if validationErrors?.date_of_birth}
 							<sub
 								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
+								class="text-rose-500 text-xs tracking-[-0.0075rem]"
+								>{validationErrors.date_of_birth[0]}</sub
 							>
 						{/if}
 					</div>
@@ -530,14 +309,15 @@
 									type="text"
 									name="emergency_contact_name"
 									id="emergency_contact_name"
+									bind:value={emergencyContactName}
 									disabled={loading}
 									placeholder="Enter name"
 									class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 								/>
-								{#if validationErrors?.last_name}
+								{#if validationErrors?.emergency_contact_name}
 									<sub
 										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs">{validationErrors.last_name[0]}</sub
+										class="text-rose-500 text-xs">{validationErrors.emergency_contact_name[0]}</sub
 									>
 								{/if}
 							</div>
@@ -548,16 +328,18 @@
 								>
 								<input
 									type="text"
+									bind:value={emergencyContactRelationship}
 									name="emergency_contact_relationship"
 									id="emergency_contact_relationship"
 									disabled={loading}
 									placeholder="Enter emergency contact relationship"
 									class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 								/>
-								{#if validationErrors?.last_name}
+								{#if validationErrors?.emergency_contact_relationship}
 									<sub
 										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs">{validationErrors.last_name[0]}</sub
+										class="text-rose-500 text-xs"
+										>{validationErrors.emergency_contact_relationship[0]}</sub
 									>
 								{/if}
 							</div>
@@ -567,16 +349,18 @@
 								>
 								<input
 									type="text"
-									name="emergency_phone_number"
-									id="emergency_phone_number"
+									name="emergency_contact_number"
+									bind:value={emergencyContactNumber}
+									id="emergency_contact_number"
 									disabled={loading}
 									placeholder="Enter emergency phone number"
 									class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 								/>
-								{#if validationErrors?.last_name}
+								{#if validationErrors?.emergency_contact_number}
 									<sub
 										transition:slide={{ delay: 250, duration: 300 }}
-										class="text-rose-500 text-xs">{validationErrors.last_name[0]}</sub
+										class="text-rose-500 text-xs"
+										>{validationErrors.emergency_contact_number[0]}</sub
 									>
 								{/if}
 							</div>

@@ -1,7 +1,23 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 
 import { ZodError, z } from 'zod';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ fetch }) => {
+	const adminExists = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists/`);
+
+	if (adminExists.ok) {
+		console.log('test');
+		const admin = await adminExists.json();
+		if (admin.admin_exists) {
+		}
+	} else if (adminExists.status === 401) {
+		throw redirect(302, '/');
+	} else {
+		console.log(adminExists.status);
+	}
+};
 
 const setupSchema = z
 	.object({
@@ -9,14 +25,7 @@ const setupSchema = z
 			.string({ required_error: 'Email is required' })
 			.trim()
 			.email({ message: 'Not a valid email' }),
-		first_name: z
-			.string({ required_error: 'First name is required' })
-			.min(3, { message: 'Minimum of 3 characters is required' })
-			.trim(),
-		last_name: z
-			.string({ required_error: 'Last name is required' })
-			.min(3, { message: 'Minimum of 3 characters is required' })
-			.trim(),
+
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(8, { message: 'Password must be at least 8 characters' })
@@ -45,8 +54,6 @@ const setupSchema = z
 /**
  * @typedef {object} setupError
  * @property {string[]=} email
- * @property {string[]=} firstName
- * @property {string[]=} lastName
  * @property {string[]=} password
  * @property {string[]=} password2
  * @property {string[]=} server
@@ -57,15 +64,13 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const email = formData.get('email');
-		const first_name = formData.get('first-name');
-		const last_name = formData.get('last-name');
+
 		const password = formData.get('password');
 		const password2 = formData.get('confirm-password');
 
 		const dataToValidate = {
 			...(email && { email }),
-			...(first_name && { first_name }),
-			...(last_name && { last_name }),
+
 			...(password && { password }),
 			...(password2 && { password2 })
 		};

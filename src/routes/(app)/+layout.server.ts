@@ -10,6 +10,12 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals }) =>
 		const allPermission = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/permissions/`);
 		const user = locals.user;
 
+		// console.log(url.pathname);
+
+		if (locals.user.staff_profile === null && url.pathname !== '/settings') {
+			throw redirect(302, '/settings?staff_profile=null');
+		}
+
 		const permissions = await allPermission.json();
 		const getImages = await fetch(`${PUBLIC_API_ENDPOINT}api/images/?limit=10`);
 
@@ -18,6 +24,9 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals }) =>
 
 			return { images, user, permissions };
 		} else if (getImages.status === 401) {
+			console.log(getImages.status);
+			console.log(allPermission.status);
+
 			throw redirect(302, `/auth/login?from=${currUrl}`);
 		}
 	} else if (!locals.user) {

@@ -144,6 +144,7 @@
 						class="brand-image overflow-hidden cursor-pointer relative h-32 self-stretch bg-[#f9f9f9]"
 					>
 						<img
+							loading="lazy"
 							class="h-full w-full object-cover aspect-[16/9] object-center rounded-lg"
 							src={image.image}
 							alt={image.title}

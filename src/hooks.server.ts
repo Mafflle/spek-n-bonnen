@@ -5,50 +5,6 @@ import type { Cookies } from '@sveltejs/kit';
 
 // Helper functions for token management
 
-async function refreshTokens(cookies: Cookies): Promise<boolean> {
-	const refreshToken = cookies.get('refresh');
-
-	if (!refreshToken) {
-		throw new Error('Refresh token not found');
-	}
-
-	const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
-		method: 'POST',
-		body: JSON.stringify({ refresh: refreshToken }),
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json'
-		}
-	});
-
-	if (!response.ok) {
-		console.log(response.statusText);
-
-		const errorbody = await response.json();
-		console.log(errorbody);
-		return false;
-	}
-
-	const tokens = await response.json();
-	console.log('Successfully refreshed tokens');
-
-	cookies.set('access', tokens.access, {
-		httpOnly: true,
-		secure: true,
-		sameSite: 'lax',
-		path: '/',
-		maxAge: 60 * 60 * 24 * 30
-	});
-	cookies.set('refresh', tokens.refresh, {
-		httpOnly: true,
-		secure: true,
-		sameSite: 'lax',
-		path: '/',
-		maxAge: 60 * 60 * 24 * 30
-	});
-
-	return true;
-}
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	const access = event.cookies.get('access');
 
@@ -63,12 +19,57 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		}
 	}
 
+	async function refreshTokens(): Promise<boolean> {
+		const refreshToken = event.cookies.get('refresh');
+
+		if (!refreshToken) {
+			throw new Error('Refresh token not found');
+		}
+
+		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
+			method: 'POST',
+			body: JSON.stringify({ refresh: refreshToken }),
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			}
+		});
+
+		if (!response.ok) {
+			console.log(response.statusText);
+
+			const errorbody = await response.json();
+			console.log(errorbody);
+			return false;
+		}
+
+		const tokens = await response.json();
+		console.log('Successfully refreshed tokens');
+
+		event.cookies.set('access', tokens.access, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 30
+		});
+		event.cookies.set('refresh', tokens.refresh, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 30
+		});
+
+		return true;
+	}
+
 	const retryRequest = async (attempt = 1) => {
 		const maxAttempts = 4; // Adjust as needed
 		const delay = Math.pow(2, attempt - 1) * 1000;
 		console.log(maxAttempts, attempt);
 
-		if (await refreshTokens(event.cookies)) {
+		if (await refreshTokens()) {
 			const res = await fetch(request.clone());
 			return res;
 		}
@@ -111,6 +112,51 @@ export const handle = async ({ event, resolve }) => {
 		return await resolve(event);
 	}
 
+	async function refreshTokens(): Promise<boolean> {
+		const refreshToken = event.cookies.get('refresh');
+
+		if (!refreshToken) {
+			throw new Error('Refresh token not found');
+		}
+
+		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
+			method: 'POST',
+			body: JSON.stringify({ refresh: refreshToken }),
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			}
+		});
+
+		if (!response.ok) {
+			console.log(response.statusText);
+
+			const errorbody = await response.json();
+			console.log(errorbody);
+			return false;
+		}
+
+		const tokens = await response.json();
+		console.log('Successfully refreshed tokens');
+
+		event.cookies.set('access', tokens.access, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 30
+		});
+		event.cookies.set('refresh', tokens.refresh, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 30
+		});
+
+		return true;
+	}
+
 	if (!event.url.pathname.includes('auth')) {
 		const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 			headers: {
@@ -125,7 +171,7 @@ export const handle = async ({ event, resolve }) => {
 			const delay = Math.pow(2, attempt - 1) * 1000;
 			console.log(maxAttempts, attempt);
 
-			if (await refreshTokens(event.cookies)) {
+			if (await refreshTokens()) {
 				const newAccessToken: string | undefined = event.cookies.get('access');
 				const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 					headers: {
@@ -139,6 +185,8 @@ export const handle = async ({ event, resolve }) => {
 				if (res.ok) {
 					const user = await res.json();
 					event.locals.user = user;
+					console.log('user', user);
+
 					return await resolve(event);
 				}
 			}
