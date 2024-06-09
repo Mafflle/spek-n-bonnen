@@ -11,15 +11,10 @@ export const GET = async ({ request, url }) => {
 	});
 
 	// console.log(res.headers.get('Authorization'));
+	// console.log(res.status);
 
 	if (res.ok) {
 		const filteredPerms = await res.json();
-		filteredPerms.results = filteredPerms.results.map((perm) => {
-			return {
-				value: perm.id,
-				label: perm.codename
-			};
-		});
 
 		return new Response(JSON.stringify(filteredPerms), { status: 200 });
 	} else {

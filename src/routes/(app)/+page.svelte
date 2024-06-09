@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { currentUser } from '$lib/user';
 </script>
 
 <h1>Welcome to SvelteKit</h1>

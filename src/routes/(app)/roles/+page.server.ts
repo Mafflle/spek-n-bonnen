@@ -1,28 +1,25 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { client, showToast } from '$lib/utils';
-import { fail, type Actions } from '@sveltejs/kit';
+import { check, showToast } from '$lib/utils';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 import { z } from 'zod';
-import { getCurrentUser } from '$lib/user';
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1`);
+export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
+	if (check('view_group', locals.user) || check('view_permission', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+
+	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?page=1&search=group`);
 	const rolesRes = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/`);
 	const access = cookies.get('access');
 	const refresh = cookies.get('refresh');
-	// console.log('curr', getCurrentUser());
 
 	if (res.ok && rolesRes.ok) {
 		const permissions = await res.json();
 		const roles = await rolesRes.json();
+		// console.log(permissions);
 
-		permissions.results = permissions.results.map((perm) => {
-			return {
-				value: perm.id,
-				label: perm.codename
-			};
-		});
-
+		permissions.results;
 		return {
 			permissions,
 			roles,
@@ -36,7 +33,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	} else if (!rolesRes.ok) {
 		console.log('roles', rolesRes);
 
-		showToast('Error fetching roles', 'error');
+		// showToast('Error fetching roles', 'error');
 	}
 };
 
@@ -61,6 +58,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const permArray = formData.getAll('permission');
+
 		const currRoleId = formData.get('role-id');
 		const name = formData.get('name');
 		const permissions = permArray.map((permId) => parseInt(permId));
@@ -91,6 +89,8 @@ export const actions: Actions = {
 						edited: true
 					};
 				} else if (!res.ok && res.status === 400) {
+					console.log(res);
+
 					const body = await res.json();
 					console.log('create role request error', body);
 					return fail(400, { message: 'Error while editing role', errors: body });
@@ -100,6 +100,7 @@ export const actions: Actions = {
 					method: 'POST',
 					body: JSON.stringify(validatedData)
 				});
+
 				// console.log('create role', res);
 
 				if (res.ok) {
@@ -123,6 +124,7 @@ export const actions: Actions = {
 			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
+				console.log(toSend.errors);
 
 				return fail(400, toSend);
 			}
@@ -131,6 +133,7 @@ export const actions: Actions = {
 			return fail(500, toSend);
 		}
 	},
+
 	delete: async ({ fetch, request, params }) => {
 		const formData = await request.formData();
 

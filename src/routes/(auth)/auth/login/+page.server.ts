@@ -2,13 +2,12 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { Actions } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import { dev } from '$app/environment';
 
 const loginSchema = z.object({
 	email: z
 		.string({ required_error: 'Email is required' })
-		.email({ message: 'Not a valid email' })
-		.trim(),
+		.trim()
+		.email({ message: 'Not a valid email' }),
 	password: z
 		.string({ required_error: 'Password is required' })
 		.min(8, { message: 'Password must be at least 8 characters' })
@@ -20,7 +19,7 @@ type Errors = {
 	password?: [string];
 };
 export const actions: Actions = {
-	login: async ({ fetch, request, cookies }) => {
+	login: async ({ fetch, request, cookies, locals }) => {
 		const formData = await request.formData();
 		const email = formData.get('email');
 		const password = formData.get('password');
@@ -43,20 +42,34 @@ export const actions: Actions = {
 				const tokens = await res.json();
 				cookies.set('access', tokens.access, {
 					httpOnly: true,
-					secure: dev ? false : true,
+					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 				cookies.set('refresh', tokens.refresh, {
 					httpOnly: true,
-					secure: dev ? false : true,
+					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 
-				return {
-					success: 'true'
-				};
+				const access = cookies.get('access');
+				const getLoggedInUser = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${access}`
+					}
+				});
+				if (getLoggedInUser.ok) {
+					const user = await getLoggedInUser.json();
+					return {
+						success: 'true',
+						currUser: user
+					};
+				}
 			} else if (!res.ok && res.status === 401) {
 				return fail(401, { message: 'Invalid email or password' });
 			} else {

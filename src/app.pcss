@@ -29,6 +29,15 @@ h6 {
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
 	}
+	.active {
+		@apply bg-primary-light text-primary-red;
+	}
+	.form-group {
+		@apply flex flex-col;
+	}
+	.form-label {
+		@apply mb-2 text-sm font-medium font-satoshi;
+	}
 }
 
 @layer base {
@@ -86,5 +95,11 @@ h6 {
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;
+	}
+}
+
+@layer components {
+	.labels {
+		@apply flex items-start flex-col justify-start gap-4;
 	}
 }

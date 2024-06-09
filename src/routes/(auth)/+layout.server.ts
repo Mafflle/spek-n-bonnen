@@ -1,13 +1,14 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { getCurrentUser } from '$lib/user';
 
 export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
-	const currentUser = getCurrentUser();
 	const access = cookies.get('access');
+	const refresh = cookies.get('refresh');
 	const previous = url.searchParams.get('from');
 
-	if (currentUser) {
+	if (access && refresh) {
+		console.log('tokens present');
+
 		if (previous) {
 			if (previous === '/') {
 				throw redirect(302, '/');
@@ -15,5 +16,7 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 		} else {
 			throw redirect(302, '/');
 		}
+	} else {
+		console.log('no tokens');
 	}
 };

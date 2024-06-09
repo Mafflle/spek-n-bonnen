@@ -1,8 +1,8 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { showToast } from '$lib/utils';
-import { fail, type Action, type Actions, redirect } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
+import { check } from '$lib/utils';
 
 type Errors = {
 	first_name?: [string];
@@ -23,7 +23,10 @@ const inviteSchema = z
 			.string({ required_error: 'Last name is required' })
 			.trim()
 			.min(1, { message: 'Last name should be longer' }),
-		email: z.string({ required_error: 'Email is required' }).email({ message: 'Invalid email' }),
+		email: z
+			.string({ required_error: 'Email is required' })
+			.trim()
+			.email({ message: 'Invalid email' }),
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(8, { message: 'Password must be at least 8 characters' })
@@ -52,23 +55,27 @@ const inviteSchema = z
 		}
 	});
 
-export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	const access = cookies.get('access');
-	// console.log(access);
 
-	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=10`);
-	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?limit=10`);
+	// console.log(check('view_account', locals.user));
+	if (check('view_account', locals.user) || check('view_group', locals.user)) {
+		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
+	}
+	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups?limit=10`);
+	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users?limit=10&&ordering=is_staff`);
 
 	if (groups.ok && staffs.ok) {
 		const data = await groups.json();
-		const users = await staffs.json();
+		let users = await staffs.json();
+
+		// console.log(users);
+
 		return {
 			access,
-			groups: data.results,
-			users
+			groups: data,
+			users: users
 		};
-	} else if (groups.status === 401 || staffs.status === 401) {
-		throw redirect(302, `/auth/login?from=${url.pathname}`);
 	}
 };
 
@@ -103,12 +110,14 @@ export const actions: Actions = {
 				body: JSON.stringify(validatedData)
 			});
 
+			console.log('inviting', res.status, res.statusText);
+
 			if (res.ok) {
 				const invitedStaff = await res.json();
 
-				{
-					invitedStaff;
-				}
+				return {
+					invitedStaff
+				};
 			} else if (!res.ok) {
 				const details = await res.json();
 				// console.log('error', details);

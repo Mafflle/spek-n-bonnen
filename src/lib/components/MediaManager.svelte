@@ -7,8 +7,10 @@
 	import Modal from './Modal.svelte';
 	import UploadBox from './UploadBox.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { Button } from './ui/button';
 
 	export let images: any[];
+	export let multiple: boolean = false;
 	dayjs.extend(relativeTime);
 
 	// console.log(images);
@@ -16,38 +18,68 @@
 	let showModal: boolean = false;
 	let showDeleteModal: boolean = false;
 	let loading: boolean = false;
-	let validationErrors: { name?: [string]; logo?: [string] };
+	let validationErrors: { title?: [string]; image?: [string] };
 	let imageValidationError: string;
-	let selectedImage;
+	let selectedItems = [];
+	let imageCount: number;
 	const dispatch = createEventDispatcher();
 
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 	const toggleDeleteModal = (currImage) => {
-		selectedImage = currImage;
+		selectedItems = currImage;
 		showDeleteModal = !showDeleteModal;
 	};
 
 	const selectMedia = (image) => {
-		selectedImage = image;
-
-		dispatch('selected', selectedImage);
-		showToast('Image selected successfully', 'info');
+		if (multiple) {
+			if (selectedItems.find((item) => item.id === image.id)) {
+				selectedItems = selectedItems.filter((item) => item.id !== image.id);
+			} else {
+				selectedItems = [image, ...selectedItems];
+			}
+		} else {
+			selectedItems = [image];
+			dispatchSelectedImages();
+		}
 	};
+
+	const dispatchSelectedImages = () => {
+		dispatch('selected', selectedItems);
+		if (multiple) {
+			showToast('Images selected successfully', 'info');
+		} else {
+			showToast('Image selected successfully', 'info');
+		}
+	};
+
+	$: {
+		imageCount = images.length;
+	}
 </script>
 
-<div class="max-w-full w-[930px] bg-white rounded flex flex-col h-auto items-start">
-	<section class="flex gap-2 px-3 py-4 items-center w-full shadow">
+<div class="max-w-full w-full bg-white rounded flex flex-col h-auto items-start">
+	<section class="flex justify-between gap-2 px-3 py-4 items-center w-full shadow">
 		<h5 class="text-lg font-satoshi font-bold">Media manager</h5>
+		{#if multiple}
+			<!-- <button disabled={selectedItems.length > 0} class="border-2 border-grey-200 px-4 py-1 rounded"
+				>Done</button
+			> -->
+			<Button
+				on:click={dispatchSelectedImages}
+				disabled={selectedItems.length < 1}
+				variant="secondary">Done</Button
+			>
+		{/if}
 	</section>
 
-	<div class="flex-1 flex flex-col gap-8 py-10 px-8 w-full">
-		<div class="flex flex-col gap-4 w-full">
-			<p>Gallery</p>
-			<section class=" flex justify-between w-full">
+	<div class="flex-1 flex flex-col gap-2 p-4 md:py-10 md:px-8 w-full">
+		<div class="mb-6 flex flex-col gap-4 w-full">
+			<p>Gallery ({imageCount})</p>
+			<section class=" flex justify-between items-center w-full">
 				<div
-					class="flex items-center w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
+					class="flex items-center sm:w-[18em] border gap-2 rounded-md border-[#D9D9D9] text-[#232222] px-2"
 				>
 					<span>
 						<svg
@@ -79,34 +111,46 @@
 						class=" py-0.5 flex-auto outline-none placeholder:text-xs"
 					/>
 				</div>
-
-				<button
-					on:click={toggleModal}
-					class="bg-primary-100 py-2 px-2.5 flex items-center gap-1 text-sm rounded-3xl text-white"
-				>
-					<span>
-						<img src="/icons/plus.svg" alt="plus" />
-					</span>
-					<span>Upload media</span>
-				</button>
+				<div class="flex items-center gap-3">
+					<button
+						on:click={toggleModal}
+						class="bg-primary-100 py-1.5 px-4 flex items-center gap-1 text-sm rounded-3xl text-white"
+					>
+						<iconify-icon icon="mingcute:upload-3-fill" width="22	"></iconify-icon>
+						<!-- <span>
+							<img src="/icons/plus.svg" alt="plus" />
+						<!-- </span>  -->
+						<span class="hidden sm:block">Upload</span>
+					</button>
+				</div>
 			</section>
 		</div>
-		<div class="grid grid-cols-3 gap-10 overflow-scroll no-scrollbar max-h-[300px]">
+		<!-- <div class="flex justify-end w-full">
+			<Button class="text-blue-400 flex items-center gap-1"
+				><span>Select mulitple</span> <input class="p-0" type="radio" /></Button
+			>
+		</div> -->
+		<div
+			class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10 overflow-scroll no-scrollbar max-h-96"
+		>
 			{#each images as image}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					on:click={() => selectMedia(image)}
+					on:click|preventDefault={() => selectMedia(image)}
 					class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
 				>
-					<div class="brand-image overflow-hidden relative h-32 self-stretch bg-[#f9f9f9]">
+					<div
+						class="brand-image overflow-hidden cursor-pointer relative h-32 self-stretch bg-[#f9f9f9]"
+					>
 						<img
-							class="h-full w-full object-cover rounded-lg"
+							loading="lazy"
+							class="h-full w-full object-cover aspect-[16/9] object-center rounded-lg"
 							src={image.image}
 							alt={image.title}
 						/>
 
-						<div
+						<!-- <div
 							in:fly={{ y: -100 }}
 							out:fly={{ y: 100 }}
 							class="absolute hidden h-full w-full text-primary-50 bg-grey-100/40 z-10 top-0 translate-y-[-100%] transition-all duration-500 items-center gap-2 justify-center"
@@ -119,7 +163,20 @@
 								class="bg-white hover:bg-white/60 hover:text-red-500 transition-all delay-200 text-black-100 flex items-center py-0.5 px-3 rounded-md"
 								><iconify-icon width="20" icon="mdi:trash"></iconify-icon></button
 							>
-						</div>
+						</div> -->
+
+						{#if multiple && selectedItems.find((item) => item.id === image.id)}
+							<div class="w-full h-full absolute bg-[#908c8c36] top-0 flex items-end justify-end">
+								<span
+									class="border-2 border-white rounded-full flex items-center justify-center p-0"
+									><iconify-icon
+										width="25"
+										icon="ri:checkbox-circle-fill"
+										class="m-0 text-green-500"
+									></iconify-icon></span
+								>
+							</div>
+						{/if}
 					</div>
 					<div class="media-info flex w-full flex-col items-start gap-2 flex-[1 0 0]">
 						<div class="media-name text-base font-medium">{image.title}</div>
@@ -149,12 +206,14 @@
 			return async ({ update, result }) => {
 				try {
 					if (result.status === 200) {
+						images = [result.data.newMedia, ...images];
 						showToast('New media uploaded successfully', 'success');
+
 						toggleModal();
 					} else if (result.status === 400) {
 						validationErrors = result.data.errors;
-						if (validationErrors && validationErrors.logo) {
-							imageValidationError = validationErrors.logo[0];
+						if (validationErrors && validationErrors?.image) {
+							imageValidationError = validationErrors.image[0];
 						}
 					} else {
 						showToast('Ooops something went wrong!!', 'error');
@@ -169,7 +228,7 @@
 		slot="modal-content"
 		class="max-w-md w-full px-6 py-8 flex flex-col gap-5 rounded-md bg-white"
 	>
-		<UploadBox error={imageValidationError} inputName="image" />
+		<UploadBox error={imageValidationError} isFileInput={true} inputName="image" />
 		<div class="modal-input">
 			<input
 				type="text"
@@ -178,10 +237,10 @@
 				placeholder="Media name"
 				class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 			/>
-			{#if validationErrors?.name}
+			{#if validationErrors?.title}
 				<sub
 					transition:slide={{ delay: 250, duration: 300 }}
-					class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
+					class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.title}</sub
 				>
 			{/if}
 		</div>
@@ -216,7 +275,7 @@
 						showToast('Image deleted successfully', 'success');
 						console.log(images);
 
-						images = images.filter((image) => image.id !== selectedImage.id);
+						images = images.filter((image) => image.id !== selectedItems.id);
 						console.log(images);
 						showDeleteModal = false;
 					} else {
@@ -231,8 +290,8 @@
 		method="post"
 		class="w-[350px] bg-white rounded-md py-5 px-8 flex flex-col items-center justify-center"
 	>
-		<input type="text" bind:value={selectedImage.id} name="image-id" class="hidden" />
-		<h5 class="font-medium mb-5">Do you want to delete {selectedImage.title}?</h5>
+		<input type="text" bind:value={selectedItems.id} name="image-id" class="hidden" />
+		<h5 class="font-medium mb-5">Do you want to delete {selectedItems.title}?</h5>
 		<div class="  w-full text-primary-50 flex items-center gap-2 justify-center">
 			<button
 				type="submit"
@@ -255,7 +314,7 @@
 </Modal>
 
 <style>
-	.brand-image-card:hover .brand-image div {
+	/* .brand-image-card:hover .brand-image div {
 		display: flex;
 		text-align: center;
 		animation-name: translateImage;
@@ -263,7 +322,7 @@
 		animation-direction: normal;
 		animation-timing-function: linear;
 		animation-fill-mode: forwards;
-	}
+	} */
 
 	@keyframes translateImage {
 		/* 0% {
@@ -278,7 +337,7 @@
 			transform: translateY(0%);
 			-ms-transform: translateY(0%);
 		} */
-		from {
+		/* from {
 			opacity: 0;
 			transform: translateY(-100%);
 			-ms-transform: translateY(-100%);
@@ -287,6 +346,6 @@
 			transform: translateY(0%);
 			-ms-transform: translateY(0%);
 			opacity: 1;
-		}
+		} */
 	}
 </style>

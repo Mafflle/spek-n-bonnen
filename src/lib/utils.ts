@@ -1,46 +1,111 @@
 import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
-import toast from 'svelte-french-toast';
-import { passwordConfirmation, passwordModal, inviteUserModal } from '$lib/stores';
+import { toast } from 'svelte-sonner';
+import {
+	passwordConfirmation,
+	passwordModal,
+	inviteUserModal,
+	type Permission,
+	type Role
+} from '$lib/stores';
 
-export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
+// types
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'promise';
 export type Option = {
 	value: number;
 	label: string;
+	slug: string;
 };
-export const showToast = (message: string, type: ToastType) => {
+export type CarcassErrors = {
+	purchase_price?: [string];
+	cold_weight?: [string];
+	weight?: [string];
+	lot_number?: [string];
+	ahdb_code?: [string];
+	vendor_code?: [string];
+	vendor_item_name?: [string];
+	vendor_moq?: [string];
+	vendor_moq_unit?: [string];
+	origin_and_terroir?: [string];
+	certifications?: [string];
+	country_of_origin?: [string];
+	ear_tag?: [string];
+	lairage_number?: [string];
+	carcass_number?: [string];
+	sex_category?: [string];
+	conformation?: [string];
+	fat_score?: [string];
+	date_of_slaughter?: [string];
+	date_received?: [string];
+	farm_id?: [string];
+	slaughter_house_id?: [string];
+	butcher_shop_id?: [string];
+	manufacturer_id?: [string];
+	brand_id?: [string];
+	vendor_id?: [string];
+	server?: [string];
+};
+
+// utility functions
+export const showToast = (message: string, type: ToastType, promise?) => {
 	if (message) {
 		if (type === 'success') {
-			toast(message, {
-				style: 'background: #8fef98; color: #06111F;',
-				position: 'bottom-right'
+			toast.success(message, {
+				position: 'top-right',
+				dismissable: true
+				// class: 'h-[80px] md:w-[468px] w-[200px]  text-white',
+				// classes: {
+				// 	title: 'text-white',
+				// 	success: 'bg-green-main text-white'
+				// }
 			});
 		} else if (type === 'error') {
-			toast(message, {
-				style: 'background: #ef8f8f; color: #ed3434;',
-				position: 'bottom-right'
+			toast.error(message, {
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'warning') {
-			toast(message, {
-				style: 'background: #fff3cd; color: #fbbf24;',
-				position: 'bottom-right'
+			toast.warning(message, {
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'info') {
 			// Blue background with white text
-			toast(message, {
-				style: 'background: #bab6b6; color: #111111;',
-				position: 'bottom-right'
+			toast.info(message, {
+				position: 'top-right',
+				dismissable: true
+			});
+		} else if (type === 'promise') {
+			toast.promise(promise, {
+				loading: 'Loading...',
+				success: () => {
+					return message;
+				}
 			});
 		} else {
 			toast(message, {
-				style: 'background: #bab6b6; color: #111111;',
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		}
 	}
 };
 
+export function getRandomColor() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+		color += letters[Math.round(Math.random() * 15)];
+	}
+	return color;
+}
+
+export type loggedInUser = {
+	name: string;
+	email: string;
+	color: string;
+};
 export const client = axios.create({
 	//axios client
 	baseURL: PUBLIC_API_ENDPOINT,
@@ -102,14 +167,21 @@ export const debounce = (cb: Function, delay = 1000) => {
 	};
 };
 
-export const isEqual = (obj1: Option, obj2: Option) => {
-	return obj1.value === obj2.value && obj1.label === obj2.label;
+export const isEqual = (obj1, obj2) => {
+	if (obj1.value) {
+		return obj1.value === obj2.value && obj1.label === obj2.label;
+	} else if (obj1.code_name) {
+		return obj1.id === obj2.id && obj1.code_name === obj2.code_name;
+	} else {
+		return obj1.id === obj2.id && obj1.name === obj2.name;
+	}
 };
 
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
+import type { User } from './user';
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
@@ -153,3 +225,52 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+export const getSexCategory = (code) => {
+	let response;
+	switch (code) {
+		case 'A':
+			response = 'Young Bull';
+			break;
+		case 'B':
+			response = 'Bull';
+			break;
+		case 'C':
+			response = 'Steer';
+			break;
+		case 'E':
+			response = 'Heifer';
+	}
+
+	return response;
+};
+
+export const generatePassword = (length: number) => {
+	const charset =
+		'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*!@#$%^&()_+{}|:<>?[];.,/';
+	let password = '';
+	for (let i = 0; i < length; i++) {
+		password += charset.charAt(Math.floor(Math.random() * charset.length));
+	}
+	return password;
+};
+
+export function check(permission: string, user: User) {
+	if (permission && !user?.is_superuser) {
+		for (let i = 0; i < user.groups.length; i++) {
+			let currRole = user.groups[i];
+			for (let x = 0; x < currRole?.permissions.length; x++) {
+				let currPermission = currRole?.permissions[x];
+				if (currPermission?.codename === permission) {
+					return false;
+				}
+			}
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+export function getLoggedInLoggedinUser() {
+	return JSON.parse(localStorage.getItem('loggedinUsers')) || [];
+}

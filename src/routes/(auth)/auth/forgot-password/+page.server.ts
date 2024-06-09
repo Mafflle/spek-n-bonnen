@@ -6,8 +6,8 @@ import { z } from 'zod';
 const schema = z.object({
 	email: z
 		.string({ required_error: 'Email is required' })
-		.email({ message: 'Not a valid email' })
 		.trim()
+		.email({ message: 'Not a valid email' })
 });
 
 // export const resetPasswordSchema = z

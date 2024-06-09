@@ -32,11 +32,16 @@
 	};
 </script>
 
-<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
-	<form use:enhance={handleSubmit} method="post" action="?/resetpassword">
+<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2] px-5 md:p-0 shadow">
+	<form
+		class="w-full flex flex-col items-center justify-center"
+		use:enhance={handleSubmit}
+		method="post"
+		action="?/resetpassword"
+	>
 		<input type="text" bind:value={token} class="hidden" name="token" />
 		<div
-			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 w-full md:w-[22rem] lg:w-[28.25rem]"
+			class="bg-white shadow-none border-none rounded-2xl text-[#2d2d2d] px-5 py-10 flex flex-col justify-center items-center gap-8 w-full sm:w-[25em] md:w-[28.25rem]"
 		>
 			<div class="pass-avatar">
 				<img src="/icons/pass.svg" alt="password svg" />
@@ -48,7 +53,7 @@
 				</div>
 			</div>
 
-			<div class="password-input">
+			<div class="password-input w-full">
 				<input
 					type="password"
 					id="password"
@@ -63,13 +68,13 @@
 					>
 				{/if}
 			</div>
-			<div class="password-input">
+			<div class="password-input w-full">
 				<input
 					type="password"
 					name="confirm-password"
 					id="confirm-password"
 					placeholder="Confirm new password"
-					class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+					class="input w-full xss:w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
 				{#if validationErrors?.confirmPassword}
 					<sub
