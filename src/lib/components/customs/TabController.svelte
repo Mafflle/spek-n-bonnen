@@ -20,7 +20,7 @@
 </script>
 
 <div
-	class="staff_profile-tab-controls h-24 xl:h-[118px] w-full bg-[#F7F7F7] flex items-center xl:space-x-6 rounded-[8px] px-6 xl:px-8 relative z-20"
+	class="staff_profile-tab-controls h-24 xl:h-[118px] w-full bg-[#F7F7F7] flex items-center xl:space-x-6 rounded-[8px] px-6 lg:px-8 xl:px-10 relative z-20"
 >
 	<div
 		class="staff_profile-section border-white border-[8px] shadow-sm lg:border-[10px] rounded-full relative -bottom-[50%]"

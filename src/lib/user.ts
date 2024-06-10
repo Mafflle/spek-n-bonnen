@@ -128,7 +128,7 @@ export const staffprofileSchema = z.object({
 	profile_picture: profilePictureSchema.optional()
 });
 
-export type StaffProfileErrors = {
+export type staffProfileErrors = {
 	first_name?: string[];
 	last_name?: string[];
 	preferred_name?: string[];

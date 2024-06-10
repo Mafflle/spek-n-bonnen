@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { staffprofileSchema, type StaffProfileErrors } from '$lib/user';
+import { staffprofileSchema, type staffProfileErrors } from '$lib/user';
 import { fail, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -48,7 +48,7 @@ export const actions: Actions = {
 					const updatedStaffProfile = await editStaffProfile.json();
 					return { edit: true, updatedStaffProfile };
 				} else {
-					console.log(editStaffProfile.status);
+					console.log('updating', editStaffProfile.status);
 					console.log(editStaffProfile.statusText);
 					const error = await editStaffProfile.json();
 					// console.log(error);
@@ -65,7 +65,7 @@ export const actions: Actions = {
 					const newStaffProfile = await createStaffProfile.json();
 					return { edit: true, newStaffProfile };
 				} else {
-					console.log(createStaffProfile.status);
+					console.log('creating', createStaffProfile.status);
 					const error = await createStaffProfile.json();
 				}
 			}

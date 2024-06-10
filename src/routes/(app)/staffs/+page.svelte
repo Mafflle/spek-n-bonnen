@@ -34,9 +34,8 @@
 
 	let generating: boolean = false;
 
+	console.log(users);
 	$Users = users.results;
-
-	// console.log($LoggedinUser);
 
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
