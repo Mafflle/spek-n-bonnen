@@ -37,16 +37,6 @@ export type StaffProfile = {
 	updated_at?: Date;
 } | null;
 
-const profilePictureSchema = z.object({
-	title: z
-		.string()
-		.optional()
-		.refine(
-			(title) => title?.includes('-'), // Ensure title contains a hyphen
-			'Title must contain a hyphen if first and last names are provided'
-		)
-});
-
 export const staffprofileSchema = z.object({
 	first_name: z
 		.string({ required_error: 'First name is required' })
@@ -124,8 +114,7 @@ export const staffprofileSchema = z.object({
 			{ message: 'Invalid emergency contact number format' }
 		),
 
-	profile_picture_id: z.number().int().positive().optional(),
-	profile_picture: profilePictureSchema.optional()
+	profile_picture_id: z.number().int().positive().optional()
 });
 
 export type staffProfileErrors = {

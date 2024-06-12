@@ -21,14 +21,9 @@ export const actions: Actions = {
 		const profile_picture_id = parseInt(formData.get('profile_picture_id') as string);
 		const hasExistingProfile = formData.get('hasExistingProfile') === 'true';
 
-		const profile_picture = {
-			...(first_name && last_name && { title: `${first_name}-${last_name}'s profile picture` })
-		};
-
 		const dataToValidate = {
 			...(first_name && { first_name }),
 			...(last_name && { last_name }),
-			...(profile_picture && { profile_picture }),
 			...(preferred_name && { preferred_name }),
 			...(phone_number && { phone_number }),
 			...(address && { address }),
