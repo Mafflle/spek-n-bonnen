@@ -4,8 +4,6 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts,pcss}'],
 
-	plugins: [require('daisyui')],
-
 	darkMode: ['class'],
 	safelist: ['dark'],
 
@@ -102,9 +100,6 @@ const config = {
 				sans: ['Inter', ...fontFamily.sans]
 			}
 		}
-	},
-	daisyui: {
-		themes: ['light']
 	}
 };
 
