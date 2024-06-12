@@ -4,7 +4,9 @@ import { fail, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const actions: Actions = {
-	'manage-staff-profile': async ({ request, fetch }) => {
+	'manage-staff-profile': async ({ request, fetch, locals }) => {
+		// console.log(locals);
+
 		const formData = await request.formData();
 
 		const first_name = formData.get('first_name');
@@ -39,11 +41,16 @@ export const actions: Actions = {
 		try {
 			const validatedData = staffprofileSchema.parse(dataToValidate);
 
+			// console.log(locals.user);
+
 			if (hasExistingProfile) {
 				const editStaffProfile = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/`, {
 					method: 'put',
 					body: JSON.stringify(validatedData)
 				});
+				console.log('edit', editStaffProfile.status);
+				console.log('edit', editStaffProfile.statusText);
+
 				if (editStaffProfile.ok) {
 					const updatedStaffProfile = await editStaffProfile.json();
 					return { edit: true, updatedStaffProfile };
@@ -55,7 +62,7 @@ export const actions: Actions = {
 				}
 			} else {
 				const createStaffProfile = await fetch(
-					`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/create/`,
+					`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/create`,
 					{
 						method: 'post',
 						body: JSON.stringify(validatedData)
@@ -70,7 +77,7 @@ export const actions: Actions = {
 				}
 			}
 		} catch (e) {
-			const toSend = { message: '', errors: {} as StaffProfileErrors };
+			const toSend = { message: '', errors: {} as staffProfileErrors };
 
 			if (e instanceof z.ZodError) {
 				(toSend.message = 'Validation errors'), (toSend.errors = e.flatten().fieldErrors);

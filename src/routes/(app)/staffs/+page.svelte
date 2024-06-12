@@ -14,13 +14,12 @@
 	import { KeyIcon } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	// import { uid } from 'uid';
 
 	export let data;
 
 	let { groups, access, users } = data;
 	let loading: boolean = false;
-	let showModal: boolean = false;
+	let showModal: boolean = true;
 	let searching: boolean = false;
 	let validationErrors: {
 		email?: [string];
@@ -30,11 +29,10 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
-	// console.log(users);
 
 	let generating: boolean = false;
 
-	console.log(users);
+	// console.log(users);
 	$Users = users.results;
 
 	const submit: SubmitFunction = async ({ formData }) => {
@@ -72,7 +70,6 @@
 			showToast('Please select roles to assign the staff', 'error');
 		}
 	}
-	// console.log(users);
 
 	let currInputType = 'password';
 
@@ -90,8 +87,6 @@
 		}
 	};
 
-	// console.log(groups);
-
 	const usePassword = () => {
 		generating = true;
 		const password = generatePassword(9);
@@ -102,7 +97,9 @@
 		generating = false;
 		currInputType = 'text';
 	};
+
 	let currStaff;
+
 	onDestroy(() => {
 		container.set([]);
 	});
@@ -230,39 +227,6 @@
 			<div class="form-group py-6 flex flex-col gap-10 items-start justify-center w-full px-4">
 				<span class="font-satoshi text-sm">Kindly input user details and select user role</span>
 				<section class="w-full px-3 flex flex-col gap-5">
-					<div class="form-item w-full flex flex-col">
-						<label for="first-name" class="text-sm mb-1 font-medium font-satoshi">First name</label>
-						<input
-							type="text"
-							name="first-name"
-							disabled={loading}
-							id="first-name"
-							placeholder="First name"
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						{#if validationErrors?.first_name}
-							<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
-								>{validationErrors.first_name[0]}</sub
-							>
-						{/if}
-					</div>
-					<div class="form-item w-full flex flex-col">
-						<label for="last-name" class="text-sm mb-1 font-medium font-satoshi">Last name</label>
-						<input
-							type="text"
-							name="last-name"
-							id="last-name"
-							disabled={loading}
-							placeholder="Last name"
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						{#if validationErrors?.last_name}
-							<sub transition:slide={{ delay: 250, duration: 300 }} class="text-rose-500 text-xs"
-								>{validationErrors.last_name[0]}</sub
-							>
-						{/if}
-					</div>
-
 					<div class="form-item w-full flex flex-col gap-1">
 						<label for="email" class="text-sm mb-1 font-medium font-satoshi">Email</label>
 						<input

@@ -36,10 +36,10 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		});
 
 		if (!response.ok) {
-			console.log(response.statusText);
+			// console.log(response.statusText);
 
 			const errorbody = await response.json();
-			console.log(errorbody);
+			console.log('error fetching account', errorbody);
 			return false;
 		}
 
@@ -96,6 +96,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 	const res = await fetch(request.clone());
 
+	console.log(res.url, res.status);
+
 	if (!res.ok && res.status === 401 && !res.url.includes('auth')) {
 		console.log('Request intercepted with 401 status');
 		await retryRequest();
@@ -129,10 +131,10 @@ export const handle = async ({ event, resolve }) => {
 		});
 
 		if (!response.ok) {
-			console.log(response.statusText);
+			// console.log(response.statusText);
 
 			const errorbody = await response.json();
-			console.log(errorbody);
+			console.log('error', errorbody);
 			return false;
 		}
 
@@ -180,12 +182,12 @@ export const handle = async ({ event, resolve }) => {
 						Authorization: `Bearer ${newAccessToken}`
 					}
 				});
-				console.log('here we go');
+				// console.log('here we go');
 
 				if (res.ok) {
 					const user = await res.json();
 					event.locals.user = user;
-					console.log('user', user);
+					// console.log('user', user);
 
 					return await resolve(event);
 				}
@@ -213,7 +215,7 @@ export const handle = async ({ event, resolve }) => {
 			const user = await res.json();
 			event.locals.user = user;
 		} else if (!res.ok) {
-			console.log(res.status);
+			// console.log(res.status);
 
 			await retryRequest();
 			return await resolve(event);

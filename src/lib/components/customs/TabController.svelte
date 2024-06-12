@@ -36,7 +36,7 @@
 	<div
 		role="tablist"
 		aria-label="Tabs"
-		class="tab-list flex items-center justify-center flex-1 space-x-2 xl:space-x-4"
+		class="tab-list flex items-center justify-center flex-1 space-x-2 lg:space-x-14 xl:space-x-20"
 		bind:this={tabList}
 	>
 		{#each tabs as tab, index}

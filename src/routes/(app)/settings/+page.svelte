@@ -16,9 +16,7 @@
 	import UploadBox from '$lib/components/UploadBox.svelte';
 	import Profile from '$lib/components/HRM/Profile.svelte';
 	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
-	import ClockInOut from '$lib/components/HRM/ClockInOut.svelte';
 	import Vacation from '$lib/components/HRM/Vacation.svelte';
-	export let data;
 
 	dayjs.extend(relativeTime);
 
@@ -40,7 +38,7 @@
 
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		const hasExistingProfile =
+		let hasExistingProfile =
 			$currentUser?.staff_profile !== undefined && $currentUser?.staff_profile !== null;
 
 		formData.append('hasExistingProfile', hasExistingProfile.toString());
@@ -92,7 +90,6 @@
 	let tabs = [
 		{ title: 'Profile', id: 'staff_profile', component: Profile },
 		{ title: 'Work Schedule', id: 'work-schedule', component: WorkSchedule },
-		{ title: 'Clock (in/out)', id: 'clock-in-out', component: ClockInOut },
 		{ title: 'Vacation', id: 'vacation', component: Vacation }
 	];
 </script>
