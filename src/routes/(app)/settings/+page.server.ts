@@ -62,7 +62,7 @@ export const actions: Actions = {
 				}
 			} else {
 				const createStaffProfile = await fetch(
-					`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/create`,
+					`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/create/`,
 					{
 						method: 'post',
 						body: JSON.stringify(validatedData)
