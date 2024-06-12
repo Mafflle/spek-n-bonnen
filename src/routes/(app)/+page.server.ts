@@ -50,8 +50,11 @@ export const actions: Actions = {
 		const currUrl = formData.get('currUrl');
 		cookies.delete('access', { path: '/' });
 		cookies.delete('refresh', { path: '/' });
-
-		throw redirect(302, `auth/login?from=${currUrl}`);
+		if (currUrl) {
+			throw redirect(302, `auth/login?from=${currUrl}`);
+		} else {
+			throw redirect(302, 'auth/login');
+		}
 	},
 	upload: async ({ fetch, request, url }) => {
 		// console.log(cookies.get('access'));

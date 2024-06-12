@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { isEqual, type Option } from './utils';
+import { isEqual } from './utils';
 
 export type Permission = {
 	id: number;
@@ -100,7 +100,7 @@ export let inviteUserModal = writable(false);
 export const container = writable<(Permission | Role)[]>([]);
 export let Roles = writable<Role[]>([]);
 export let Primals = writable<Primal[]>([]);
-export let LoggedinUser = writable<{ name: string; email: string; color: string }[]>([]);
+export let LoggedinUsers = writable<{ name?: string; email: string; avatar?: string }[]>([]);
 export let Batches = writable<Batch[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
 export let Tags = writable<any[]>([]);

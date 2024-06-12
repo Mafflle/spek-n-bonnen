@@ -129,6 +129,7 @@ export type staffProfileErrors = {
 	emergency_contact_name?: string[];
 	emergency_contact_number?: string[];
 };
+
 export const currentUser = writable<User>(); //current user store
 
 export const Users = writable<User[]>([]);

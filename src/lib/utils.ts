@@ -1,14 +1,13 @@
-import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
 import { toast } from 'svelte-sonner';
-import {
-	passwordConfirmation,
-	passwordModal,
-	inviteUserModal,
-	type Permission,
-	type Role
-} from '$lib/stores';
+import { passwordConfirmation, passwordModal, inviteUserModal, LoggedinUsers } from '$lib/stores';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { cubicOut } from 'svelte/easing';
+import type { TransitionConfig } from 'svelte/transition';
+import type { User } from './user';
+import { browser } from '$app/environment';
 
 // types
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'promise';
@@ -102,9 +101,9 @@ export function getRandomColor() {
 }
 
 export type loggedInUser = {
-	name: string;
+	name?: string;
 	email: string;
-	color: string;
+	avatar?: string;
 };
 export const client = axios.create({
 	//axios client
@@ -177,11 +176,6 @@ export const isEqual = (obj1, obj2) => {
 	}
 };
 
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import { cubicOut } from 'svelte/easing';
-import type { TransitionConfig } from 'svelte/transition';
-import type { User } from './user';
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
@@ -271,6 +265,33 @@ export function check(permission: string, user: User) {
 		return false;
 	}
 }
-export function getLoggedInLoggedinUser() {
+export function getLoggedinUser(): { name?: string; email: string; avatar?: string }[] {
 	return JSON.parse(localStorage.getItem('loggedinUsers')) || [];
 }
+
+export const updateLoggedInUsers = (loggedInUser: User) => {
+	if (browser) {
+		let users = getLoggedinUser() as loggedInUser[];
+		if (users.length > 0) {
+			LoggedinUsers.set(users);
+		} else {
+			if (loggedInUser?.staff_profile) {
+				let currUser = {
+					name: `${loggedInUser?.staff_profile.first_name} ${loggedInUser?.staff_profile.last_name}`,
+					email: `${loggedInUser?.email}`,
+					avatar: loggedInUser.staff_profile.profile_picture.image
+				};
+				users.push(currUser);
+				LoggedinUsers.set(users);
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
+			} else {
+				let currUser = {
+					email: loggedInUser?.email as string
+				};
+				users.push(currUser);
+				LoggedinUsers.set(users);
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
+			}
+		}
+	}
+};
