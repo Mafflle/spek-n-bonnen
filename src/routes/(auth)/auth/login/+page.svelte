@@ -293,29 +293,6 @@
 							{/if}
 						</div>
 					</div>
-					<div class="submit w-full flex flex-col gap-[1.88rem]">
-						<button
-							class="bg-primary-red py-3 px-3 rounded-[8px] w-full
-						hover:bg-[#C7453C] hover:rounded-[0.625rem]
-						focus:shadow-custom text-white font-bold font-satoshi text-sm flex gap-1 items-center justify-center
-						"
-							type="submit"
-						>
-							{#if loading}
-								<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
-							{:else}
-								<span class="button-text">Log in </span>
-								<iconify-icon icon="ep:right" width="15"></iconify-icon>
-							{/if}
-						</button>
-
-						<div class="forgot-password">
-							<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
-								<div class="text-[#9C9C9C]">Forgotten password?</div>
-								<a href="auth/forgot-password" class="hover:underline">Click here to reset</a>
-							</div>
-						</div>
-					</div>
 				</div>
 			</form>
 		{:else if !userToLogin}

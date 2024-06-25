@@ -42,6 +42,7 @@ const config = {
 					900: '#A0000F',
 					red: '#DC5950',
 					light: '#FFE8E7',
+					green: '#DDFFC8',
 					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' },
 					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
 				},

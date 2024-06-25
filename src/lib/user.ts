@@ -133,3 +133,4 @@ export type staffProfileErrors = {
 export const currentUser = writable<User>(); //current user store
 
 export const Users = writable<User[]>([]);
+export const ManagersAssigned = writable<User[] | any[]>([]);

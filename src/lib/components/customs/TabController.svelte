@@ -5,6 +5,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let tabs: { title: string; id: string }[];
+	export let withImage: boolean = true;
 	export let selectedTab: string;
 	const dispatch = createEventDispatcher();
 	let tabList: HTMLDivElement;

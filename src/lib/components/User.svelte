@@ -84,6 +84,15 @@
 						<span class="text-grey-100">Edit</span>
 					</Button>
 				</DropdownMenu.Item>
+
+				<DropdownMenu.Item>
+					<Button
+						class="text-sm font-satoshi text-grey-100 -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+					>
+						<iconify-icon width="20" icon="ph:eye-light"></iconify-icon>
+						<span class="text-grey-100">View</span>
+					</Button>
+				</DropdownMenu.Item>
 				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
 				<DropdownMenu.Item>
 					<form action="?/delete" method="post" class="">

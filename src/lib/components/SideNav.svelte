@@ -7,14 +7,7 @@
 	import { Button } from './ui/button';
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
-
-	function shortenName(name: string, maxLength: number = 10): string {
-		if (name.length > maxLength) {
-			return name.substring(0, maxLength); // Extract the first 10 characters
-		} else {
-			return name;
-		}
-	}
+	import { shortenText } from '$lib/utils';
 
 	const routes = [
 		{
@@ -141,7 +134,7 @@
 						</Avatar.Root>
 						<p class="text-sm">
 							{#if $currentUser?.staff_profile}
-								{shortenName($currentUser.staff_profile.preferred_name)}
+								{shortenText($currentUser.staff_profile.preferred_name)}
 							{:else}
 								{$currentUser?.email}
 							{/if}

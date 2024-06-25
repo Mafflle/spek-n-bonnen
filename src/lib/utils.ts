@@ -295,3 +295,11 @@ export const updateLoggedInUsers = (loggedInUser: User) => {
 		}
 	}
 };
+
+export function shortenText(text: string, maxLength: number = 10): string {
+	if (text.length > maxLength) {
+		return text.substring(0, maxLength); // Extract the first 10 characters
+	} else {
+		return text;
+	}
+}

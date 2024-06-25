@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Carcass } from '$lib/stores/carcass.stores';
 	import Separator from './ui/separator/separator.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
+
 	import PhysicalInfo from './carcass-info/PhysicalInfo.svelte';
 	import VendorInfo from './carcass-info/VendorInfo.svelte';
 	import TraceabilityInfo from './carcass-info/TraceabilityInfo.svelte';

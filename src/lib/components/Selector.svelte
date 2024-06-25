@@ -195,6 +195,7 @@
 			{:else if options.length > 0}
 				{#each options as option}
 					<Select.Item
+					
 						on:click={() => onSelected(option)}
 						value={option.value}
 						label={option.label}

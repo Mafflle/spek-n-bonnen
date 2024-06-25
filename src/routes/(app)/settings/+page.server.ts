@@ -43,8 +43,6 @@ export const actions: Actions = {
 					method: 'put',
 					body: JSON.stringify(validatedData)
 				});
-				console.log('edit', editStaffProfile.status);
-				console.log('edit', editStaffProfile.statusText);
 
 				if (editStaffProfile.ok) {
 					const updatedStaffProfile = await editStaffProfile.json();

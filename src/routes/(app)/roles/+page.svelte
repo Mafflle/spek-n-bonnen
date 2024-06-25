@@ -92,9 +92,10 @@
 	//permissions function(s)
 	const searchPermissions = debounce(async (search: string) => {
 		// if (!search.trim()) return (validationErrors.search = 'Search keyword is required');
+
 		searching = true;
 		try {
-			const res = await fetch(`roles?search=${search}`, {
+			const res = await fetch(`roles/?search=${search}`, {
 				headers: { access: `${data.access}` }
 			});
 
@@ -275,7 +276,6 @@
 		</Table.Root> -->
 	</div>
 </div>
-.
 
 <Modal mode="sheet" {showModal} on:close={() => (showModal = false)}>
 	<form

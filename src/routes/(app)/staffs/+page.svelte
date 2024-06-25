@@ -1,26 +1,28 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
-	import PillSelector from '$lib/components/PillSelector.svelte';
-	import SearchInput from '$lib/components/SearchInput.svelte';
-	import User from '$lib/components/User.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import * as Sheet from '$lib/components/ui/sheet';
+
 	import { container } from '$lib/stores.js';
-	import { Users } from '$lib/user.js';
-	import { generatePassword, showToast } from '$lib/utils.js';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import { KeyIcon } from 'lucide-svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { Users, type User } from '$lib/user.js';
+	import { onDestroy } from 'svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import User from '$lib/components/User.svelte';
+	import InviteStaff from '$lib/components/HRM/InviteStaff.svelte';
+	import CreateTask from '$lib/components/HRM/CreateTask.svelte';
+	import { Tasks, type Task } from '$lib/hrm.js';
+	import dayjs from 'dayjs';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { shortenText } from '$lib/utils.js';
 
 	export let data;
 
-	let { groups, access, users } = data;
-	let loading: boolean = false;
-	let showModal: boolean = true;
-	let searching: boolean = false;
+	let { groups, access, users, tasks } = data;
+
+	Tasks.set(tasks.results as Task[]);
+
+	let showModal: boolean = false;
+	let showTaskDetails: boolean = false;
+
 	let validationErrors: {
 		email?: [string];
 		last_name?: [string];
@@ -29,76 +31,26 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
+	$: currentTab = 'tasks';
 
-	let generating: boolean = false;
+	const staffManagers = data.staffManagers.results as User[];
+	let currentTask: Task | null;
 
-	// console.log(users);
 	$Users = users.results;
-
-	const submit: SubmitFunction = async ({ formData }) => {
-		loading = true;
-		$container.forEach((item) => formData.append('role', `${item.value}`));
-		console.log(formData.getAll('role'));
-
-		return async ({ result, update }) => {
-			try {
-				console.log(result);
-
-				if (result.status === 200) {
-					container.set([]);
-					$Users = [result.data.invitedStaff, ...$Users];
-					showToast('Staff invited successfully', 'success');
-					toggleModal();
-				} else if (result.status === 400) {
-					validationErrors = result.data.errors;
-				} else if (result.status == 500) {
-					showToast('Ooops something went wrong', 'error');
-				}
-			} finally {
-				await update();
-				loading = false;
-			}
-		};
-	};
 
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 
-	$: {
-		if (validationErrors?.groups) {
-			showToast('Please select roles to assign the staff', 'error');
-		}
-	}
-
-	let currInputType = 'password';
-
-	const toggleInputType = () => {
-		if (currInputType === 'password') {
-			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
-				input.type = 'text';
-			});
-			currInputType = 'text';
+	function toggleTaskDetails(task?: Task) {
+		if (task) {
+			currentTask = task;
 		} else {
-			document.querySelectorAll('#password, #confirm-password').forEach((input) => {
-				input.type = 'password';
-			});
-			currInputType = 'password';
+			currentTask = null;
 		}
-	};
 
-	const usePassword = () => {
-		generating = true;
-		const password = generatePassword(9);
-		console.log(password);
-		document.querySelectorAll('#password, #confirm-password').forEach((input) => {
-			input.value = password;
-		});
-		generating = false;
-		currInputType = 'text';
-	};
-
-	let currStaff;
+		showTaskDetails = !showTaskDetails;
+	}
 
 	onDestroy(() => {
 		container.set([]);
@@ -156,259 +108,185 @@
 					<div class="w-5 h-5 relative">
 						<img src="/icons/plus.svg" alt="user-plus" />
 					</div>
-					<span class="text-white text-sm font-bold font-satoshi hidden sm:block"
-						>Invite new user</span
-					>
+					<span class="text-white text-sm font-bold font-satoshi hidden sm:block">
+						{#if currentTab === 'staffs'}
+							Invite new user
+						{:else if currentTab === 'tasks'}
+							Create task
+						{/if}
+					</span>
 				</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="border rounded-xl w-full max-w-full overflow-x-scroll no-scrollbar">
-		<table class="table">
-			<thead>
-				<tr class="">
-					<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-					<th class="bg-[#F9F9F9]">Email</th>
-					<th class="bg-[#F9F9F9]">Role</th>
-					<th class="bg-[#F9F9F9]">Date</th>
-					<th class="bg-[#F9F9F9]">Status</th>
+	<Tabs.Root bind:value={currentTab} class="w-full ">
+		<Tabs.List
+			class=" h-20 oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap justify-between px-10  xl:px-20 space-x-8 md:flex-wrap-none mb-12 md:pb-1 "
+		>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="staffs">Staffs</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="tasks">Tasks</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="traceability">Traceability</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="origin">Origin</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="destination">Destination</Tabs.Trigger
+			>
+		</Tabs.List>
+		<!-- <Separator data-separator-root class="hidden md:block" /> -->
+		<Tabs.Content class="w-full   " value="staffs">
+			<div class="border rounded-xl w-full max-w-full overflow-x-scroll no-scrollbar">
+				<table class="table">
+					<thead class="">
+						<tr class="">
+							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
+							<th class="bg-[#F9F9F9]">Email</th>
+							<th class="bg-[#F9F9F9]">Role</th>
+							<th class="bg-[#F9F9F9]">Date</th>
+							<th class="bg-[#F9F9F9]">Status</th>
 
-					<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each $Users as user}
-					{#if user.is_staff}
-						<User {user} />
-					{/if}
+							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each $Users as user}
+							{#if user.is_staff}
+								<User {user} />
+							{/if}
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</Tabs.Content>
+		<Tabs.Content class="w-full" value="tasks">
+			<div class="grid grid-cols-3 gap-4 xl:gap-6 xl:grid-cols-3">
+				{#each $Tasks as task, i}
+					<div
+						on:click={() => toggleTaskDetails(task)}
+						class="col-span-1 cursor-pointer flex flex-col w-full border-2 min-h-[170px] p-4 gap-1 rounded-xl"
+					>
+						<section class="flex items-center justify-between mb-2">
+							<h5 class="text-primary-red text-sm xl:text-base">{task.title}</h5>
+							<span
+								class="bg-primary-green text-xs xl:text-sm text-[#41AA00] text-center py-0.5 px-4 rounded-3xl"
+							>
+								{task.status}
+							</span>
+						</section>
+						<section class="grid text-grey-100 mb-auto">
+							<h6 class="text-sm xl:text-lg font-satoshi font-medium">Solve all ticket enquiry</h6>
+							<p class="xl:text-sm text-xs font-satoshi">
+								{shortenText(task.description, 100)}
+							</p>
+						</section>
+						<section class="flex items-center justify-between">
+							<section class="flex items-center gap-2">
+								<div class="flex items-center -space-x-2">
+									{#each task.assignees as assignee, i}
+										<Avatar.Root class="w-5 h-5">
+											<Avatar.Fallback class="text-xs"
+												>{assignee.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
+											>
+										</Avatar.Root>
+									{/each}
+								</div>
+								<span class="text-primary-softPink-50 text-xs">GroupA</span>
+							</section>
+							<div class=" flex items-center gap-1 text-primary-softPink-50">
+								<img class="w-3.5 h-3.5" src="/icons/TaskClock.svg" alt="clock icon" />
+								<span class="text-xs">{dayjs(task.end_time).diff(task.start_time, 'hour')}/hrs</span
+								>
+							</div>
+						</section>
+					</div>
 				{/each}
-			</tbody>
-		</table>
-	</div>
+			</div>
+		</Tabs.Content>
+	</Tabs.Root>
 </div>
 
 <Modal mode="sheet" on:close={toggleModal} {showModal}>
-	<form
-		action="?/invite_staff"
-		method="post"
-		use:enhance={submit}
-		class="w-full max-xsm:pb-4 pb-6 max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
-		slot="modal-content"
-	>
-		<section class="md:h-full w-full">
-			<div
-				class="flex w-full sticky bg-white top-0 h-16 max-xsm:py-2 z-30 items-center justify-center mb-5"
-			>
-				<Sheet.Header
-					is="text"
-					class="flex flex-col h-full items-center justify-center w-full   z-10  "
-				>
-					<div class="w-full h-full px-3 flex flex-row justify-between items-center">
-						<Sheet.Title
-							class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
-						>
-							<img src="/icons/UserWithEclipse.svg" alt="user icon " />
-							<span>
-								<!-- {currRoleId ? 'Edit' : 'Create'}  -->
-								Invite User</span
-							>
-						</Sheet.Title>
-						<button
-							type="button"
-							class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
-						>
-							<img src="/icons/close.svg" alt="close icon" />
-						</button>
-					</div>
-					<Separator />
-				</Sheet.Header>
-			</div>
-			<div class="form-group py-6 flex flex-col gap-10 items-start justify-center w-full px-4">
-				<span class="font-satoshi text-sm">Kindly input user details and select user role</span>
-				<section class="w-full px-3 flex flex-col gap-5">
-					<div class="form-item w-full flex flex-col gap-1">
-						<label for="email" class="text-sm mb-1 font-medium font-satoshi">Email</label>
-						<input
-							type="text"
-							name="email"
-							id="email"
-							placeholder="Email"
-							disabled={loading}
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						{#if validationErrors?.email}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
-							>
-						{/if}
-					</div>
-					<div class="flex flex-col gap-4 justify-between items-center w-full">
-						<div class="form-item w-full flex flex-col gap-1">
-							<label for="password" class="text-sm mb-1 font-medium font-satoshi"
-								>Create user password</label
-							>
-							<div class="w-full relative flex items-center px-0">
-								<input
-									type={currInputType}
-									name="password"
-									id="password"
-									placeholder="Enter your password"
-									class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
-								/>
-								<button
-									type="button"
-									on:click={toggleInputType}
-									class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
-								>
-									<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
-										<iconify-icon icon="carbon:view" width="20"></iconify-icon>
-									</span>
-									<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
-										<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
-									</span>
-								</button>
-							</div>
-							{#if validationErrors?.password}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]"
-									>{validationErrors.password}</sub
-								>
-							{/if}
-						</div>
+	<div slot="modal-content" class="w-full h-fit max-h-full overflow-x-scroll no-scrollbar">
+		{#if currentTab === 'staffs'}
+			<InviteStaff {groups} {access} {staffManagers} />
+		{:else if currentTab === 'tasks'}
+			<CreateTask
+				on:closed={() => (currentTask = null)}
+				task={currentTask}
+				{access}
+				users={users.results}
+			/>
+		{/if}
+	</div>
+</Modal>
 
-						<div class="form-item w-full flex flex-col gap-1">
-							<label for="confirm-password" class="text-sm mb-1 font-medium font-satoshi"
-								>Confirm password</label
+<Modal showModal={showTaskDetails} on:close={() => toggleTaskDetails()}>
+	<div
+		slot="modal-content"
+		class="min-w-[460px] max-w-md col-span-1 flex flex-col min-h-[132px] py-4 px-8 gap-1 rounded-xl w-full bg-white"
+	>
+		<section class="flex items-center justify-end mb-2">
+			<button on:click={() => toggleTaskDetails()}>
+				<iconify-icon icon="hugeicons:cancel-01" width="25" class="text-grey-100"></iconify-icon>
+			</button>
+		</section>
+		<section class="flex items-center justify-between">
+			<h5 class="text-primary-red">{currentTask.title}</h5>
+			<span
+				class="bg-primary-green text-[10px] xl:text-sm text-[#41AA00] min-w-[77px] py-1 px-2.5 rounded-3xl"
+			>
+				{currentTask.status}
+			</span>
+		</section>
+		<section class="grid text-grey-100 mb-5">
+			<h6 class="text-xl font-satoshi font-medium">Solve all ticket enquiry</h6>
+			<p class="text-sm xl:text-base font-satoshi">
+				Lorem ipsum dolor sit amet, consectetur adipis, sed do eiusmod tempor incididunt ut labore
+				et Lorem ipsum dolor sit amet, consectetur adipis,sed do eiusmod tempor incididunt ut labore
+				et Lorem ipsum dolor sit amet, consectetur adipis,sed do eiusmod tempor incididunt ut labore
+				et
+			</p>
+		</section>
+		<section class="flex items-center justify-between mb-5">
+			<section class="flex items-center gap-2">
+				<div class="flex items-center -space-x-2">
+					{#each currentTask.assignees as assignee, i}
+						<Avatar.Root class="w-7 h-7">
+							<Avatar.Fallback class="text-sm"
+								>{assignee.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
 							>
-							<div class="w-full relative flex items-center px-0">
-								<input
-									type={currInputType}
-									name="confirm-password"
-									id="confirm-password"
-									placeholder="Confirm your password"
-									class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9]"
-								/>
-								<button
-									type="button"
-									on:click={toggleInputType}
-									class="absolute right-1 flex items-center cursor-pointer z-10 w-max p-2"
-								>
-									<span class={currInputType === 'password' ? 'flex items-center' : 'hidden'}>
-										<iconify-icon icon="carbon:view" width="20"></iconify-icon>
-									</span>
-									<span class={currInputType === 'text' ? ' flex items-center' : 'hidden'}>
-										<iconify-icon icon="carbon:view-off" width="20" class=""></iconify-icon>
-									</span>
-								</button>
-							</div>
-							{#if validationErrors?.password2}
-								<sub
-									transition:slide={{ delay: 250, duration: 300 }}
-									class="text-rose-500 text-xs tracking-[-0.0075rem]"
-									>{validationErrors.password2}</sub
-								>
-							{/if}
-						</div>
-						<div class="flex w-full">
-							<button
-								type="button"
-								disabled={generating}
-								on:click={() => usePassword()}
-								class="rounded-md text-secondary-green text-sm flex items-center font-satoshi"
-							>
-								{#if generating}
-									<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
-								{:else}
-									<div class="flex items-center gap-1">
-										<KeyIcon size="18" />
-										<span>Generate Password</span>
-									</div>
-								{/if}
-							</button>
-						</div>
-					</div>
-					<div class="flex flex-col gap-3 w-full mt-4">
-						<p class="text-sm font-medium font-satoshi mb-2">Select user role</p>
-						<SearchInput
-							placeholder="Search roles"
-							token={access}
-							{loading}
-							endpoint="staffs"
-							on:searched={(e) => (groups = e.detail.results)}
-							on:searching={(e) => (searching = e.detail)}
-						/>
-						{#if searching}
-							<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
-								<iconify-icon icon="line-md:loading-twotone-loop" width="30"></iconify-icon>
-							</div>
-						{:else}
-							<div class="max-w-full">
-								<PillSelector options={groups.results} />
-							</div>
-							<div class="hidden" id="rolesContainer"></div>
-						{/if}
-					</div>
-					<div class="form-item w-full flex flex-col gap-1">
-						<label for="work_hours" class="text-sm mb-1 font-medium font-satoshi"
-							>Set weekly work hours</label
-						>
-						<input
-							type="number"
-							name="work_hours"
-							id="work_hours"
-							placeholder="Set weekly work hours"
-							disabled={loading}
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						<!-- {#if validationErrors?.email}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
-							>
-						{/if} -->
-					</div>
-					<div class="form-item w-full flex flex-col gap-1">
-						<label for="date" class="text-sm mb-1 font-medium font-satoshi">Date Hired</label>
-						<input
-							type="date"
-							name="date"
-							id="date"
-							placeholder="Select date"
-							disabled={loading}
-							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
-						/>
-						<!-- {#if validationErrors?.email}
-							<sub
-								transition:slide={{ delay: 250, duration: 300 }}
-								class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.email[0]}</sub
-							>
-						{/if} -->
-					</div>
-				</section>
+						</Avatar.Root>
+					{/each}
+				</div>
+				<span class="text-primary-softPink-50">GroupA</span>
+			</section>
+			<div class=" flex items-center gap-2 text-primary-softPink-50">
+				<img class="w-5 h-5" src="/icons/TaskClock.svg" alt="clock icon" />
+				<span>{dayjs(currentTask.end_time).diff(currentTask.start_time, 'hour')}/hrs</span>
 			</div>
 		</section>
-		<Sheet.Footer class="w-full  px-3 self-end">
-			<div class="w-full px-4">
-				<Button
-					disabled={loading}
-					type="submit"
-					class="flex w-full bg-primary-red gap-2 items-center font-satoshi text-sm font-bold text-white py-2.5 px-3 rounded-md hover:bg-primary-100"
-				>
-					{#if loading}
-						<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
-					{:else if currStaff}
-						<span>Proceed</span>
-						<iconify-icon icon="ep:right" width="15"></iconify-icon>
-					{:else}
-						<span> Send Invite </span>
-
-						<iconify-icon icon="ep:right" width="15"></iconify-icon>
-					{/if}
-				</Button>
-			</div>
-		</Sheet.Footer>
-	</form>
+		<section class="flex items-center justify-center gap-7">
+			<Button
+				on:click={() => {
+					showTaskDetails = false;
+					toggleModal();
+				}}
+				variant="outline"
+				class="border-primary-red border text-primary-red">Edit Task</Button
+			>
+			<Button class="bg-primary-red border">Delete Task</Button>
+		</section>
+	</div>
 </Modal>
