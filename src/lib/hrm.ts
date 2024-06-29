@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { User } from './user';
 
 export enum TaskPriorities {
 	LOW = 'LOW',
@@ -15,7 +16,7 @@ export enum TaskStatus {
 export type Task = {
 	id: number;
 	title: string;
-	assignees: string[];
+	assignees: User[];
 	created_at: Date;
 	updated_at: Date;
 	description: string;

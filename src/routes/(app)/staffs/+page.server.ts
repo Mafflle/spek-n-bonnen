@@ -1,7 +1,7 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { number, z } from 'zod';
+import { z } from 'zod';
 import { check } from '$lib/utils';
 
 type Errors = {
@@ -138,6 +138,7 @@ export const actions: Actions = {
 				body: JSON.stringify(validatedData)
 			});
 
+			console.log(res);
 			console.log('inviting', res.status, res.statusText);
 
 			if (res.ok) {
@@ -176,7 +177,7 @@ export const actions: Actions = {
 		const priority = formData.get('priority');
 		const start_time = formData.get('start_time');
 		const end_time = formData.get('end_time');
-		const assignedManagers = formData.getAll('assignees_id');
+		const assignedManagers = formData.getAll('assignees_ids');
 		const existingTask = parseInt(formData.get('existingTaskId') as string);
 		console.log(existingTask);
 
@@ -198,17 +199,19 @@ export const actions: Actions = {
 
 			console.log('starting');
 			if (existingTask && existingTask > 0) {
-				const editTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`, {
-					method: 'PUT',
+				const editTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${existingTask}/`, {
+					method: 'put',
 					body: JSON.stringify(validatedData)
 				});
 
 				if (editTask.ok) {
+					console.log('almost');
 					const editedTask = await editTask.json();
+					console.log('completed', editedTask);
 
 					return {
-						editedTask,
-						edited: true
+						edited: true,
+						editedTask
 					};
 				} else {
 					console.log(editTask.status);

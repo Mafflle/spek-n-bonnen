@@ -12,7 +12,7 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
-	import { TaskPriorities, Tasks, type Task } from '$lib/hrm';
+	import { Tasks, type Task } from '$lib/hrm';
 	import { createEventDispatcher, onDestroy } from 'svelte';
 
 	export let access;
@@ -28,13 +28,7 @@
 	let taskDescription = task?.description;
 	let taskPriority = { value: task?.priority, label: task?.priority };
 
-	ManagersAssigned.set(
-		task?.assignees.map((assignee) => {
-			return {
-				email: assignee
-			};
-		})
-	);
+	ManagersAssigned.set(task?.assignees);
 
 	$: times = task && { startTime: task?.start_time, endTime: task?.end_time };
 
@@ -51,7 +45,7 @@
 
 		if ($ManagersAssigned && $ManagersAssigned.length > 0) {
 			$ManagersAssigned.forEach((manager) => {
-				formData.append('assignees_id', `${manager?.id}`);
+				formData.append('assignees_ids', `${manager?.id}`);
 			});
 		} else {
 			showToast('Please select employees to assign task', 'error');
@@ -65,6 +59,8 @@
 		return async ({ update, result, formData }) => {
 			try {
 				if (result.status === 200) {
+					console.log(result);
+
 					if (result.data.edited) {
 						let editedTask = result.data.editedTask;
 
@@ -87,6 +83,7 @@
 						});
 						showToast('Task created successfully', 'success');
 					}
+
 					dispatch('close');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;

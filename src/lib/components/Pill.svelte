@@ -24,7 +24,7 @@
 		// console.log(selected);
 	};
 	let hovering: boolean = false;
-	// console.log(option);
+	// console.log(option);sx
 
 	onMount(() => {
 		// container.subscribe((items) => {
@@ -50,7 +50,7 @@
 				>{#if option?.codename}
 					{option?.codename}
 				{:else if option.staff_profile}
-					{option.staff_profile.first_name} {option.staff_profile.last_name}
+					{option.staff_profile?.first_name} {option.staff_profile?.last_name}
 				{:else if option.name}
 					{option.name}
 				{:else if option.email}
