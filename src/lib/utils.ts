@@ -303,3 +303,19 @@ export function shortenText(text: string, maxLength: number = 10): string {
 		return text;
 	}
 }
+export function formatTime(timeStr) {
+	const [hours, minutes] = timeStr.split(':').map(Number);
+
+	let meridian = 'AM';
+	let formattedHours = hours;
+
+	if (hours >= 12) {
+		meridian = 'PM';
+		formattedHours = hours === 12 ? 12 : hours - 12;
+	}
+
+	const formattedTime = `${formattedHours.toString().padStart(2, '0')}:${minutes
+		.toString()
+		.padStart(2, '0')}${meridian}`;
+	return formattedTime;
+}

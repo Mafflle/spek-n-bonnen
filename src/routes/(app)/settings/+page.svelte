@@ -18,7 +18,17 @@
 	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
 	import Vacation from '$lib/components/HRM/Vacation.svelte';
 
+	import TimeEntriesLog from '$lib/components/HRM/TimeEntriesLog.svelte';
+	import { TimeEntries } from '$lib/hrm.js';
+
+	export let data;
+
 	dayjs.extend(relativeTime);
+
+	let schedules = data.mySchedule.results;
+	let { myTimeEntries } = data;
+
+	TimeEntries.set(myTimeEntries.results);
 
 	let showModal: boolean = false;
 	let showProfileModal: boolean = false;
@@ -89,8 +99,19 @@
 
 	let tabs = [
 		{ title: 'Profile', id: 'staff_profile', component: Profile },
-		{ title: 'Work Schedule', id: 'work-schedule', component: WorkSchedule },
-		{ title: 'Vacation', id: 'vacation', component: Vacation }
+		{
+			title: 'Work Schedule',
+			id: 'work-schedule',
+			component: WorkSchedule,
+			props: { viewType: 'employee', workSchedule: schedules }
+		},
+		{ title: 'Vacation', id: 'vacation', component: Vacation },
+		{
+			title: 'Logs',
+			id: 'logs',
+			component: TimeEntriesLog,
+			props: { timeEntries: $TimeEntries }
+		}
 	];
 </script>
 
@@ -126,7 +147,7 @@
 				</div>
 			</section>
 		{/if}
-		<section class="w-full">
+		<section class="w-full h-full">
 			<CustomTabs on:editProfile={() => (showProfileModal = true)} {tabs} />
 		</section>
 	</div>

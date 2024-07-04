@@ -165,25 +165,10 @@
 							<form action="/?/logout" class="" method="post">
 								<DropdownMenu.Item
 									type="submit"
-									class="text-grey-100 cursor-pointer font-satoshi  -tracking-[0.14px]  flex items-center justify-start py-2 rounded gap-2"
+									class="text-grey-100 w-full cursor-pointer font-satoshi  -tracking-[0.14px]  flex items-center justify-start  rounded gap-2"
 								>
 									<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
-									<!-- <button type="submit"
-										class="button-content text-inherit flex items-center justify-center lg:justify-start w-full md:gap-2.5 md:py-1 md:px-3"
-									>
-										<span class="w-full button-text hidden lg:flex text-sm"
-											>Logout</span>
-										
-								</button> -->
-
-									<!-- {#if loading}
-					<iconify-icon
-					class="text-primary-red"
-					width="20"
-					icon="eos-icons:three-dots-loading"
-					></iconify-icon>
-					{:else} -->
-									<button class="flex items-center gap-2">
+									<button class=" w-full flex py-2 items-center gap-2">
 										<iconify-icon icon="material-symbols:logout" width="20"></iconify-icon>
 
 										<span class="">Logout </span>

@@ -9,16 +9,16 @@ import type { RequestEvent } from './routes/$types';
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	let access = event.cookies.get('access');
 
-	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
-		request.headers.set('Origin', event.url.origin);
-		if (!request.url.includes('/images/')) {
-			request.headers.set('Content-Type', 'application/json');
-		}
-
-		if (access) {
-			request.headers.set('Authorization', `Bearer ${access}`);
-		}
+	// if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
+	request.headers.set('Origin', event.url.origin);
+	if (!request.url.includes('/images/')) {
+		request.headers.set('Content-Type', 'application/json');
 	}
+
+	if (access) {
+		request.headers.set('Authorization', `Bearer ${access}`);
+	}
+	// }
 	// const response = await fetch(request);
 
 	async function refreshAndRetry(maxAttempts = 3) {
@@ -83,6 +83,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 	if (!response.ok) {
 		// Handle other errors if needed
+		console.log(response.url);
+
 		console.error('API request failed:', response.status, response.statusText);
 		// You might want to return a custom error response or throw an error here.
 	}
@@ -118,7 +120,7 @@ export const handle = async ({ event, resolve }) => {
 
 				if (response.ok) {
 					const tokens = await response.json();
-					console.log('Successfully refreshed tokens', tokens);
+					console.log('Successfully refreshed tokens');
 
 					event.cookies.set('access', tokens.access, {
 						httpOnly: true,
@@ -164,7 +166,7 @@ export const handle = async ({ event, resolve }) => {
 	if (!access) {
 		return await resolve(event); // No access token, skip fetching user profile
 	}
-
+	event.locals.accessToken = access;
 	try {
 		const profileResponse = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 			headers: {
@@ -177,6 +179,7 @@ export const handle = async ({ event, resolve }) => {
 		if (profileResponse.ok) {
 			const user = await profileResponse.json();
 			event.locals.user = user;
+			event.locals.accessToken = access;
 			return await resolve(event);
 		} else if (profileResponse.status === 401) {
 			const newAccessToken = await refreshToken(event);
@@ -191,6 +194,7 @@ export const handle = async ({ event, resolve }) => {
 				if (retryResponse.ok) {
 					const user = await retryResponse.json();
 					event.locals.user = user;
+					event.locals.accessToken = newAccessToken;
 					return await resolve(event);
 				} else {
 					// Handle the case where even after a successful token refresh, the user profile fetch still fails (e.g., user might be deleted)

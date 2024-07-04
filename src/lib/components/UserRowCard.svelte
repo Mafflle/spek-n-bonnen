@@ -5,28 +5,10 @@
 	import { showToast } from '$lib/utils';
 	import type { User } from '$lib/user';
 	import dayjs from 'dayjs';
-	import { LoggedinUsers } from '$lib/stores';
 
 	export let user: User;
 
 	let loading: boolean = false;
-
-	const deleteBrand: SubmitFunction = () => {
-		loading = true;
-		return async ({ result, update }) => {
-			try {
-				if (result.status == 200) {
-					LoggedinUsers.update((users) => users.filter((user) => user.id !== id));
-					showToast('User deleted successfully', 'success');
-				} else {
-					showToast('Ooops something went wrong', 'error');
-				}
-			} finally {
-				loading = false;
-				update();
-			}
-		};
-	};
 </script>
 
 <tr class="border-b border-[#D9D9D9]">
@@ -78,7 +60,7 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
 				<DropdownMenu.Item>
 					<Button
-						class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+						class="text-xs font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
 						<img src="/icons/edit.svg" alt="edit icon" />
 						<span class="text-grey-100">Edit</span>
@@ -87,9 +69,10 @@
 
 				<DropdownMenu.Item>
 					<Button
-						class="text-sm font-satoshi text-grey-100 -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+						href="staffs/{user?.id}"
+						class="text-xs font-satoshi text-grey-100 -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
-						<iconify-icon width="20" icon="ph:eye-light"></iconify-icon>
+						<iconify-icon width="17" icon="ph:eye-light"></iconify-icon>
 						<span class="text-grey-100">View</span>
 					</Button>
 				</DropdownMenu.Item>
@@ -97,7 +80,7 @@
 				<DropdownMenu.Item>
 					<form action="?/delete" method="post" class="">
 						<Button
-							class="text-sm font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
+							class="text-xs font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 							type="submit"
 							>{#if loading}
 								<iconify-icon

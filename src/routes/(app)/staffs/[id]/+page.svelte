@@ -2,25 +2,22 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { container } from '$lib/stores.js';
-	import { Users, type User } from '$lib/user.js';
 	import { onDestroy } from 'svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import UserRowCard from '$lib/components/UserRowCard.svelte';
-	import InviteStaff from '$lib/components/HRM/InviteStaff.svelte';
-	import CreateTask from '$lib/components/HRM/CreateTask.svelte';
-	import { Tasks, type Task } from '$lib/hrm.js';
+
+	import { type Schedule, workSchedules, type Task } from '$lib/hrm.js';
 	import dayjs from 'dayjs';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { shortenText } from '$lib/utils.js';
+	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
+	import ManageSchedule from '$lib/components/HRM/ManageSchedule.svelte';
 
 	export let data;
 
-	let { groups, access, users, tasks } = data;
+	let { userAccount, userTasks, userSchedule } = data;
 
-	Tasks.set(tasks.results as Task[]);
-
-	let showModal: boolean = false;
+	let showScheduleModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
 	let validationErrors: {
@@ -31,16 +28,21 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
-	$: currentTab = 'staffs';
+	$: currentTab = 'schedules';
 
-	const staffManagers = data.staffManagers.results as User[];
+	$: workSchedules.set(userSchedule.results);
+
 	let currentTask: Task | null;
+	let currentSchedule: Schedule | null;
 
-	$Users = users.results;
-
-	const toggleModal = () => {
-		showModal = !showModal;
-	};
+	function toggleScheduleModal(schedule?: Schedule) {
+		if (schedule) {
+			currentSchedule = schedule;
+		} else {
+			currentSchedule = null;
+		}
+		showScheduleModal = !showScheduleModal;
+	}
 
 	function toggleTaskDetails(task?: Task) {
 		if (task) {
@@ -52,7 +54,6 @@
 		showTaskDetails = !showTaskDetails;
 	}
 
-	// $: console.log(currentTask);
 	onDestroy(() => {
 		container.set([]);
 	});
@@ -65,8 +66,10 @@
 <div class="staff-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
 	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Staff management</div>
-			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Employee management</div>
+			<sub class="text-[#6B6B6B] text-sm">
+				Manage employee profile, assign roles and create schedules
+			</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
@@ -100,23 +103,21 @@
 			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
-				<button
-					on:click={toggleModal}
-					class=" px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+				{#if currentTab === 'schedules'}
+					<button
+						on:click={() => toggleScheduleModal()}
+						class=" px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
-				>
-					<div class="w-5 h-5 relative">
-						<img src="/icons/plus.svg" alt="user-plus" />
-					</div>
-					<span class="text-white text-sm font-bold font-satoshi hidden sm:block">
-						{#if currentTab === 'staffs'}
-							Invite new user
-						{:else if currentTab === 'tasks'}
-							Create task
-						{/if}
-					</span>
-				</button>
+					>
+						<div class="w-5 h-5 relative">
+							<img src="/icons/plus.svg" alt="user-plus" />
+						</div>
+						<span class="text-white text-xs font-bold font-satoshi hidden sm:block">
+							Create work schdule
+						</span>
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -126,47 +127,30 @@
 			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6  xl:pl-10 space-x-8 md:flex-wrap-none mb-12 md:pb-1 "
 		>
 			<Tabs.Trigger
-				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="staffs">Staffs</Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="tasks">Employee Task</Tabs.Trigger
 			>
 			<Tabs.Trigger
-				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="tasks">Tasks</Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="schedules">Work schedule</Tabs.Trigger
 			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="vacation">Vacation</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="balance">Employee Balance</Tabs.Trigger
+			>
+			<!-- <Tabs.Trigger
+				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="destination">Destination</Tabs.Trigger
+			> -->
 		</Tabs.List>
-		<!-- <Separator data-separator-root class="hidden md:block" /> -->
-		<Tabs.Content class="w-full relative  " value="staffs">
-			<div class="border rounded-xl w-full max-w-full overflow-x-scroll no-scrollbar">
-				<table class="table">
-					<thead class="">
-						<tr class="">
-							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-							<th class="bg-[#F9F9F9]">Email</th>
-							<th class="bg-[#F9F9F9]">Role</th>
-							<th class="bg-[#F9F9F9]">Date</th>
-							<th class="bg-[#F9F9F9]">Status</th>
 
-							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each $Users as user}
-							{#if user.is_staff}
-								<UserRowCard {user} />
-							{/if}
-						{/each}
-					</tbody>
-				</table>
-			</div>
-			<div class="flex items-center gap-4 border-2 rounded-lg absolute mt-1 px-2 right-0">
-				<button>prev</button>
-				<span>page: 1</span>
-				<button>next</button>
-			</div>
-		</Tabs.Content>
 		<Tabs.Content class="w-full" value="tasks">
 			<div class="grid grid-cols-3 gap-4 xl:gap-6 xl:grid-cols-3">
-				{#each $Tasks as task, i}
+				{#each userTasks.results as task, i}
 					<div
 						on:click={() => toggleTaskDetails(task)}
 						class="col-span-1 cursor-pointer flex flex-col w-full border-2 min-h-[170px] p-4 gap-1 rounded-xl"
@@ -212,24 +196,22 @@
 				{/each}
 			</div>
 		</Tabs.Content>
+		<Tabs.Content class="w-full" value="schedules">
+			<WorkSchedule
+				workSchedule={$workSchedules}
+				on:createSchedule={() => toggleScheduleModal()}
+				on:editSchedule={(e) => toggleScheduleModal(e.detail.schedule)}
+				viewType="manager"
+			/>
+		</Tabs.Content>
 	</Tabs.Root>
 </div>
 
-<Modal mode="sheet" on:close={toggleModal} {showModal}>
+<Modal mode="sheet" on:close={() => toggleScheduleModal()} showModal={showScheduleModal}>
 	<div slot="modal-content" class="w-full h-fit max-h-full overflow-x-scroll no-scrollbar">
-		{#if currentTab === 'staffs'}
-			<InviteStaff {groups} {access} {staffManagers} />
-		{:else if currentTab === 'tasks'}
-			<CreateTask
-				on:close={() => {
-					currentTask = null;
-					toggleModal();
-				}}
-				task={currentTask}
-				{access}
-				users={users.results}
-			/>
-		{/if}
+		{#if currentTab === 'schedules'}
+			<ManageSchedule bind:schedule={currentSchedule} on:close={() => toggleScheduleModal()} />
+		{:else if currentTab === 'tasks'}{/if}
 	</div>
 </Modal>
 
@@ -266,7 +248,6 @@
 					<div class="flex items-center -space-x-2">
 						{#each currentTask.assignees as assignee, i}
 							<Avatar.Root class="w-7 h-7">
-								<!-- {#if assignee.staff_profile} -->
 								<Avatar.Image
 									class="w-full h-full object-cover"
 									src={assignee?.staff_profile?.profile_picture.image}
@@ -274,7 +255,6 @@
 								<Avatar.Fallback class="text-sm"
 									>{assignee?.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
 								>
-								<!-- {/if} -->
 							</Avatar.Root>
 						{/each}
 					</div>
@@ -289,7 +269,7 @@
 				<Button
 					on:click={() => {
 						showTaskDetails = false;
-						toggleModal();
+						toggleScheduleModal();
 					}}
 					variant="outline"
 					class="border-primary-red border text-primary-red">Edit Task</Button

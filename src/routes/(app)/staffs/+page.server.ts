@@ -85,7 +85,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	if (check('view_account', locals.user) || check('view_group', locals.user)) {
 		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
 	}
-	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=10`);
+	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=20`);
 	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_staff=true`);
 	const managers = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_manager=true`);
 	const getTasks = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`);
@@ -95,7 +95,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 		let users = await staffs.json();
 		let staffManagers = await managers.json();
 		let tasks = await getTasks.json();
-
+		// console.log(users);
 		return {
 			access,
 			groups: data,
