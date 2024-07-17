@@ -4,7 +4,6 @@
 	import * as Sheet from './ui/sheet';
 	import * as Drawer from './ui/drawer';
 	import { mediaQuery } from 'svelte-legos';
-	import { slide } from 'svelte/transition';
 	export let showModal: boolean = false;
 	export let mode: 'sheet' | 'dialog' = 'dialog';
 	export let lock: boolean = false;
@@ -42,7 +41,7 @@
 		}}
 	>
 		<Drawer.Content class="max-h-[80vh]">
-			<slot name="modal-content" class="" />
+			<slot name="modal-content" class="w-full" />
 		</Drawer.Content>
 	</Drawer.Root>
 {/if}
