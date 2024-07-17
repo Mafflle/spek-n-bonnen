@@ -1034,16 +1034,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bits-ui@npm:^0.20.1":
-  version: 0.20.1
-  resolution: "bits-ui@npm:0.20.1"
+"bits-ui@npm:^0.21.10":
+  version: 0.21.10
+  resolution: "bits-ui@npm:0.21.10"
   dependencies:
     "@internationalized/date": "npm:^3.5.1"
     "@melt-ui/svelte": "npm:0.76.2"
     nanoid: "npm:^5.0.5"
   peerDependencies:
-    svelte: ^4.0.0
-  checksum: 10c0/5ace92ad08987023254489bd9fcb6d861e8dc5476042b652df282ff1d3989d90d86c4c10a3c564b27398a2efab44e8a1e17452f39c88019ce3607338d8ff91a6
+    svelte: ^4.0.0 || ^5.0.0-next.118
+  checksum: 10c0/a393e2e39d2696edb0b7ddf45880ab4161aecb8a41122692f4bfff92f8dd020f5956023ea74ee4792f182e2b0e7698c6eb972f5d8e97285588c209c605b39689
   languageName: node
   linkType: hard
 
@@ -3944,7 +3944,7 @@ __metadata:
     "@tinymce/tinymce-svelte": "npm:^2.0.1"
     autoprefixer: "npm:^10.4.14"
     axios: "npm:^1.6.2"
-    bits-ui: "npm:^0.20.1"
+    bits-ui: "npm:^0.21.10"
     clsx: "npm:^2.1.0"
     dayjs: "npm:^1.11.10"
     dotenv: "npm:^16.3.1"

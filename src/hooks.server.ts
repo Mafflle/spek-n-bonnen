@@ -2,225 +2,217 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { HandleFetch } from '@sveltejs/kit';
 
 import type { Cookies } from '@sveltejs/kit';
+import type { RequestEvent } from './routes/$types';
 
 // Helper functions for token management
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
-	const access = event.cookies.get('access');
+	let access = event.cookies.get('access');
 
-	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
-		request.headers.set('Origin', event.url.origin);
-		if (!request.url.includes('/images/')) {
-			request.headers.set('Content-Type', 'application/json');
-		}
-
-		if (access) {
-			request.headers.set('Authorization', `Bearer ${access}`);
-		}
+	// if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
+	request.headers.set('Origin', event.url.origin);
+	if (!request.url.includes('/images/')) {
+		request.headers.set('Content-Type', 'application/json');
 	}
 
-	async function refreshTokens(): Promise<boolean> {
-		const refreshToken = event.cookies.get('refresh');
+	if (access) {
+		request.headers.set('Authorization', `Bearer ${access}`);
+	}
+	// }
+	// const response = await fetch(request);
 
-		if (!refreshToken) {
-			throw new Error('Refresh token not found');
-		}
+	async function refreshAndRetry(maxAttempts = 3) {
+		let attempt = 1;
+		while (attempt <= maxAttempts) {
+			const refreshToken = event.cookies.get('refresh');
 
-		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
-			method: 'POST',
-			body: JSON.stringify({ refresh: refreshToken }),
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
+			if (!refreshToken) {
+				console.error('Refresh token not found');
+				return null;
 			}
-		});
 
-		if (!response.ok) {
-			// console.log(response.statusText);
+			try {
+				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
+					method: 'POST',
+					body: JSON.stringify({ refresh: refreshToken }),
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+					}
+				});
 
-			const errorbody = await response.json();
-			console.log('error fetching account', errorbody);
-			return false;
-		}
+				if (response.ok) {
+					const tokens = await response.json();
+					console.log('Successfully refreshed tokens');
 
-		const tokens = await response.json();
-		console.log('Successfully refreshed tokens');
+					event.cookies.set('access', tokens.access, {
+						path: '/'
+					});
+					event.cookies.set('refresh', tokens.refresh, {
+						path: '/'
+					});
 
-		event.cookies.set('access', tokens.access, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'lax',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 30
-		});
-		event.cookies.set('refresh', tokens.refresh, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'lax',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 30
-		});
+					return;
+				} else {
+					console.error(`Refresh attempt ${attempt} failed:`, await response.json());
+				}
+			} catch (error) {
+				console.error(`Refresh attempt ${attempt} failed due to a network error:`, error);
+			}
 
-		return true;
-	}
-
-	const retryRequest = async (attempt = 1) => {
-		const maxAttempts = 4; // Adjust as needed
-		const delay = Math.pow(2, attempt - 1) * 1000;
-		console.log(maxAttempts, attempt);
-
-		if (await refreshTokens()) {
-			const res = await fetch(request.clone());
-			return res;
-		}
-
-		// const newAccessToken: string | undefined = event.cookies.get('access');
-		// if (newAccessToken) {
-		// 	request.headers.set('Authorization', `Bearer ${newAccessToken}`);
-		// }
-
-		console.error('Error refreshing token:', error);
-
-		if (attempt < maxAttempts) {
+			// Exponential backoff with jitter
+			const delay = Math.random() * 1000 + Math.pow(2, attempt - 1) * 1000; // 1s, 3s, 7s,...
+			console.log(`Retrying token refresh in ${delay / 1000} seconds...`);
 			await new Promise((resolve) => setTimeout(resolve, delay));
-			//  console.log(refreshTokens.status, refreshTokens.statusText);
-			//  console.log('errorbody', errorBody);
-
-			//when refresh fails, it tries again for confirmation
-			console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
-			// wait for a bit before refreshing
-			// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
-			await retryRequest(attempt + 1);
+			attempt++;
 		}
-	};
-
-	const res = await fetch(request.clone());
-
-	console.log(res.url, res.status);
-
-	if (!res.ok && res.status === 401 && !res.url.includes('auth')) {
-		console.log('Request intercepted with 401 status');
-		await retryRequest();
-		console.log('done');
+		console.error('Max refresh attempts reached. Could not refresh token.');
+		return null; // Indicate refresh failure
 	}
-	return res;
+
+	// Make the initial request
+	let response = await fetch(request.clone()); // Clone to allow retrying
+
+	// Retry if 401 Unauthorized
+	if (response.status === 401 && !request.url.includes('auth')) {
+		await refreshAndRetry(5);
+		access = event.cookies.get('access');
+		request.headers.set('Authorization', `Bearer ${access}`);
+		response = await fetch(request.clone());
+	}
+
+	if (!response.ok) {
+		// Handle other errors if needed
+		console.log(response.url);
+
+		console.error('API request failed:', response.status, response.statusText);
+		// You might want to return a custom error response or throw an error here.
+	}
+
+	return response;
+
 	// console.log('hey');
 };
 
 export const handle = async ({ event, resolve }) => {
-	const access = event.cookies.get('access');
+	async function refreshToken(event: RequestEvent): Promise<string | null> {
+		const maxAttempts = 5;
+		let attempt = 1;
+		const delay = 1000; // Initial delay of 1 second
 
-	if (!access) {
-		return await resolve(event);
-	}
+		while (attempt <= maxAttempts) {
+			const refreshToken = event.cookies.get('refresh');
 
-	async function refreshTokens(): Promise<boolean> {
-		const refreshToken = event.cookies.get('refresh');
-
-		if (!refreshToken) {
-			throw new Error('Refresh token not found');
-		}
-
-		const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
-			method: 'POST',
-			body: JSON.stringify({ refresh: refreshToken }),
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
+			if (!refreshToken) {
+				console.error('Refresh token not found');
+				return null;
 			}
-		});
 
-		if (!response.ok) {
-			// console.log(response.statusText);
+			try {
+				const response = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
+					method: 'POST',
+					body: JSON.stringify({ refresh: refreshToken }),
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+					}
+				});
 
-			const errorbody = await response.json();
-			console.log('error', errorbody);
-			return false;
+				if (response.ok) {
+					const tokens = await response.json();
+					console.log('Successfully refreshed tokens');
+
+					event.cookies.set('access', tokens.access, {
+						httpOnly: true,
+						secure: true,
+						sameSite: 'lax',
+						path: '/',
+						maxAge: 60 * 60 * 24 * 30 // 30 days
+					});
+					event.cookies.set('refresh', tokens.refresh, {
+						httpOnly: true,
+						secure: true,
+						sameSite: 'lax',
+						path: '/',
+						maxAge: 60 * 60 * 24 * 30 // 30 days
+					});
+					return tokens.access;
+				} else {
+					// Log the error for debugging
+					const errorBody = await response.json();
+					console.error(`Refresh attempt ${attempt} failed:`, errorBody);
+				}
+			} catch (error) {
+				console.error(`Refresh attempt ${attempt} failed due to a network error:`, error);
+			}
+
+			// Exponential backoff with jitter
+			const jitter = Math.random() * 500; // Add up to 500ms of random jitter
+			const nextDelay = delay * Math.pow(2, attempt - 1) + jitter;
+			console.log(`Retrying token refresh in ${nextDelay / 1000} seconds...`);
+			await new Promise((resolve) => setTimeout(resolve, nextDelay));
+			attempt++;
 		}
 
-		const tokens = await response.json();
-		console.log('Successfully refreshed tokens');
-
-		event.cookies.set('access', tokens.access, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'lax',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 30
-		});
-		event.cookies.set('refresh', tokens.refresh, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'lax',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 30
-		});
-
-		return true;
+		console.error('Max refresh attempts reached. Could not refresh token.');
+		return null;
 	}
 
-	if (!event.url.pathname.includes('auth')) {
-		const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
+	if (event.url.pathname.startsWith('/auth') || event.locals.user) {
+		return await resolve(event); // Skip user profile fetching for auth routes or existing user data
+	}
+
+	const access = event.cookies.get('access');
+	if (!access) {
+		return await resolve(event); // No access token, skip fetching user profile
+	}
+	event.locals.accessToken = access;
+	try {
+		const profileResponse = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
 				Authorization: `Bearer ${access}`
 			}
 		});
 
-		const retryRequest = async (attempt = 1) => {
-			const maxAttempts = 4; // Adjust as needed
-			const delay = Math.pow(2, attempt - 1) * 1000;
-			console.log(maxAttempts, attempt);
+		console.log(profileResponse.url, profileResponse.status);
 
-			if (await refreshTokens()) {
-				const newAccessToken: string | undefined = event.cookies.get('access');
-				const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
+		if (profileResponse.ok) {
+			const user = await profileResponse.json();
+			event.locals.user = user;
+			event.locals.accessToken = access;
+			return await resolve(event);
+		} else if (profileResponse.status === 401) {
+			const newAccessToken = await refreshToken(event);
+			if (newAccessToken) {
+				// Retry fetching the user profile with the new access token
+				const retryResponse = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
 					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
 						Authorization: `Bearer ${newAccessToken}`
 					}
 				});
-				// console.log('here we go');
 
-				if (res.ok) {
-					const user = await res.json();
+				if (retryResponse.ok) {
+					const user = await retryResponse.json();
 					event.locals.user = user;
-					// console.log('user', user);
-
+					event.locals.accessToken = newAccessToken;
+					return await resolve(event);
+				} else {
+					// Handle the case where even after a successful token refresh, the user profile fetch still fails (e.g., user might be deleted)
+					console.error('Failed to fetch user profile after token refresh.');
 					return await resolve(event);
 				}
+			} else {
+				event.locals.user = null;
+				return await resolve(event);
 			}
-
-			if (attempt < maxAttempts) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-				//  console.log(refreshTokens.status, refreshTokens.statusText);
-				//  console.log('errorbody', errorBody);
-
-				//when refresh fails, it tries again for confirmation
-				console.log(`Refresh attempt ${attempt} failed, retrying in ${delay}ms`);
-				// wait for a bit before refreshing
-				// after timeout refresh begins till its over *note the previous value of 'attempt' will be used due to closure
-				await retryRequest(attempt + 1);
-			} else if (attempt >= maxAttempts) {
-				console.log(attempt, 'attempts exceeded');
-
-				event.cookies.delete('access', { path: '/' });
-				event.cookies.delete('refresh', { path: '/' });
-			}
-		};
-
-		if (res.ok) {
-			const user = await res.json();
-			event.locals.user = user;
-		} else if (!res.ok) {
-			// console.log(res.status);
-
-			await retryRequest();
+		} else {
+			// Handle other error responses (e.g., 500 Internal Server Error)
+			console.error('Unexpected error fetching user profile:', profileResponse.status);
 			return await resolve(event);
 		}
+	} catch (error) {
+		// Handle potential network errors
+		console.error('Network error fetching user profile:', error);
+		return await resolve(event);
 	}
-
-	return await resolve(event);
 };

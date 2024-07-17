@@ -5,24 +5,26 @@ import { z } from 'zod';
 import { check } from '$lib/utils';
 
 type Errors = {
-	first_name?: [string];
-	last_name?: [string];
 	email?: [string];
 	password?: [string];
 	password2?: [string];
 	groups?: [string];
 };
 
+const taskPriorities = ['LOW', 'NORMAL', 'HIGH'] as const;
+
+const dateSchema = z.preprocess(
+	(arg) => {
+		if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+	},
+	z.date({
+		required_error: 'Date is required',
+		invalid_type_error: 'Invalid date format'
+	})
+);
+
 const inviteSchema = z
 	.object({
-		first_name: z
-			.string({ required_error: 'First name is required' })
-			.trim()
-			.min(1, { message: 'First name should be longer' }),
-		last_name: z
-			.string({ required_error: 'Last name is required' })
-			.trim()
-			.min(1, { message: 'Last name should be longer' }),
 		email: z
 			.string({ required_error: 'Email is required' })
 			.trim()
@@ -43,7 +45,12 @@ const inviteSchema = z
 			.trim(),
 		groups: z
 			.array(z.number({ required_error: 'Roles are required' }))
-			.nonempty({ message: 'Roles are required' })
+			.nonempty({ message: 'Roles are required' }),
+		managers: z
+			.array(z.number({ required_error: 'You need to assign this employee a manager ' }))
+			.nonempty({ message: 'You need to assign this employee a manager' })
+			.optional(),
+		is_manager: z.any().optional()
 	})
 	.superRefine(({ password, password2 }, ctx) => {
 		if (password2 !== password) {
@@ -55,26 +62,46 @@ const inviteSchema = z
 		}
 	});
 
+const taskSchema = z.object({
+	title: z
+		.string({ required_error: 'Task name is required' })
+		.min(1, { message: 'Task name is required' })
+		.trim(),
+	description: z.string({ required_error: 'Task description is resquired' }).trim().optional(),
+	priority: z.enum(taskPriorities, {
+		description: 'Task priority is required',
+		required_error: 'Please select task priority'
+	}),
+	start_time: dateSchema,
+	end_time: dateSchema,
+	assignees_ids: z
+		.array(z.number({ required_error: 'Please assign this task to someone ' }))
+		.nonempty({ message: 'Please assign this task to someone' })
+});
+
 export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	const access = cookies.get('access');
 
-	// console.log(check('view_account', locals.user));
 	if (check('view_account', locals.user) || check('view_group', locals.user)) {
 		throw redirect(302, "/?message=You don't have the permission to view this page&&type=info");
 	}
-	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=10`);
+	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=20`);
 	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_staff=true`);
+	const managers = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_manager=true`);
+	const getTasks = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`);
 
-	console.log('groups', groups.statusText);
-
-	if (groups.ok && staffs.ok) {
+	if (groups.ok && staffs.ok && getTasks.ok && managers.ok) {
 		const data = await groups.json();
 		let users = await staffs.json();
-
+		let staffManagers = await managers.json();
+		let tasks = await getTasks.json();
+		// console.log(users);
 		return {
 			access,
 			groups: data,
-			users: users
+			users: users,
+			staffManagers,
+			tasks
 		};
 	}
 };
@@ -84,32 +111,34 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const roles = formData.getAll('role');
-		const first_name = formData.get('first-name');
-		const last_name = formData.get('last-name');
 		const email = formData.get('email');
 		const password = formData.get('password');
 		const password2 = formData.get('confirm-password');
+		const is_manager = formData.get('is_manager');
+		const assigned_managers = formData.getAll('assigned_manager');
+		// console.log(roles);
 
 		const groups = roles.map((role) => parseInt(role));
 
+		const managers = assigned_managers.map((manager) => parseInt(manager as string));
 		const dataToValidate = {
-			...(first_name && { first_name }),
-			...(last_name && { last_name }),
 			...(email && { email }),
 			...(password && { password }),
 			...(password2 && { password2 }),
-			...(groups && { groups })
+			...(groups && { groups }),
+			...(is_manager && { is_manager }),
+			...(managers && { managers })
 		};
 
 		try {
 			const validatedData = inviteSchema.parse(dataToValidate);
-			// console.log(validatedData);
 
 			const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/invite/`, {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
 
+			console.log(res);
 			console.log('inviting', res.status, res.statusText);
 
 			if (res.ok) {
@@ -131,6 +160,91 @@ export const actions: Actions = {
 			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
+				console.log(toSend.errors);
+
+				return fail(400, toSend);
+			}
+
+			console.log('error', error);
+			return fail(500, toSend);
+		}
+	},
+	manage_task: async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const title = formData.get('title');
+		const description = formData.get('description');
+		const priority = formData.get('priority');
+		const start_time = formData.get('start_time');
+		const end_time = formData.get('end_time');
+		const assignedManagers = formData.getAll('assignees_ids');
+		const existingTask = parseInt(formData.get('existingTaskId') as string);
+		console.log(existingTask);
+
+		let assignees_ids = assignedManagers.map((m) => parseInt(m as string));
+
+		const dataToValidate = {
+			...(title && { title }),
+			...(description && { description }),
+			...(priority && { priority }),
+			...(start_time && { start_time }),
+			...(end_time && { end_time }),
+			...(assignees_ids && { assignees_ids })
+		};
+
+		console.log(dataToValidate);
+
+		try {
+			const validatedData = taskSchema.parse(dataToValidate);
+
+			console.log('starting');
+			if (existingTask && existingTask > 0) {
+				const editTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${existingTask}/`, {
+					method: 'put',
+					body: JSON.stringify(validatedData)
+				});
+
+				if (editTask.ok) {
+					console.log('almost');
+					const editedTask = await editTask.json();
+					console.log('completed', editedTask);
+
+					return {
+						edited: true,
+						editedTask
+					};
+				} else {
+					console.log(editTask.status);
+				}
+			} else {
+				const createTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`, {
+					method: 'post',
+					body: JSON.stringify(validatedData)
+				});
+				console.log('in progress', createTask.status);
+				if (createTask.ok) {
+					const newTask = await createTask.json();
+					console.log(newTask);
+
+					return {
+						newTask,
+						edited: false
+					};
+				} else {
+					console.log(createTask.status);
+				}
+			}
+		} catch (error) {
+			const toSend = {
+				message: 'Ooops something went wrong',
+				errors: {} as Errors
+			};
+
+			if (error instanceof z.ZodError) {
+				toSend.message = 'Validation error';
+				toSend.errors = error.flatten().fieldErrors;
+
+				console.log(toSend.errors);
 
 				return fail(400, toSend);
 			}

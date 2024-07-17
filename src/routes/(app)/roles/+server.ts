@@ -4,7 +4,9 @@ export const GET = async ({ request, url }) => {
 	const access = request.headers.get('access');
 	const search = url.searchParams.get('search');
 
-	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions?search=${search}`, {
+	console.log('searching');
+
+	const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/permissions/?search=${search}`, {
 		headers: {
 			Authorization: `Bearer ${access}`
 		}

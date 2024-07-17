@@ -2,44 +2,61 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { container } from '$lib/stores.js';
-	import { Users, type User } from '$lib/user.js';
 	import { onDestroy } from 'svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Avatar from '$lib/components/ui/avatar';
 
-	import InviteStaff from '$lib/components/HRM/forms/InviteStaff.svelte';
-	import CreateTask from '$lib/components/HRM/forms/CreateTask.svelte';
-	import { currentTask, Tasks, type Task } from '$lib/hrm.js';
+	import { type Schedule, workSchedules, type Task } from '$lib/hrm.js';
 	import dayjs from 'dayjs';
 	import Button from '$lib/components/ui/button/button.svelte';
 
-	import StaffsTab from '$lib/components/HRM/tabs/StaffsTab.svelte';
+	import WorkSchedule from '$lib/components/HRM/tabs/WorkSchedule.svelte';
+	import ManageSchedule from '$lib/components/HRM/forms/ManageSchedule.svelte';
 	import TaskTab from '$lib/components/HRM/tabs/TaskTab.svelte';
+	import Profile from '$lib/components/HRM/tabs/Profile.svelte';
 
 	export let data;
 
-	let { groups, access, users, tasks } = data;
+	let { userAccount, userTasks, userSchedule } = data;
 
-	Tasks.set(tasks.results as Task[]);
-
-	let showModal: boolean = false;
+	let showScheduleModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
-	$: currentTab = 'staffs';
+	let validationErrors: {
+		email?: [string];
+		last_name?: [string];
+		first_name?: [string];
+		password?: [string];
+		password2?: [string];
+		groups?: [string];
+	} = {};
+	$: currentTab = 'schedules';
 
-	const staffManagers = data.staffManagers.results as User[];
+	$: workSchedules.set(userSchedule.results);
 
-	$: {
-		Users.set(users.results);
+	let currentTask: Task | null;
+	let currentSchedule: Schedule | null;
+
+	function toggleScheduleModal(schedule?: Schedule) {
+		if (schedule) {
+			currentSchedule = schedule;
+		} else {
+			currentSchedule = null;
+		}
+		showScheduleModal = !showScheduleModal;
 	}
 
-	const toggleModal = () => {
-		showModal = !showModal;
-	};
+	function toggleTaskDetails(task?: Task) {
+		if (task) {
+			currentTask = task;
+		} else {
+			currentTask = null;
+		}
 
-	function toggleTaskDetails() {
 		showTaskDetails = !showTaskDetails;
 	}
+
+	console.log(userAccount);
 
 	onDestroy(() => {
 		container.set([]);
@@ -53,8 +70,10 @@
 <div class="staff-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
 	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Staff management</div>
-			<sub class="text-[#6B6B6B] text-sm"> Manage employees, assign roles and tasks </sub>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Employee Profile</div>
+			<sub class="text-[#6B6B6B] text-sm">
+				Manage employee profile, assign roles and create schedules
+			</sub>
 		</div>
 		<div class="filters flex items-center w-full justify-between">
 			<div
@@ -88,69 +107,77 @@
 			</div>
 
 			<div class="filter-buttons flex items-start gap-5">
-				<button
-					on:click={toggleModal}
-					class=" px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
+				{#if currentTab === 'schedules'}
+					<button
+						on:click={() => toggleScheduleModal()}
+						class=" px-2.5 py-2 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
                     hover:bg-[#C7453C]
                     focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
-				>
-					<div class="w-5 h-5 relative">
-						<img src="/icons/plus.svg" alt="user-plus" />
-					</div>
-					<span class="text-white text-sm font-bold font-satoshi hidden sm:block">
-						{#if currentTab === 'staffs'}
-							Invite new user
-						{:else if currentTab === 'tasks'}
-							Create task
-						{/if}
-					</span>
-				</button>
+					>
+						<div class="w-5 h-5 relative">
+							<img src="/icons/plus.svg" alt="user-plus" />
+						</div>
+						<span class="text-white text-xs font-bold font-satoshi hidden sm:block">
+							Create work schdule
+						</span>
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
 
 	<Tabs.Root bind:value={currentTab} class="w-full ">
 		<Tabs.List
-			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6  xl:pl-10 space-x-8 md:flex-wrap-none mb-12 md:pb-1 "
+			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6   space-x-5 md:flex-wrap-none mb-12 md:pb-1 "
 		>
 			<Tabs.Trigger
-				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="staffs">Staffs</Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="profile">Profile</Tabs.Trigger
 			>
 			<Tabs.Trigger
-				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
 				value="tasks">Tasks</Tabs.Trigger
 			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="schedules">Work schedule</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="vacation">Vacation</Tabs.Trigger
+			>
+			<!-- <Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="balance">Balance</Tabs.Trigger
+			> -->
 		</Tabs.List>
-		<!-- <Separator data-separator-root class="hidden md:block" /> -->
-		<Tabs.Content class="w-full relative  " value="staffs">
-			<StaffsTab />
-			<div class="flex items-center gap-4 border-2 rounded-lg absolute mt-1 px-2 right-0">
-				<button>prev</button>
-				<span>page: 1</span>
-				<button>next</button>
-			</div>
+
+		<Tabs.Content class="w-full" value="profile">
+			<Profile view="manager" currentProfile={userAccount} />
 		</Tabs.Content>
 		<Tabs.Content class="w-full" value="tasks">
-			<TaskTab Tasks={$Tasks} on:open={toggleModal} />
+			<TaskTab Tasks={userTasks.results} />
+		</Tabs.Content>
+		<Tabs.Content class="w-full" value="schedules">
+			<WorkSchedule
+				workSchedule={$workSchedules}
+				on:createSchedule={() => toggleScheduleModal()}
+				on:editSchedule={(e) => toggleScheduleModal(e.detail.schedule)}
+				viewType="manager"
+			/>
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
 
-<Modal mode="sheet" on:close={toggleModal} {showModal}>
+<Modal mode="sheet" on:close={() => toggleScheduleModal()} showModal={showScheduleModal}>
 	<div slot="modal-content" class="w-full h-fit max-h-full overflow-x-scroll no-scrollbar">
-		{#if currentTab === 'staffs'}
-			<InviteStaff {groups} {access} {staffManagers} />
-		{:else if currentTab === 'tasks'}
-			<CreateTask
-				on:close={() => {
-					currentTask.set(null);
-					toggleModal();
-				}}
-				task={$currentTask}
-				{access}
-				users={users.results}
+		{#if currentTab === 'schedules'}
+			<ManageSchedule
+				on:add-WH={() => (currentTab = 'profile')}
+				bind:schedule={currentSchedule}
+				on:close={() => toggleScheduleModal()}
 			/>
+			<!-- {:else if currentTab === 'tasks'} -->
 		{/if}
 	</div>
 </Modal>
@@ -160,18 +187,18 @@
 		slot="modal-content"
 		class="min-w-[460px] max-w-md col-span-1 flex flex-col min-h-[132px] py-4 px-8 gap-1 rounded-xl w-full bg-white"
 	>
-		{#if $currentTask}
+		{#if currentTask}
 			<section class="flex items-center justify-end mb-2">
 				<button on:click={() => toggleTaskDetails()}>
 					<iconify-icon icon="hugeicons:cancel-01" width="25" class="text-grey-100"></iconify-icon>
 				</button>
 			</section>
 			<section class="flex items-center justify-between">
-				<h5 class="text-primary-red">{$currentTask.title}</h5>
+				<h5 class="text-primary-red">{currentTask.title}</h5>
 				<span
 					class="bg-primary-green text-[10px] xl:text-sm text-[#41AA00] min-w-[77px] py-1 px-2.5 rounded-3xl"
 				>
-					{$currentTask.status}
+					{currentTask.status}
 				</span>
 			</section>
 			<section class="grid text-grey-100 mb-5">
@@ -186,9 +213,8 @@
 			<section class="flex items-center justify-between mb-5">
 				<section class="flex items-center gap-2">
 					<div class="flex items-center -space-x-2">
-						{#each $currentTask.assignees as assignee, i}
+						{#each currentTask.assignees as assignee, i}
 							<Avatar.Root class="w-7 h-7">
-								<!-- {#if assignee.staff_profile} -->
 								<Avatar.Image
 									class="w-full h-full object-cover"
 									src={assignee?.staff_profile?.profile_picture.image}
@@ -196,7 +222,6 @@
 								<Avatar.Fallback class="text-sm"
 									>{assignee?.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
 								>
-								<!-- {/if} -->
 							</Avatar.Root>
 						{/each}
 					</div>
@@ -204,14 +229,14 @@
 				</section>
 				<div class=" flex items-center gap-1 text-primary-softPink-50">
 					<img class="w-5 h-5" src="/icons/TaskClock.svg" alt="clock icon" />
-					<span>{dayjs($currentTask.end_time).diff($currentTask.start_time, 'hour')}/hrs</span>
+					<span>{dayjs(currentTask.end_time).diff(currentTask.start_time, 'hour')}/hrs</span>
 				</div>
 			</section>
 			<section class="flex items-center justify-center gap-7">
 				<Button
 					on:click={() => {
 						showTaskDetails = false;
-						toggleModal();
+						toggleScheduleModal();
 					}}
 					variant="outline"
 					class="border-primary-red border text-primary-red">Edit Task</Button
