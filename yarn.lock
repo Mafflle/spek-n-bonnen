@@ -1348,6 +1348,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-picker-svelte@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "date-picker-svelte@npm:2.13.0"
+  peerDependencies:
+    svelte: ^3.24.0 || ^4.0.0
+  checksum: 10c0/8fd241e20366838290e3629e53288fc8ff32d09a01511b7a8d2e278a67070671b9a66d10d2be6cafcdf1b934812e314c44253cfe4f72920c45a1812ec7f2d05d
+  languageName: node
+  linkType: hard
+
 "dayjs@npm:^1.10.6":
   version: 1.11.11
   resolution: "dayjs@npm:1.11.11"
@@ -3946,6 +3955,7 @@ __metadata:
     axios: "npm:^1.6.2"
     bits-ui: "npm:^0.21.10"
     clsx: "npm:^2.1.0"
+    date-picker-svelte: "npm:^2.13.0"
     dayjs: "npm:^1.11.10"
     dotenv: "npm:^16.3.1"
     eslint: "npm:^8.28.0"
