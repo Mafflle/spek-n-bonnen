@@ -8,6 +8,8 @@
 	export let currentProfile: User;
 	export let view: 'employee' | 'manager' = 'employee';
 
+	const dispatch = createEventDispatcher();
+
 	let showEditModal: boolean = false;
 
 	$: name = `${currentProfile?.staff_profile?.first_name} ${currentProfile?.staff_profile?.last_name}`;
@@ -23,8 +25,6 @@
 		showEditModal = false;
 		dispatch('updatedProfile', { profile: user });
 	}
-
-	const dispatch = createEventDispatcher();
 </script>
 
 <div class="w-full py-5 flex flex-col gap-8 text-grey-200">
