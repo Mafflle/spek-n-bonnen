@@ -1,10 +1,12 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { staffprofileSchema, type StaffProfileErrors } from '$lib/user';
+import { staffprofileSchema, type staffProfileErrors } from '$lib/user';
 import { fail, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const actions: Actions = {
-	'manage-staff-profile': async ({ request, fetch }) => {
+	'manage-staff-profile': async ({ request, fetch, locals }) => {
+		// console.log(locals);
+
 		const formData = await request.formData();
 
 		const first_name = formData.get('first_name');
@@ -19,14 +21,9 @@ export const actions: Actions = {
 		const profile_picture_id = parseInt(formData.get('profile_picture_id') as string);
 		const hasExistingProfile = formData.get('hasExistingProfile') === 'true';
 
-		const profile_picture = {
-			...(first_name && last_name && { title: `${first_name}-${last_name}'s profile picture` })
-		};
-
 		const dataToValidate = {
 			...(first_name && { first_name }),
 			...(last_name && { last_name }),
-			...(profile_picture && { profile_picture }),
 			...(preferred_name && { preferred_name }),
 			...(phone_number && { phone_number }),
 			...(address && { address }),
@@ -39,16 +36,21 @@ export const actions: Actions = {
 		try {
 			const validatedData = staffprofileSchema.parse(dataToValidate);
 
+			// console.log(locals.user);
+
 			if (hasExistingProfile) {
 				const editStaffProfile = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/`, {
 					method: 'put',
 					body: JSON.stringify(validatedData)
 				});
+				console.log('edit', editStaffProfile.status);
+				console.log('edit', editStaffProfile.statusText);
+
 				if (editStaffProfile.ok) {
 					const updatedStaffProfile = await editStaffProfile.json();
 					return { edit: true, updatedStaffProfile };
 				} else {
-					console.log(editStaffProfile.status);
+					console.log('updating', editStaffProfile.status);
 					console.log(editStaffProfile.statusText);
 					const error = await editStaffProfile.json();
 					// console.log(error);
@@ -65,12 +67,12 @@ export const actions: Actions = {
 					const newStaffProfile = await createStaffProfile.json();
 					return { edit: true, newStaffProfile };
 				} else {
-					console.log(createStaffProfile.status);
+					console.log('creating', createStaffProfile.status);
 					const error = await createStaffProfile.json();
 				}
 			}
 		} catch (e) {
-			const toSend = { message: '', errors: {} as StaffProfileErrors };
+			const toSend = { message: '', errors: {} as staffProfileErrors };
 
 			if (e instanceof z.ZodError) {
 				(toSend.message = 'Validation errors'), (toSend.errors = e.flatten().fieldErrors);

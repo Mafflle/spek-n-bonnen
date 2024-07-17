@@ -3,9 +3,9 @@
 	import { Button } from './ui/button';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import { showToast } from '$lib/utils';
-	import { LoggedinUser } from '$lib/stores';
 	import type { User } from '$lib/user';
 	import dayjs from 'dayjs';
+	import { LoggedinUsers } from '$lib/stores';
 
 	export let user: User;
 
@@ -16,7 +16,7 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status == 200) {
-					LoggedinUser.update((users) => users.filter((user) => user.id !== id));
+					LoggedinUsers.update((users) => users.filter((user) => user.id !== id));
 					showToast('User deleted successfully', 'success');
 				} else {
 					showToast('Ooops something went wrong', 'error');

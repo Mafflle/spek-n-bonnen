@@ -38,6 +38,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-io/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/core@npm:3.0.0"
+  checksum: 10c0/c8a725ad5729b38d3f73b7c2bf852ac18a980d6b610832db9f87eb6821e6377854112ba4b5f8510d3e3f49d5290a50dd79ae7724bbafeb146bfdfb5b4c8a13ed
+  languageName: node
+  linkType: hard
+
+"@date-io/dayjs@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/dayjs@npm:3.0.0"
+  dependencies:
+    "@date-io/core": "npm:^3.0.0"
+  peerDependencies:
+    dayjs: ^1.8.17
+  peerDependenciesMeta:
+    dayjs:
+      optional: true
+  checksum: 10c0/0c445e6ca6dd2e39a359645f817258cf6f5909455c3b41172a2e6ccfaad85dbe2683b7328b46399f8edaf2ecffd3441b5b2ac869126d1e8765116e2fc6526816
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.18.20":
   version: 0.18.20
   resolution: "@esbuild/android-arm64@npm:0.18.20"
@@ -1356,6 +1377,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.10.6":
+  version: 1.11.11
+  resolution: "dayjs@npm:1.11.11"
+  checksum: 10c0/0131d10516b9945f05a57e13f4af49a6814de5573a494824e103131a3bbe4cc470b1aefe8e17e51f9a478a22cd116084be1ee5725cedb66ec4c3f9091202dc4b
+  languageName: node
+  linkType: hard
+
 "dayjs@npm:^1.11.10":
   version: 1.11.10
   resolution: "dayjs@npm:1.11.10"
@@ -2626,6 +2654,13 @@ __metadata:
   version: 3.2.0
   resolution: "jsonc-parser@npm:3.2.0"
   checksum: 10c0/5a12d4d04dad381852476872a29dcee03a57439574e4181d91dca71904fcdcc5e8e4706c0a68a2c61ad9810e1e1c5806b5100d52d3e727b78f5cdc595401045b
+  languageName: node
+  linkType: hard
+
+"just-throttle@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "just-throttle@npm:2.3.1"
+  checksum: 10c0/08f09fa43e16902252def87552e1418589f79a86e6890bd1f14ef8324007bb58dbe60452dd79569e59001e7d4aab31a500cd9a75ec32cd8a87cf3f3390fff903
   languageName: node
   linkType: hard
 
@@ -3935,6 +3970,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "spek-n-bonnen@workspace:."
   dependencies:
+    "@date-io/dayjs": "npm:^3.0.0"
     "@internationalized/date": "npm:^3.5.2"
     "@playwright/test": "npm:^1.28.1"
     "@sveltejs/adapter-auto": "npm:^2.0.0"
@@ -3962,6 +3998,7 @@ __metadata:
     prettier-plugin-svelte: "npm:^3.0.0"
     quill: "npm:^1.3.7"
     svelte: "npm:^4.0.5"
+    svelte-calendar: "npm:^3.1.6"
     svelte-check: "npm:^3.6.0"
     svelte-file-dropzone: "npm:^2.0.2"
     svelte-headless-table: "npm:^0.18.1"
@@ -4105,6 +4142,16 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 10c0/6c4032340701a9950865f7ae8ef38578d8d7053f5e10518076e6554a9381fa91bd9c6850193695c141f32b21f979c985db07265a758867bac95de05f7d8aeb39
+  languageName: node
+  linkType: hard
+
+"svelte-calendar@npm:^3.1.6":
+  version: 3.1.6
+  resolution: "svelte-calendar@npm:3.1.6"
+  dependencies:
+    dayjs: "npm:^1.10.6"
+    just-throttle: "npm:^2.3.1"
+  checksum: 10c0/afb5298871bdd01c7cd49c7940405393fec8da297b7a97c03b1c1ea802c0ec00c150a0fca6e567ab1c5a853a68009ac1f65580415194acfb805098300c55256a
   languageName: node
   linkType: hard
 

@@ -6,14 +6,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { LoggedinUser } from '$lib/stores.js';
+	import { LoggedinUsers } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
-	import {
-		getLoggedInLoggedinUser,
-		showToast,
-		type loggedInUser,
-		type ToastType
-	} from '$lib/utils.js';
+	import { showToast, updateLoggedInUsers, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
@@ -22,23 +17,6 @@
 
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
-
-	if (browser) {
-		let users = getLoggedInLoggedinUser();
-		if (users.length > 0) {
-			$LoggedinUser = users;
-		} else {
-			if ($currentUser) {
-				let currUser = {
-					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
-					email: `${$currentUser?.email}`
-				};
-				users.push(currUser);
-				$LoggedinUser = users;
-				localStorage.setItem('loggedinUsers', JSON.stringify(users));
-			}
-		}
-	}
 
 	onMount(() => {
 		if (message && messageType) {
@@ -53,7 +31,7 @@
 	let userToLogin: loggedInUser | null;
 
 	const unsubscribe = currentUser.subscribe((currUser) => currUser);
-	const unsubscribeLoggedInUsers = LoggedinUser.subscribe((users) => users);
+	const unsubscribeLoggedInUsers = LoggedinUsers.subscribe((users) => users);
 	let showModal: boolean = false;
 	let loading: boolean = false;
 
@@ -92,6 +70,8 @@
 			}
 		};
 	};
+
+	updateLoggedInUsers($currentUser);
 
 	onDestroy(() => {
 		unsubscribe();
@@ -138,15 +118,27 @@
 			>
 				<div class="flex flex-col items-center gap-2">
 					<Avatar.Root class="w-16 h-16">
-						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+						<Avatar.Image
+							class="w-full h-full"
+							src={userToLogin.avatar}
+							alt="User's profile picture"
+						/>
 						<Avatar.Fallback>
-							<span class="text-2xl">
-								{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
-							</span>
+							{#if userToLogin.name}
+								<span class="text-2xl">
+									{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
+								</span>
+							{:else}
+								<span class="text-2xl">
+									{`${userToLogin.email.split('')[0][0].toLocaleUpperCase()}${userToLogin.email.split('')[0][1].toLocaleUpperCase()}`}
+								</span>
+							{/if}
 						</Avatar.Fallback>
 					</Avatar.Root>
 					<div class="w-full flex items-center justify-center">
-						<span class="font-satoshi font-medium text-center">{userToLogin.name}</span>
+						<span class="font-satoshi font-medium text-center"
+							>{userToLogin.name ?? userToLogin.email}</span
+						>
 					</div>
 				</div>
 				<div class=" flex flex-col justify-center items-center gap-6 w-full">
@@ -208,24 +200,34 @@
 				</div>
 			</form>
 		{/if}
-		{#if !userToLogin && $LoggedinUser.length > 0}
+		{#if !userToLogin && $LoggedinUsers.length > 0}
 			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
-				{#each $LoggedinUser as user}
+				{#each $LoggedinUsers as user}
 					<button
 						disabled={$currentUser?.email === user.email}
 						on:click={() => selectUserToLogin(user)}
 						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
 					>
 						<Avatar.Root class="w-10 h-10">
-							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+							<Avatar.Image
+								class="w-full h-full object-cover"
+								src={user.avatar}
+								alt="User's profile picture"
+							/>
 							<Avatar.Fallback>
-								<span class="text-base">
-									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
-								</span>
+								{#if user.name}
+									<span class="text-2xl">
+										{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+									</span>
+								{:else}
+									<span class="text-2xl">
+										{`${user.email.split('')[0][0].toLocaleUpperCase()}${user.email.split('')[0][1].toLocaleUpperCase()}`}
+									</span>
+								{/if}
 							</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="w-full flex items-center justify-between">
-							<span class="text-xl text-start">{user.name}</span>
+							<span class="text-xl text-start">{user.name ?? user.email}</span>
 							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
 						></iconify-icon> -->
 							{#if $currentUser?.email === user.email}
@@ -238,14 +240,14 @@
 				<form action="/?/logout" method="post" class="w-full">
 					<button
 						type="submit"
-						class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
+						class="w-full px-4 cursor-pointer py-2 justify-start items-center gap-1 flex text-primary-50"
 					>
 						<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
 						<span class="text-lg font-satoshi block">Add Account</span></button
 					>
 				</form>
 			</div>
-		{:else if $LoggedinUser.length < 1}
+		{:else if $LoggedinUsers.length < 1}
 			<div>No user added yet</div>
 		{/if}
 	</div>

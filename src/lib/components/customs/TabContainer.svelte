@@ -27,7 +27,7 @@
 	<TabController bind:selectedTab {tabs} on:tabChange={(e) => handleTabClick(e.detail)} />
 
 	<div class="tabs-container overflow-hidden flex items-center justify-end max-w-full w-full">
-		<div class="max-w-[75%] lg:max-w-[705px] xl:max-w-[780px] w-full">
+		<div class="max-w-[75%] xl:max-w-[780px] w-full">
 			{#each tabs as tab}
 				<TabContent {tab} {selectedTab}>
 					<svelte:component this={tab.component} on:editProfile={() => dispatch('editProfile')} />

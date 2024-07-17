@@ -12,7 +12,7 @@
 		role="tabpanel"
 		aria-labelledby={`tab-${tab.id}`}
 		id={`tabpanel-${tab.id}`}
-		class="tab-panel w-full"
+		class="tab-panel w-full flex"
 	>
 		<slot />
 	</div>
