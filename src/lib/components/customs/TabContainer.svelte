@@ -3,6 +3,7 @@
 	import type { SvelteComponent } from 'svelte';
 	import TabController from './TabController.svelte';
 	import TabContent from './TabContent.svelte';
+	import { currentUser } from '$lib/user';
 
 	const dispatch = createEventDispatcher();
 
@@ -37,7 +38,11 @@
 					<svelte:component
 						this={tab.component}
 						{...tab.props}
-						on:editProfile={() => dispatch('editProfile')}
+						on:updatedProfile={(e) => {
+							if ($currentUser?.staff_profile) {
+								$currentUser.staff_profile = e.detail.profile;
+							}
+						}}
 					/>
 				</TabContent>
 			{/each}

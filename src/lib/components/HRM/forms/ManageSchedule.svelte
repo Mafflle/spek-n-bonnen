@@ -5,19 +5,45 @@
 	import { slide } from 'svelte/transition';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { showToast } from '$lib/utils';
+	import { calculateTimeDifference, calculateTotalTimeDifference, showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';
 	import { workSchedules, type Schedule } from '$lib/hrm';
+	import type { StaffProfile } from '$lib/user';
 	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 
 	export let schedule: Schedule | null = null;
+
+	$: currUserProfile = $page.data.userAccount.staff_profile as StaffProfile;
+
+	$: totalScheduledHours = calculateTotalTimeDifference($workSchedules) / 60;
 
 	let loading: boolean = false;
 	const dispatch = createEventDispatcher();
 
 	const submit: SubmitFunction = ({ formData, cancel }) => {
 		loading = true;
+
+		let start_time = formData.get('start_time') as string;
+		let end_time = formData.get('end_time') as string;
+
+		let currTimeDiff = calculateTimeDifference(start_time, end_time) / 60 + totalScheduledHours;
+
+		if (currUserProfile && currTimeDiff > currUserProfile?.preferred_weekly_working_hours) {
+			cancel();
+
+			showToast(
+				`${currUserProfile.preferred_name}'s schedule is currently overallocated by ${(currTimeDiff - currUserProfile.preferred_weekly_working_hours).toFixed(1)} hours. Please review and make necessary adjustments.`,
+				'info'
+			);
+			loading = false;
+		}
+
+		if (currUserProfile && !currUserProfile.preferred_weekly_working_hours) {
+			cancel();
+			dispatch('close');
+			dispatch('add-WH');
+		}
 		let staffId = $page.params.id;
 		if (staffId) {
 			formData.append('account_id', `${staffId}`);

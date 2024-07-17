@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table/index.js';
-	import * as DropdownMenu from '../ui/dropdown-menu';
-	import { Button } from '../ui/button';
-	import ClockInOut from './ClockInOut.svelte';
-	import type { Schedule } from '../../hrm';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Button } from '$lib/components/ui/button';
+	import ClockInOut from '$lib/components/HRM/forms/ClockInOut.svelte';
+	import type { Schedule } from '$lib/hrm';
 	import { createEventDispatcher } from 'svelte';
 
 	export let viewType: 'employee' | 'manager' = 'employee';
@@ -36,7 +36,7 @@
 	}
 </script>
 
-{#if workSchedule && workSchedule.length > 0}
+{#if workSchedule.length > 0}
 	<div class="w-full h-fit overflow-clip border border-grey-300 mt-8 rounded-xl">
 		<Table.Root class="">
 			<Table.Caption
@@ -74,7 +74,7 @@
 						>
 						<Table.Cell class="font-medium  text-grey-100">
 							{#if viewType === 'employee'}
-								<ClockInOut  {schedule} disabled={!(today.getDay() === schedule.id)} />
+								<ClockInOut {schedule} disabled={!(today.getDay() === schedule.id)} />
 							{:else if viewType === 'manager'}
 								<DropdownMenu.Root>
 									<!-- <button class=" px-1.5 flex justify-center items-center">

@@ -25,6 +25,7 @@ export type Task = {
 	status: TaskStatus;
 };
 export let Tasks = writable<Task[]>([]);
+export let currentTask = writable<Task | null>(null);
 
 // Schedule
 export type Schedule = {

@@ -14,11 +14,11 @@
 	import CustomTabs from '$lib/components/customs/TabContainer.svelte';
 	import { page } from '$app/stores';
 	import UploadBox from '$lib/components/UploadBox.svelte';
-	import Profile from '$lib/components/HRM/Profile.svelte';
-	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
-	import Vacation from '$lib/components/HRM/Vacation.svelte';
+	import Profile from '$lib/components/HRM/tabs/Profile.svelte';
+	import WorkSchedule from '$lib/components/HRM/tabs/WorkSchedule.svelte';
+	import Vacation from '$lib/components/HRM/tabs/Vacation.svelte';
 
-	import TimeEntriesLog from '$lib/components/HRM/TimeEntriesLog.svelte';
+	import TimeEntriesLog from '$lib/components/HRM/tabs/TimeEntriesLog.svelte';
 	import { TimeEntries } from '$lib/hrm.js';
 
 	export let data;
@@ -63,7 +63,7 @@
 							return { ...current, staff_profile: editedProfile } as User;
 						});
 
-						showToast('Profile edited successfully', 'success');
+						showToast('Profile updated successfully', 'success');
 					} else {
 						const newProfile = result.data.newStaffProfile as User;
 						currentUser.update((currentValue) => {
@@ -98,7 +98,12 @@
 	let email = $currentUser?.email;
 
 	let tabs = [
-		{ title: 'Profile', id: 'staff_profile', component: Profile },
+		{
+			title: 'Profile',
+			id: 'staff_profile',
+			component: Profile,
+			props: { currentProfile: $currentUser }
+		},
 		{
 			title: 'Work Schedule',
 			id: 'work-schedule',
@@ -148,12 +153,21 @@
 			</section>
 		{/if}
 		<section class="w-full h-full">
-			<CustomTabs on:editProfile={() => (showProfileModal = true)} {tabs} />
+			<CustomTabs
+				on:updatedProfile={(e) => {
+					console.log($currentUser, e.detail);
+
+					if ($currentUser) {
+						$currentUser.staff_profile = e.detail.profile;
+					}
+				}}
+				{tabs}
+			/>
 		</section>
 	</div>
 </div>
 
-<Modal
+<!-- <Modal
 	mode="sheet"
 	showModal={showProfileModal}
 	lock={$currentUser?.staff_profile === null}
@@ -405,4 +419,4 @@
 			</div>
 		</Sheet.Footer>
 	</form>
-</Modal>
+</Modal> -->

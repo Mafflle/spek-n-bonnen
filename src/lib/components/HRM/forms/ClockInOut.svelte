@@ -1,19 +1,17 @@
 <script lang="ts">
 	import dayjs from 'dayjs';
-	import Modal from '../Modal.svelte';
-	import Separator from '../ui/separator/separator.svelte';
-	import { TimeEntries, type TimeEntry, type Schedule } from '../../hrm';
+	import Modal from '../../Modal.svelte';
+	import Separator from '../../ui/separator/separator.svelte';
+	import { TimeEntries, type TimeEntry, type Schedule } from '../../../hrm';
 	import { formatTime, showToast } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
 	import { createEventDispatcher, onDestroy } from 'svelte';
 
-	const dispatch = createEventDispatcher();
-
 	let todaysEntries = filterTodaysEntries($TimeEntries);
 
 	let timerState: 'CLOCK_IN' | 'CLOCK_OUT' | 'BREAK_START' | 'BREAK_END' =
-		todaysEntries[0].event_type;
+		todaysEntries.length > 0 ? todaysEntries[0].event_type : 'CLOCK_IN';
 	let showModal: boolean = false;
 	export let disabled: boolean = false;
 
@@ -158,7 +156,11 @@
 		>
 			<img
 				class="w-full h-full transition-all"
-				src="/icons/{timerState === state.state && !disabled ? state.activeSrc : state.src}"
+				src="/icons/{todaysEntries.length > 0 &&
+				todaysEntries[0].event_type === state.state &&
+				!disabled
+					? state.activeSrc
+					: state.src}"
 				alt={state.alt}
 			/>
 		</button>

@@ -6,13 +6,15 @@
 	import { onDestroy } from 'svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import UserRowCard from '$lib/components/UserRowCard.svelte';
-	import InviteStaff from '$lib/components/HRM/InviteStaff.svelte';
-	import CreateTask from '$lib/components/HRM/CreateTask.svelte';
-	import { Tasks, type Task } from '$lib/hrm.js';
+
+	import InviteStaff from '$lib/components/HRM/forms/InviteStaff.svelte';
+	import CreateTask from '$lib/components/HRM/forms/CreateTask.svelte';
+	import { currentTask, Tasks, type Task } from '$lib/hrm.js';
 	import dayjs from 'dayjs';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { shortenText } from '$lib/utils.js';
+
+	import StaffsTab from '$lib/components/HRM/tabs/StaffsTab.svelte';
+	import TaskTab from '$lib/components/HRM/tabs/TaskTab.svelte';
 
 	export let data;
 
@@ -23,36 +25,22 @@
 	let showModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
-	let validationErrors: {
-		email?: [string];
-		last_name?: [string];
-		first_name?: [string];
-		password?: [string];
-		password2?: [string];
-		groups?: [string];
-	} = {};
 	$: currentTab = 'staffs';
 
 	const staffManagers = data.staffManagers.results as User[];
-	let currentTask: Task | null;
 
-	$Users = users.results;
+	$: {
+		Users.set(users.results);
+	}
 
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 
-	function toggleTaskDetails(task?: Task) {
-		if (task) {
-			currentTask = task;
-		} else {
-			currentTask = null;
-		}
-
+	function toggleTaskDetails() {
 		showTaskDetails = !showTaskDetails;
 	}
 
-	// $: console.log(currentTask);
 	onDestroy(() => {
 		container.set([]);
 	});
@@ -136,28 +124,7 @@
 		</Tabs.List>
 		<!-- <Separator data-separator-root class="hidden md:block" /> -->
 		<Tabs.Content class="w-full relative  " value="staffs">
-			<div class="border rounded-xl w-full max-w-full overflow-x-scroll no-scrollbar">
-				<table class="table">
-					<thead class="">
-						<tr class="">
-							<th class="bg-[#F9F9F9] rounded-tl-[0.625rem]">Name</th>
-							<th class="bg-[#F9F9F9]">Email</th>
-							<th class="bg-[#F9F9F9]">Role</th>
-							<th class="bg-[#F9F9F9]">Date</th>
-							<th class="bg-[#F9F9F9]">Status</th>
-
-							<th class="bg-[#F9F9F9] rounded-tr-[0.625rem]"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each $Users as user}
-							{#if user.is_staff}
-								<UserRowCard {user} />
-							{/if}
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<StaffsTab />
 			<div class="flex items-center gap-4 border-2 rounded-lg absolute mt-1 px-2 right-0">
 				<button>prev</button>
 				<span>page: 1</span>
@@ -165,52 +132,7 @@
 			</div>
 		</Tabs.Content>
 		<Tabs.Content class="w-full" value="tasks">
-			<div class="grid grid-cols-3 gap-4 xl:gap-6 xl:grid-cols-3">
-				{#each $Tasks as task, i}
-					<div
-						on:click={() => toggleTaskDetails(task)}
-						class="col-span-1 cursor-pointer flex flex-col w-full border-2 min-h-[170px] p-4 gap-1 rounded-xl"
-					>
-						<section class="flex items-center justify-between">
-							<h5 class="text-primary-red text-xs">Task Name</h5>
-							<span
-								class="bg-primary-green text-xs xl:text-sm text-[#41AA00] text-center py-0.5 px-4 rounded-3xl"
-							>
-								{task.status}
-							</span>
-						</section>
-						<section class="grid text-grey-100 mb-auto">
-							<h6 class="text-sm xl:text-lg font-satoshi font-medium">{task.title}</h6>
-							<p class="xl:text-sm text-xs font-satoshi">
-								{shortenText(task.description, 100)}
-							</p>
-						</section>
-						<section class="flex items-center justify-between">
-							<section class="flex items-center gap-2">
-								<div class="flex items-center -space-x-2">
-									{#each task.assignees as assignee, i}
-										<Avatar.Root class="w-6 h-6">
-											<Avatar.Image
-												class="w-full h-full object-cover"
-												src={assignee?.staff_profile?.profile_picture.image}
-											/>
-											<Avatar.Fallback class="text-xs"
-												>{assignee.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
-											>
-										</Avatar.Root>
-									{/each}
-								</div>
-								<span class="text-primary-softPink-50 text-xs">GroupA</span>
-							</section>
-							<div class=" flex items-center gap-1 text-primary-softPink-50">
-								<img class="w-3.5 h-3.5" src="/icons/TaskClock.svg" alt="clock icon" />
-								<span class="text-xs">{dayjs(task.end_time).diff(task.start_time, 'hour')}/hrs</span
-								>
-							</div>
-						</section>
-					</div>
-				{/each}
-			</div>
+			<TaskTab Tasks={$Tasks} on:open={toggleModal} />
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
@@ -222,10 +144,10 @@
 		{:else if currentTab === 'tasks'}
 			<CreateTask
 				on:close={() => {
-					currentTask = null;
+					currentTask.set(null);
 					toggleModal();
 				}}
-				task={currentTask}
+				task={$currentTask}
 				{access}
 				users={users.results}
 			/>
@@ -238,18 +160,18 @@
 		slot="modal-content"
 		class="min-w-[460px] max-w-md col-span-1 flex flex-col min-h-[132px] py-4 px-8 gap-1 rounded-xl w-full bg-white"
 	>
-		{#if currentTask}
+		{#if $currentTask}
 			<section class="flex items-center justify-end mb-2">
 				<button on:click={() => toggleTaskDetails()}>
 					<iconify-icon icon="hugeicons:cancel-01" width="25" class="text-grey-100"></iconify-icon>
 				</button>
 			</section>
 			<section class="flex items-center justify-between">
-				<h5 class="text-primary-red">{currentTask.title}</h5>
+				<h5 class="text-primary-red">{$currentTask.title}</h5>
 				<span
 					class="bg-primary-green text-[10px] xl:text-sm text-[#41AA00] min-w-[77px] py-1 px-2.5 rounded-3xl"
 				>
-					{currentTask.status}
+					{$currentTask.status}
 				</span>
 			</section>
 			<section class="grid text-grey-100 mb-5">
@@ -264,7 +186,7 @@
 			<section class="flex items-center justify-between mb-5">
 				<section class="flex items-center gap-2">
 					<div class="flex items-center -space-x-2">
-						{#each currentTask.assignees as assignee, i}
+						{#each $currentTask.assignees as assignee, i}
 							<Avatar.Root class="w-7 h-7">
 								<!-- {#if assignee.staff_profile} -->
 								<Avatar.Image
@@ -282,7 +204,7 @@
 				</section>
 				<div class=" flex items-center gap-1 text-primary-softPink-50">
 					<img class="w-5 h-5" src="/icons/TaskClock.svg" alt="clock icon" />
-					<span>{dayjs(currentTask.end_time).diff(currentTask.start_time, 'hour')}/hrs</span>
+					<span>{dayjs($currentTask.end_time).diff($currentTask.start_time, 'hour')}/hrs</span>
 				</div>
 			</section>
 			<section class="flex items-center justify-center gap-7">

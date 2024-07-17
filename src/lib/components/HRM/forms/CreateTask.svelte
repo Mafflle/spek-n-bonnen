@@ -6,9 +6,9 @@
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import HrmSelector from './HRMSelector.svelte';
-	import DatePicker from '../customs/DatePicker.svelte';
+	import DatePicker from '$lib/components/customs/DatePicker.svelte';
 	import { ManagersAssigned } from '$lib/user';
-	import Pill from '../Pill.svelte';
+	import Pill from '$lib/components/Pill.svelte';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { showToast } from '$lib/utils';
 	import { enhance } from '$app/forms';

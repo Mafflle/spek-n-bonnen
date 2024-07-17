@@ -37,8 +37,6 @@ export const actions: Actions = {
 		try {
 			const validatedData = staffprofileSchema.parse(dataToValidate);
 
-			// console.log(locals.user);
-
 			if (hasExistingProfile) {
 				const editStaffProfile = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/`, {
 					method: 'put',
@@ -118,7 +116,8 @@ export const actions: Actions = {
 	}
 };
 
-export const load: PageServerLoad = async ({ request, fetch }) => {
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	console.log('is_staff', locals.user?.is_staff);
 	const getMySchedule = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/work-schedule/me/`);
 	const getMyTimeEntries = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/time-entry/me/`);
 
@@ -131,8 +130,8 @@ export const load: PageServerLoad = async ({ request, fetch }) => {
 			myTimeEntries
 		};
 	} else {
-		console.log('Error editing schedule with status: ', getMySchedule.status);
-		console.log('Error editing schedule: ', getMySchedule.url);
-		console.log('Error editing schedule with error message: ', getMySchedule.statusText);
+		console.log('Error fetching schedule with status: ', getMySchedule.status);
+		console.log('Error fetching schedule: ', getMySchedule.url);
+		console.log('Error fetching schedule with error message: ', getMySchedule.statusText);
 	}
 };

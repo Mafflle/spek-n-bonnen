@@ -2,8 +2,8 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { ManagersAssigned, currentUser, type User } from '$lib/user.js';
-	import SearchInput from '../SearchInput.svelte';
+	import { ManagersAssigned, type User } from '$lib/user.js';
+	import SearchInput from '$lib/components/SearchInput.svelte';
 	import { showToast } from '$lib/utils';
 
 	export let users: User[];

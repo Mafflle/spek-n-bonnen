@@ -9,9 +9,11 @@
 	import { type Schedule, workSchedules, type Task } from '$lib/hrm.js';
 	import dayjs from 'dayjs';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { shortenText } from '$lib/utils.js';
-	import WorkSchedule from '$lib/components/HRM/WorkSchedule.svelte';
-	import ManageSchedule from '$lib/components/HRM/ManageSchedule.svelte';
+
+	import WorkSchedule from '$lib/components/HRM/tabs/WorkSchedule.svelte';
+	import ManageSchedule from '$lib/components/HRM/forms/ManageSchedule.svelte';
+	import TaskTab from '$lib/components/HRM/tabs/TaskTab.svelte';
+	import Profile from '$lib/components/HRM/tabs/Profile.svelte';
 
 	export let data;
 
@@ -54,6 +56,8 @@
 		showTaskDetails = !showTaskDetails;
 	}
 
+	console.log(userAccount);
+
 	onDestroy(() => {
 		container.set([]);
 	});
@@ -66,7 +70,7 @@
 <div class="staff-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
 	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">
-			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Employee management</div>
+			<div class="text-[2rem] tracking-[-0.04rem] font-bold">Employee Profile</div>
 			<sub class="text-[#6B6B6B] text-sm">
 				Manage employee profile, assign roles and create schedules
 			</sub>
@@ -124,11 +128,15 @@
 
 	<Tabs.Root bind:value={currentTab} class="w-full ">
 		<Tabs.List
-			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6  xl:pl-10 space-x-8 md:flex-wrap-none mb-12 md:pb-1 "
+			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6   space-x-5 md:flex-wrap-none mb-12 md:pb-1 "
 		>
 			<Tabs.Trigger
 				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="tasks">Employee Task</Tabs.Trigger
+				value="profile">Profile</Tabs.Trigger
+			>
+			<Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="tasks">Tasks</Tabs.Trigger
 			>
 			<Tabs.Trigger
 				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
@@ -138,63 +146,17 @@
 				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
 				value="vacation">Vacation</Tabs.Trigger
 			>
-			<Tabs.Trigger
-				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="balance">Employee Balance</Tabs.Trigger
-			>
 			<!-- <Tabs.Trigger
-				class="data-[state=active]:bg-background font-normal w-28 data-[state=active]:text-grey-100 data-[state=active]:shadow"
-				value="destination">Destination</Tabs.Trigger
+				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
+				value="balance">Balance</Tabs.Trigger
 			> -->
 		</Tabs.List>
 
+		<Tabs.Content class="w-full" value="profile">
+			<Profile view="manager" currentProfile={userAccount} />
+		</Tabs.Content>
 		<Tabs.Content class="w-full" value="tasks">
-			<div class="grid grid-cols-3 gap-4 xl:gap-6 xl:grid-cols-3">
-				{#each userTasks.results as task, i}
-					<div
-						on:click={() => toggleTaskDetails(task)}
-						class="col-span-1 cursor-pointer flex flex-col w-full border-2 min-h-[170px] p-4 gap-1 rounded-xl"
-					>
-						<section class="flex items-center justify-between">
-							<h5 class="text-primary-red text-xs">Task Name</h5>
-							<span
-								class="bg-primary-green text-xs xl:text-sm text-[#41AA00] text-center py-0.5 px-4 rounded-3xl"
-							>
-								{task.status}
-							</span>
-						</section>
-						<section class="grid text-grey-100 mb-auto">
-							<h6 class="text-sm xl:text-lg font-satoshi font-medium">{task.title}</h6>
-							<p class="xl:text-sm text-xs font-satoshi">
-								{shortenText(task.description, 100)}
-							</p>
-						</section>
-						<section class="flex items-center justify-between">
-							<section class="flex items-center gap-2">
-								<div class="flex items-center -space-x-2">
-									{#each task.assignees as assignee, i}
-										<Avatar.Root class="w-6 h-6">
-											<Avatar.Image
-												class="w-full h-full object-cover"
-												src={assignee?.staff_profile?.profile_picture.image}
-											/>
-											<Avatar.Fallback class="text-xs"
-												>{assignee.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
-											>
-										</Avatar.Root>
-									{/each}
-								</div>
-								<span class="text-primary-softPink-50 text-xs">GroupA</span>
-							</section>
-							<div class=" flex items-center gap-1 text-primary-softPink-50">
-								<img class="w-3.5 h-3.5" src="/icons/TaskClock.svg" alt="clock icon" />
-								<span class="text-xs">{dayjs(task.end_time).diff(task.start_time, 'hour')}/hrs</span
-								>
-							</div>
-						</section>
-					</div>
-				{/each}
-			</div>
+			<TaskTab Tasks={userTasks.results} />
 		</Tabs.Content>
 		<Tabs.Content class="w-full" value="schedules">
 			<WorkSchedule
@@ -210,8 +172,13 @@
 <Modal mode="sheet" on:close={() => toggleScheduleModal()} showModal={showScheduleModal}>
 	<div slot="modal-content" class="w-full h-fit max-h-full overflow-x-scroll no-scrollbar">
 		{#if currentTab === 'schedules'}
-			<ManageSchedule bind:schedule={currentSchedule} on:close={() => toggleScheduleModal()} />
-		{:else if currentTab === 'tasks'}{/if}
+			<ManageSchedule
+				on:add-WH={() => (currentTab = 'profile')}
+				bind:schedule={currentSchedule}
+				on:close={() => toggleScheduleModal()}
+			/>
+			<!-- {:else if currentTab === 'tasks'} -->
+		{/if}
 	</div>
 </Modal>
 

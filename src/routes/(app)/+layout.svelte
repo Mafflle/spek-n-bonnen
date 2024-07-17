@@ -252,3 +252,11 @@
 		{/if}
 	</div>
 </Modal>
+
+<!-- <Modal
+	mode="sheet"
+	showModal={showProfileModal}
+	lock={$currentUser?.staff_profile === null}
+	on:close={() => (showProfileModal = false)}
+>
+</Modal> -->

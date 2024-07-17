@@ -21,6 +21,7 @@ export type StaffProfile = {
 	last_name: string;
 	date_of_birth: Date;
 	preferred_name: string;
+	preferred_weekly_working_hours: number;
 	address: string;
 	phone_number: string;
 	emergency_contact_relationship: string;
@@ -66,7 +67,7 @@ export const staffprofileSchema = z.object({
 		.min(1, { message: 'Preffered name should be longer' })
 		.trim()
 		.optional(),
-
+	preferred_weekly_working_hours: z.number().optional(),
 	address: z
 		.string({
 			required_error: 'Address is required'
@@ -121,6 +122,7 @@ export type staffProfileErrors = {
 	first_name?: string[];
 	last_name?: string[];
 	preferred_name?: string[];
+	preferred_weekly_working_hours?: string[];
 	staff_profile_picture_id?: string[];
 	date_of_birth?: string[];
 	address?: string[];
