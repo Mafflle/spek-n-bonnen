@@ -2,7 +2,7 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Button } from './ui/button';
 	import * as DropdownMenu from './ui/dropdown-menu';
-	import { showToast } from '$lib/utils';
+	import * as Table from '$lib/components/ui/table/index.js';
 	import type { User } from '$lib/user';
 	import dayjs from 'dayjs';
 
@@ -11,17 +11,17 @@
 	let loading: boolean = false;
 </script>
 
-<tr class="border-b border-[#D9D9D9]">
-	<td>
+<Table.Row class="border-b border-[#D9D9D9]">
+	<Table.Cell>
 		<div class="   justify-start items-center gap-3 inline-flex">
 			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
 				{user.first_name}
 				{user.last_name}
 			</span>
 		</div>
-	</td>
-	<td class="text-[#9C9C9C]">{user.email}</td>
-	<td>
+	</Table.Cell>
+	<Table.Cell class="text-[#9C9C9C]">{user.email}</Table.Cell>
+	<Table.Cell>
 		<div
 			class="w-[124px] h-6 px-1 bg-stone-50 rounded-[20px] justify-start items-center gap-2.5 inline-flex"
 		>
@@ -32,20 +32,20 @@
 				{user?.groups[0]?.name ?? 'No roles assigned'}
 			</span>
 		</div>
-	</td>
-	<td class="text-[#9C9C9C]">
+	</Table.Cell>
+	<Table.Cell class="text-[#9C9C9C]">
 		<span class="min-w-max">
 			{dayjs(user.date_joined).format('DD MMM YYYY')}
 		</span>
-	</td>
-	<td class="text-[#9C9C9C]">
+	</Table.Cell>
+	<Table.Cell class="text-[#9C9C9C]">
 		<span
 			class="font-satoshi font-medium {user.is_active ? 'text-active-green' : 'text-primary-50'}"
 		>
 			{user.is_active ? 'Active' : 'Inactive'}
 		</span>
-	</td>
-	<td>
+	</Table.Cell>
+	<Table.Cell>
 		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">
 					<iconify-icon icon="pepicons-pencil:dots-y" style="color: #6b6b6b;" width="30"></iconify-icon>
@@ -97,5 +97,5 @@
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
-	</td>
-</tr>
+	</Table.Cell>
+</Table.Row>

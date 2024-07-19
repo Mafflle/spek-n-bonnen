@@ -30,7 +30,7 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
-	$: currentTab = 'schedules';
+	$: currentTab = 'profile';
 
 	$: workSchedules.set(userSchedule.results);
 

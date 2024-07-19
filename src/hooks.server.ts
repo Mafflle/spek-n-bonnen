@@ -53,6 +53,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 					});
 
 					return;
+				} else if (response.status === 401) {
+					return null;
 				} else {
 					console.error(`Refresh attempt ${attempt} failed:`, await response.json());
 				}
@@ -137,6 +139,8 @@ export const handle = async ({ event, resolve }) => {
 						maxAge: 60 * 60 * 24 * 30 // 30 days
 					});
 					return tokens.access;
+				} else if (response.status === 401) {
+					return null;
 				} else {
 					// Log the error for debugging
 					const errorBody = await response.json();
