@@ -37,7 +37,7 @@
 </script>
 
 {#if workSchedule.length > 0}
-	<div class="w-full h-fit overflow-clip border border-grey-300 mt-8 rounded-xl">
+	<div class="w-full h-fit overflow-clip border border-grey-300 rounded-xl">
 		<Table.Root class="">
 			<Table.Caption
 				>This {viewType === 'employee' ? "week's" : "employee's"} schedule.</Table.Caption

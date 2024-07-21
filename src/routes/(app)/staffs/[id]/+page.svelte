@@ -22,15 +22,7 @@
 	let showScheduleModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
-	let validationErrors: {
-		email?: [string];
-		last_name?: [string];
-		first_name?: [string];
-		password?: [string];
-		password2?: [string];
-		groups?: [string];
-	} = {};
-	$: currentTab = 'profile';
+	$: currentTab = 'schedules';
 
 	$: workSchedules.set(userSchedule.results);
 
@@ -56,7 +48,7 @@
 		showTaskDetails = !showTaskDetails;
 	}
 
-	console.log(userAccount);
+	// console.log(userAccount);
 
 	onDestroy(() => {
 		container.set([]);
@@ -118,7 +110,7 @@
 							<img src="/icons/plus.svg" alt="user-plus" />
 						</div>
 						<span class="text-white text-xs font-bold font-satoshi hidden sm:block">
-							Create work schdule
+							Create work schedule
 						</span>
 					</button>
 				{/if}
@@ -128,7 +120,7 @@
 
 	<Tabs.Root bind:value={currentTab} class="w-full ">
 		<Tabs.List
-			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6   space-x-5 md:flex-wrap-none mb-12 md:pb-1 "
+			class=" h-[70px] justify-start oveflow-x-scroll bg-[#F7F7F7] flex flex-wrap px-6   space-x-5 md:flex-wrap-none mb-8 md:pb-1 "
 		>
 			<Tabs.Trigger
 				class="data-[state=active]:bg-background data-[state=active]:font-medium font-normal w-36 data-[state=active]:text-grey-100 data-[state=active]:shadow"
@@ -159,6 +151,13 @@
 			<TaskTab Tasks={userTasks.results} />
 		</Tabs.Content>
 		<Tabs.Content class="w-full" value="schedules">
+			<section class="flex items-center justify-end w-full mb-2 px-2">
+				<p class="text-sm font-medium">
+					Preferred weekly work hours: <span class="text-base font-normal"
+						>{userAccount.staff_profile?.preferred_weekly_working_hours}</span
+					>
+				</p>
+			</section>
 			<WorkSchedule
 				workSchedule={$workSchedules}
 				on:createSchedule={() => toggleScheduleModal()}
