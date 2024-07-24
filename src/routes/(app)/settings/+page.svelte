@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import * as Sheet from '$lib/components/ui/sheet';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import Modal from '$lib/components/Modal.svelte';
-	import { currentUser, type User, type staffProfileErrors } from '$lib/user';
-	import { showToast } from '$lib/utils.js';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import dayjs from 'dayjs';
-	import { slide } from 'svelte/transition';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
 
+	import { currentUser } from '$lib/user';
+
+	import dayjs from 'dayjs';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import CustomTabs from '$lib/components/customs/TabContainer.svelte';
 	import { page } from '$app/stores';
-	import UploadBox from '$lib/components/UploadBox.svelte';
 	import Profile from '$lib/components/HRM/tabs/Profile.svelte';
 	import WorkSchedule from '$lib/components/HRM/tabs/WorkSchedule.svelte';
 	import Vacation from '$lib/components/HRM/tabs/Vacation.svelte';
@@ -30,7 +23,6 @@
 
 	TimeEntries.set(myTimeEntries.results);
 
-	let showModal: boolean = false;
 	let showProfileModal: boolean = false;
 
 	let staff_profile = $page.url.searchParams.get('staff_profile');
@@ -38,64 +30,6 @@
 	if (staff_profile || $currentUser?.staff_profile === null) {
 		showProfileModal = true;
 	}
-
-	let loading: boolean = false;
-	let validationErrors: staffProfileErrors = {};
-
-	const toggleModal = (state: boolean) => {
-		state = !state;
-	};
-
-	const submit: SubmitFunction = async ({ formData }) => {
-		loading = true;
-		let hasExistingProfile =
-			$currentUser?.staff_profile !== undefined && $currentUser?.staff_profile !== null;
-
-		formData.append('hasExistingProfile', hasExistingProfile.toString());
-
-		return async ({ update, result }) => {
-			try {
-				if (result.status === 200) {
-					if (result.data.edit) {
-						const editedProfile = result.data.updatedStaffProfile as User;
-
-						currentUser.update((current) => {
-							return { ...current, staff_profile: editedProfile } as User;
-						});
-
-						showToast('Profile updated successfully', 'success');
-					} else {
-						const newProfile = result.data.newStaffProfile as User;
-						currentUser.update((currentValue) => {
-							return { ...currentValue, staff_profile: newProfile } as User;
-						});
-						showToast('Profile completed successfully', 'success');
-					}
-
-					showProfileModal = false;
-				} else if (result.status === 400) {
-					validationErrors = result.data.errors;
-				} else {
-					showToast('Ooops something went wrong', 'error');
-				}
-			} finally {
-				await update();
-				loading = false;
-			}
-		};
-	};
-
-	let firstName = $currentUser?.staff_profile?.first_name;
-	let lastName = $currentUser?.staff_profile?.last_name;
-	let emergencyContactName = `${$currentUser?.staff_profile?.emergency_contact_name}`;
-	let emergencyContactNumber = $currentUser?.staff_profile?.emergency_contact_number;
-	let emergencyContactRelationship = $currentUser?.staff_profile?.emergency_contact_relationship;
-	let address = $currentUser?.staff_profile?.address;
-	let dateOfBirth = $currentUser?.staff_profile?.date_of_birth;
-	let phoneNumber = $currentUser?.staff_profile?.phone_number;
-
-	let preferred_name = $currentUser?.staff_profile?.preferred_name;
-	let email = $currentUser?.email;
 
 	let tabs = [
 		{

@@ -15,6 +15,7 @@
 	$: name = `${currentProfile?.staff_profile?.first_name} ${currentProfile?.staff_profile?.last_name}`;
 	$: emergencyContactName = `${currentProfile?.staff_profile?.emergency_contact_name}`;
 	$: preferred_name = currentProfile?.staff_profile?.preferred_name;
+	$: preferred_weekly_working_hours = currentProfile?.staff_profile?.preferred_weekly_working_hours;
 	$: email = currentProfile?.email;
 
 	function updatedProfile(user) {
@@ -36,15 +37,25 @@
 			</div>
 		</div>
 		<div class="flex flex-col">
+			<label for="email" class="mb-2 text-xs font-satoshi">Email Address</label>
+			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
+				<p id="email" aria-label={email}>{email}</p>
+			</div>
+		</div>
+		<div class="flex flex-col">
 			<label for="preferred_name" class="mb-2 text-xs font-satoshi">Preferred Name</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
 				<p id="preferred_name" aria-label={preferred_name}>{preferred_name}</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
-			<label for="email" class="mb-2 text-xs font-satoshi">Email Address</label>
+			<label for="preferred_weekly_working_hours" class="mb-2 text-xs font-satoshi"
+				>Preferred Weekly Working Hours</label
+			>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="email" aria-label={email}>{email}</p>
+				<p id="preferred_weekly_working_hours" aria-label="preferred_weekly_working_hours">
+					{preferred_weekly_working_hours}
+				</p>
 			</div>
 		</div>
 		<div class="flex flex-col">

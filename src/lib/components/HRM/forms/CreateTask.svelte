@@ -18,6 +18,7 @@
 	export let access;
 	export let users;
 	export let task: Task | null = null;
+	export let endpoint;
 
 	let start_time = null;
 	let end_time = null;
@@ -101,8 +102,8 @@
 
 	const taskPriorities = [
 		{ label: 'Low', value: 'LOW', color: 'text-yellow-500' },
-		{ label: 'Normal', value: 'NORMAL', color: 'text-grey-200' },
-		{ label: 'High', value: 'HIGH', color: 'text-red-500' }
+		{ label: 'Normal', value: 'NORMAL', color: 'text-[#38A6F5]' },
+		{ label: 'High', value: 'HIGH', color: 'text-primary-red' }
 	];
 
 	let validationErrors: {
@@ -224,7 +225,7 @@
 					<label for="description" class="text-sm mb-1 font-medium font-satoshi"
 						>Assign employees</label
 					>
-					<HrmSelector {users} {access} />
+					<HrmSelector {endpoint} {users} {access} />
 					{#if $ManagersAssigned && $ManagersAssigned.length > 0}
 						<div class="flex items-center flex-wrap gap-2 mt-2.5">
 							{#each $ManagersAssigned as manager}

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Button } from './ui/button';
 	import * as DropdownMenu from './ui/dropdown-menu';
 	import * as Table from '$lib/components/ui/table/index.js';
@@ -15,8 +14,8 @@
 	<Table.Cell>
 		<div class="   justify-start items-center gap-3 inline-flex">
 			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
-				{user.first_name}
-				{user.last_name}
+				{user?.staff_profile.first_name}
+				{user?.staff_profile.last_name}
 			</span>
 		</div>
 	</Table.Cell>

@@ -14,17 +14,12 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals, pare
 			throw redirect(302, '/settings?staff_profile=null');
 		}
 
-		// console.log(getImages.status);
-
 		if (getImages.ok && allPermission.ok) {
 			const permissions = await allPermission.json();
 			const images = await getImages.json();
 
 			return { images, user: locals.user, permissions };
 		} else if (getImages.status === 401) {
-			// console.log(getImages.status);
-			// console.log(allPermission.status);
-
 			throw redirect(302, ` /auth/login?from=${currUrl}`);
 		}
 	} else if (!locals.user) {

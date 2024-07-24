@@ -8,6 +8,7 @@
 
 	export let users: User[];
 	export let access;
+	export let endpoint: string;
 
 	let loading: boolean = false;
 	let searching: string = '';
@@ -69,7 +70,7 @@
 				placeholder="Search employees"
 				token={access}
 				{loading}
-				endpoint="staffs"
+				{endpoint}
 				searchEndpoint="users"
 				query="is_staff=true"
 				on:searched={(e) => {

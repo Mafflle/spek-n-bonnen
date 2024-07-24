@@ -66,8 +66,19 @@
 			icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1667 17.5V15.8333C14.1667 14.9493 13.8155 14.1014 13.1904 13.4763C12.5653 12.8512 11.7174 12.5 10.8334 12.5H4.16671C3.28265 12.5 2.43481 12.8512 1.80968 13.4763C1.18456 14.1014 0.833374 14.9493 0.833374 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.49996 9.16667C9.34091 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34091 2.5 7.49996 2.5C5.65901 2.5 4.16663 3.99238 4.16663 5.83333C4.16663 7.67428 5.65901 9.16667 7.49996 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.1666 17.5001V15.8334C19.1661 15.0948 18.9203 14.3774 18.4678 13.7937C18.0153 13.2099 17.3817 12.793 16.6666 12.6084" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3334 2.6084C14.0504 2.79198 14.6859 3.20898 15.1397 3.79366C15.5936 4.37833 15.8399 5.09742 15.8399 5.83757C15.8399 6.57771 15.5936 7.2968 15.1397 7.88147C14.6859 8.46615 14.0504 8.88315 13.3334 9.06673" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 			activeIcon:
 				'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1667 17.5V15.8333C14.1667 14.9493 13.8155 14.1014 13.1904 13.4763C12.5653 12.8512 11.7174 12.5 10.8334 12.5H4.16671C3.28265 12.5 2.43481 12.8512 1.80968 13.4763C1.18456 14.1014 0.833374 14.9493 0.833374 15.8333V17.5" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.49996 9.16667C9.34091 9.16667 10.8333 7.67428 10.8333 5.83333C10.8333 3.99238 9.34091 2.5 7.49996 2.5C5.65901 2.5 4.16663 3.99238 4.16663 5.83333C4.16663 7.67428 5.65901 9.16667 7.49996 9.16667Z" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.1666 17.5001V15.8334C19.1661 15.0948 18.9203 14.3774 18.4678 13.7937C18.0153 13.2099 17.3817 12.793 16.6666 12.6084" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3334 2.6084C14.0504 2.79198 14.6859 3.20898 15.1397 3.79366C15.5936 4.37833 15.8399 5.09742 15.8399 5.83757C15.8399 6.57771 15.5936 7.2968 15.1397 7.88147C14.6859 8.46615 14.0504 8.88315 13.3334 9.06673" stroke="#DA4E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-			pageTitle: 'Staffs',
-			permission: 'view_account'
+			pageTitle: 'Human Resources',
+			children: [
+				{
+					title: 'Tasks',
+					href: '/hrm/tasks',
+					permission: 'view_task'
+				},
+				{
+					title: 'Staffs',
+					href: '/hrm/staffs',
+					permission: 'view_staffs'
+				}
+			]
 		},
 		{
 			href: '/settings',
@@ -97,15 +108,7 @@
 	<nav class="sidebar-nav w-full h-full flex flex-col items-start justify-between gap-4 mb-4">
 		<ol class="w-full flex items-start flex-col gap-3 px-3">
 			{#each routes as route}
-				{#if route.pageTitle !== 'Orders'}
-					<NavBarButton
-						active={routes.indexOf(route) !== 0 && $page.url.pathname === route.href}
-						hidden={false}
-						{route}
-					/>
-				{:else if route.pageTitle === 'Orders'}
-					<NavBarButton hidden={false} active={$page.url.pathname.startsWith(route.href)} {route} />
-				{/if}
+				<NavBarButton active={$page.url.pathname === route.href} hidden={false} {route} />
 			{/each}
 		</ol>
 

@@ -16,7 +16,7 @@
 {#if $isDesktop}
 	{#if mode === 'dialog'}
 		<Dialog.Root bind:open={showModal} onOpenChange={() => dispatch('close')}>
-			<Dialog.Content class="md:p-0 md:min-w-max ">
+			<Dialog.Content class="md:p-0 md:min-w-max w-full">
 				<slot name="modal-content" class="w-full" />
 			</Dialog.Content>
 		</Dialog.Root>

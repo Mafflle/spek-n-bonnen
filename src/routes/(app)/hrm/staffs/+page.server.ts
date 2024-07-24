@@ -11,18 +11,6 @@ type Errors = {
 	groups?: [string];
 };
 
-const taskPriorities = ['LOW', 'NORMAL', 'HIGH'] as const;
-
-const dateSchema = z.preprocess(
-	(arg) => {
-		if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
-	},
-	z.date({
-		required_error: 'Date is required',
-		invalid_type_error: 'Invalid date format'
-	})
-);
-
 const inviteSchema = z
 	.object({
 		email: z
@@ -62,23 +50,6 @@ const inviteSchema = z
 		}
 	});
 
-const taskSchema = z.object({
-	title: z
-		.string({ required_error: 'Task name is required' })
-		.min(1, { message: 'Task name is required' })
-		.trim(),
-	description: z.string({ required_error: 'Task description is resquired' }).trim().optional(),
-	priority: z.enum(taskPriorities, {
-		description: 'Task priority is required',
-		required_error: 'Please select task priority'
-	}),
-	start_time: dateSchema,
-	end_time: dateSchema,
-	assignees_ids: z
-		.array(z.number({ required_error: 'Please assign this task to someone ' }))
-		.nonempty({ message: 'Please assign this task to someone' })
-});
-
 export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	const access = cookies.get('access');
 
@@ -88,20 +59,17 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	const groups = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/?limit=20`);
 	const staffs = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_staff=true`);
 	const managers = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/users/?is_manager=true`);
-	const getTasks = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`);
 
-	if (groups.ok && staffs.ok && getTasks.ok && managers.ok) {
+	if (groups.ok && staffs.ok && managers.ok) {
 		const data = await groups.json();
 		let users = await staffs.json();
 		let staffManagers = await managers.json();
-		let tasks = await getTasks.json();
-		// console.log(users);
+
 		return {
 			access,
 			groups: data,
 			users: users,
-			staffManagers,
-			tasks
+			staffManagers
 		};
 	}
 };
@@ -160,90 +128,6 @@ export const actions: Actions = {
 			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
-				console.log(toSend.errors);
-
-				return fail(400, toSend);
-			}
-
-			console.log('error', error);
-			return fail(500, toSend);
-		}
-	},
-	manage_task: async ({ fetch, request }) => {
-		const formData = await request.formData();
-
-		const title = formData.get('title');
-		const description = formData.get('description');
-		const priority = formData.get('priority');
-		const start_time = formData.get('start_time');
-		const end_time = formData.get('end_time');
-		const assignedManagers = formData.getAll('assignees_ids');
-		const existingTask = parseInt(formData.get('existingTaskId') as string);
-		console.log(existingTask);
-
-		let assignees_ids = assignedManagers.map((m) => parseInt(m as string));
-
-		const dataToValidate = {
-			...(title && { title }),
-			...(description && { description }),
-			...(priority && { priority }),
-			...(start_time && { start_time }),
-			...(end_time && { end_time }),
-			...(assignees_ids && { assignees_ids })
-		};
-
-		console.log(dataToValidate);
-
-		try {
-			const validatedData = taskSchema.parse(dataToValidate);
-
-			console.log('starting');
-			if (existingTask && existingTask > 0) {
-				const editTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${existingTask}/`, {
-					method: 'put',
-					body: JSON.stringify(validatedData)
-				});
-
-				if (editTask.ok) {
-					console.log('almost');
-					const editedTask = await editTask.json();
-					console.log('completed', editedTask);
-
-					return {
-						edited: true,
-						editedTask
-					};
-				} else {
-					console.log(editTask.status);
-				}
-			} else {
-				const createTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`, {
-					method: 'post',
-					body: JSON.stringify(validatedData)
-				});
-				console.log('in progress', createTask.status);
-				if (createTask.ok) {
-					const newTask = await createTask.json();
-					console.log(newTask);
-
-					return {
-						newTask,
-						edited: false
-					};
-				} else {
-					console.log(createTask.status);
-				}
-			}
-		} catch (error) {
-			const toSend = {
-				message: 'Ooops something went wrong',
-				errors: {} as Errors
-			};
-
-			if (error instanceof z.ZodError) {
-				toSend.message = 'Validation error';
-				toSend.errors = error.flatten().fieldErrors;
-
 				console.log(toSend.errors);
 
 				return fail(400, toSend);
