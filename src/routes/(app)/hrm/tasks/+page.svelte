@@ -35,7 +35,8 @@
 			{ name: '' }
 		],
 		RowComponent: TaskRow,
-		RowsData: $Tasks
+		RowsData: $Tasks,
+		Data: data
 	};
 </script>
 
@@ -152,5 +153,6 @@
 		slot="modal-content"
 		access={data.access}
 		users={data.managers.results}
+		on:close={toggleCreate}
 	/>
 </Modal>
