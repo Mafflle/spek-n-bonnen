@@ -143,6 +143,10 @@
 					</Sheet.Title>
 					<button
 						type="button"
+						on:click={() => {
+							// console.log('Close button clicked');
+							dispatch('close');
+						}}
 						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
 					>
 						<img src="/icons/close.svg" alt="close icon" />
