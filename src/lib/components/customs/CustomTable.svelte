@@ -6,6 +6,7 @@
 		columns: { name: string }[];
 		RowComponent: SvelteComponent;
 		RowsData: any[];
+		Data: any[];
 	};
 </script>
 
@@ -20,7 +21,7 @@
 	</Table.Header>
 	<Table.Body>
 		{#each props.RowsData as rowData}
-			<svelte:component this={props.RowComponent} data={rowData} />
+			<svelte:component this={props.RowComponent} data={rowData} additionalData={props.Data} />
 		{/each}
 	</Table.Body>
 </Table.Root>
