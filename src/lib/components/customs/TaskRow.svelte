@@ -2,17 +2,24 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import type { Task, TaskStatus } from '$lib/hrm';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import EditTask from '$lib/components/HRM/forms/CreateTask.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import dayjs from 'dayjs';
 	import Modal from '$lib/components/Modal.svelte';
 
-	export let data: Task;
+	export let data: any;
+	export let additionalData: any = {};
 
 	let showMoredDetails: boolean = false;
 
 	function toggleDetails() {
 		showMoredDetails = !showMoredDetails;
+	}
+	let showEdit: boolean = false;
+
+	function toggleEdit() {
+		showEdit = !showEdit;
 	}
 
 	function returnPriorityColor(priority) {
@@ -79,7 +86,7 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
 				<DropdownMenu.Item>
 					<Button
-						on:click={toggleDetails}
+						on:click={toggleEdit}
 						class="text-xs font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
 						<img src="/icons/edit.svg" alt="edit icon" />
@@ -120,6 +127,17 @@
 		</DropdownMenu.Root>
 	</Table.Cell>
 </Table.Row>
+
+<Modal showModal={showEdit} on:close={toggleEdit} mode="sheet">
+	<EditTask
+		endpoint="tasks"
+		task={data}
+		slot="modal-content"
+		access={additionalData.access}
+		users={additionalData.managers.results}
+		on:close={toggleEdit}
+	/>
+</Modal>
 
 <Modal showModal={showMoredDetails} on:close={toggleDetails}>
 	<div class="bg-white w-[800px] rounded-md grid grid-cols-1 pt-4 pb-16" slot="modal-content">
