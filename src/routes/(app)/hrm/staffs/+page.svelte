@@ -7,7 +7,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 
 	import InviteStaff from '$lib/components/HRM/forms/InviteStaff.svelte';
-	import CreateTask from '$lib/components/HRM/forms/CreateTask.svelte';
+	import ManageTask from '$lib/components/HRM/forms/ManageTask.svelte';
 	import { currentTask } from '$lib/hrm.js';
 	import dayjs from 'dayjs';
 	import Button from '$lib/components/ui/button/button.svelte';

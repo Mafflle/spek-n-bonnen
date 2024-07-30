@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table/index.js';
-	import type { SvelteComponent } from 'svelte';
-
+	import { createEventDispatcher, type SvelteComponent } from 'svelte';
+	const dispatch = createEventDispatcher();
 	export let props: {
 		columns: { name: string }[];
 		RowComponent: SvelteComponent;
@@ -20,7 +20,11 @@
 	</Table.Header>
 	<Table.Body>
 		{#each props.RowsData as rowData}
-			<svelte:component this={props.RowComponent} data={rowData} />
+			<svelte:component
+				this={props.RowComponent}
+				data={rowData}
+				on:toggleEdit={(event) => dispatch('toggleEdit', event.detail)}
+			/>
 		{/each}
 	</Table.Body>
 </Table.Root>

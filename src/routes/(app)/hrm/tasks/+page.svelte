@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CustomTable from '$lib/components/customs/CustomTable.svelte';
-	import CreateTask from '$lib/components/HRM/forms/CreateTask.svelte';
+	import ManageTask from '$lib/components/HRM/forms/ManageTask.svelte';
 	import TaskTab from '$lib/components/HRM/tabs/TaskTab.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { type Task, Tasks } from '$lib/hrm';
@@ -9,15 +9,23 @@
 	import dayjs from 'dayjs';
 	import TaskRow from '$lib/components/customs/TaskRow.svelte';
 	import { createEventDispatcher } from 'svelte';
-
+	import { writable } from 'svelte/store';
+	const currentTask = writable(null);
 	const dispatch = createEventDispatcher();
-	function toggleCurrTask(task: Task) {
-		currentTask.set(task);
-		dispatch('open');
-	}
+	// function toggleCurrTask(task: Task) {
+	// 	currentTask.set(task);
+	// 	dispatch('open');
+	// }
 
 	export let data;
-
+	function handleToggleEdit(event: CustomEvent) {
+		console.log('handleToggleEdit called', event.detail);
+		const taskData = event.detail;
+		currentTask.set(taskData);
+		showCreate = true;
+		console.log('showCreate set to', showCreate);
+		console.log('currentTask set to', $currentTask);
+	}
 	let showCreate: boolean = false;
 
 	function toggleCreate() {
@@ -95,62 +103,15 @@
 	</div>
 
 	<div class="w-full">
-		<CustomTable props={tableProps} />
-		<!-- {#if Tasks.length > 0}
-		{#each Tasks as task}
-			<div
-				on:click={() => toggleCurrTask(task)}
-				class="col-span-1 cursor-pointer flex flex-col w-full border-2 min-h-[170px] p-4 gap-1 rounded-xl"
-			>
-				<section class="flex items-center justify-between">
-					<h5 class="text-primary-red text-xs">Task Name</h5>
-					<span
-						class="bg-primary-green text-xs xl:text-sm text-[#41AA00] text-center py-0.5 px-4 rounded-3xl"
-					>
-						{task.status}
-					</span>
-				</section>
-				<section class="grid text-grey-100 mb-auto">
-					<h6 class="text-sm xl:text-lg font-satoshi font-medium">{task.title}</h6>
-					<p class="xl:text-sm text-xs font-satoshi">
-						{shortenText(task.description, 100)}
-					</p>
-				</section>
-				<section class="flex items-center justify-between">
-					<section class="flex items-center gap-2">
-						<div class="flex items-center -space-x-2">
-							{#each task.assignees as assignee, i}
-								<Avatar.Root class="w-6 h-6">
-									<Avatar.Image
-										class="w-full h-full object-cover"
-										src={assignee?.staff_profile?.profile_picture.image}
-									/>
-									<Avatar.Fallback class="text-xs"
-										>{assignee?.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback
-									>
-								</Avatar.Root>
-							{/each}
-						</div>
-						<span class="text-primary-softPink-50 text-xs">GroupA</span>
-					</section>
-					<div class=" flex items-center gap-1 text-primary-softPink-50">
-						<img class="w-3.5 h-3.5" src="/icons/TaskClock.svg" alt="clock icon" />
-						<span class="text-xs">{dayjs(task.end_time).diff(task.start_time, 'hour')}/hrs</span>
-					</div>
-				</section>
-			</div>
-		{/each}
-	{:else}
-		No Tasks created yet
-	{/if} -->
+		<CustomTable props={tableProps} on:toggleEdit={handleToggleEdit} />
 	</div>
 </div>
-
 <Modal showModal={showCreate} on:close={toggleCreate} mode="sheet">
-	<CreateTask
+	<ManageTask
 		endpoint="tasks"
 		slot="modal-content"
 		access={data.access}
 		users={data.managers.results}
+		task={$currentTask}
 	/>
 </Modal>

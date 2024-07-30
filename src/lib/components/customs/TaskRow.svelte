@@ -6,13 +6,20 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import dayjs from 'dayjs';
 	import Modal from '$lib/components/Modal.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let data: Task;
 
 	let showMoredDetails: boolean = false;
+	const dispatch = createEventDispatcher();
 
 	function toggleDetails() {
 		showMoredDetails = !showMoredDetails;
+	}
+
+	function toggleEdit(data: Task) {
+		console.log('Dispatching toggleEdit event', data);
+		dispatch('toggleEdit', data);
 	}
 
 	function returnPriorityColor(priority) {
@@ -79,7 +86,7 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start	">
 				<DropdownMenu.Item>
 					<Button
-						on:click={toggleDetails}
+						on:click={() => toggleEdit(data)}
 						class="text-xs font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
 						<img src="/icons/edit.svg" alt="edit icon" />
