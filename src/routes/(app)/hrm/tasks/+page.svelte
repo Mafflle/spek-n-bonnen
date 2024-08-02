@@ -29,6 +29,7 @@
 	let showCreate: boolean = false;
 
 	function toggleCreate() {
+		currentTask.set(null);
 		showCreate = !showCreate;
 	}
 
@@ -42,8 +43,7 @@
 			{ name: 'End time' },
 			{ name: '' }
 		],
-		RowComponent: TaskRow,
-		RowsData: $Tasks
+		RowComponent: TaskRow
 	};
 </script>
 
@@ -103,11 +103,15 @@
 	</div>
 
 	<div class="w-full">
-		<CustomTable props={tableProps} on:toggleEdit={handleToggleEdit} />
+		<CustomTable rowsData={$Tasks} props={tableProps} on:toggleEdit={handleToggleEdit} />
 	</div>
 </div>
 <Modal showModal={showCreate} on:close={toggleCreate} mode="sheet">
 	<ManageTask
+		on:close={(e) => {
+			Tasks.set(e.detail.tasks);
+			showCreate = !showCreate;
+		}}
 		endpoint="tasks"
 		slot="modal-content"
 		access={data.access}

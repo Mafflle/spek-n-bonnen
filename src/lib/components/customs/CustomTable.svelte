@@ -5,8 +5,8 @@
 	export let props: {
 		columns: { name: string }[];
 		RowComponent: SvelteComponent;
-		RowsData: any[];
 	};
+	export let rowsData: any[] = [];
 </script>
 
 <Table.Root class="w-full">
@@ -19,10 +19,10 @@
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
-		{#each props.RowsData as rowData}
+		{#each rowsData as data}
 			<svelte:component
 				this={props.RowComponent}
-				data={rowData}
+				{data}
 				on:toggleEdit={(event) => dispatch('toggleEdit', event.detail)}
 			/>
 		{/each}

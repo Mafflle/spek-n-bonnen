@@ -78,7 +78,7 @@
 						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
 					>
 						<img src="/icons/UserWithEclipse.svg" alt="user icon " />
-						<span>Complete profile</span>
+						<span>{currentStaff ? 'Edit' : 'Complete'} profile</span>
 					</Sheet.Title>
 					<button
 						type="button"
@@ -92,7 +92,11 @@
 		</div>
 		<div class="form-group py-6 flex flex-col gap-10 items-start justify-center w-full px-4">
 			<span class="font-satoshi text-sm"
-				>Kindly fill information below to complete your profile.</span
+				>Kindly fill information below to {view === 'manager' && currentStaff
+					? 'edit staff'
+					: view === 'employee' && currentStaff
+						? 'edit your'
+						: 'complete your'} profile.</span
 			>
 			<section class="w-full px-3 flex flex-col gap-5">
 				<div class="form-item w-full flex flex-col mb-5">
@@ -315,7 +319,7 @@
 				{#if loading}
 					<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
 				{:else}
-					<span> Proceed</span>
+					<span> {currentStaff ? 'Update' : 'Proceed'}</span>
 
 					<iconify-icon icon="ep:right" width="15"></iconify-icon>
 				{/if}

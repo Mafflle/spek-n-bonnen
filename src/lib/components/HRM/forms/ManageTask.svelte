@@ -86,7 +86,7 @@
 						showToast('Task created successfully', 'success');
 					}
 
-					dispatch('close');
+					dispatch('close', { tasks: $Tasks });
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 					showToast('Validation error', 'error');

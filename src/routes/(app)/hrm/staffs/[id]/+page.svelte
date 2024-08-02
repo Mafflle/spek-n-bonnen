@@ -22,7 +22,7 @@
 	let showScheduleModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
-	$: currentTab = 'schedules';
+	$: currentTab = 'profile';
 
 	$: workSchedules.set(userSchedule.results);
 
