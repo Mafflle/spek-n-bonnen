@@ -7,6 +7,8 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 	const previous = url.searchParams.get('from');
 
 	if (access && refresh) {
+		console.log('tokens present');
+
 		if (previous) {
 			if (previous === '/') {
 				throw redirect(302, '/');
@@ -15,7 +17,6 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 			throw redirect(302, '/');
 		}
 	} else {
-		cookies.delete('access', { path: '/' });
-		cookies.delete('refresh', { path: '/' });
+		console.log('no tokens');
 	}
 };

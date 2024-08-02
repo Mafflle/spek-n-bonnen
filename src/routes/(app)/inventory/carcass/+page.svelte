@@ -37,15 +37,15 @@
 </script>
 
 <svelte:head>
-	<title>Carcass - Spek-N-Boonen</title>
+	<title>Carcass - Spek-n-Boonen</title>
 </svelte:head>
 
-{#if $Carcasses.length != 0}
+{#if $Carcasses.length > 0}
 	<div class="">
 		<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 			<div class="headers flex flex-col items-start gap-[0.25rem]">
 				<h2 class="text-[2em] tracking-[2] font-satoshi font-bold">Carcass</h2>
-				<sub class="text-[#6B6B6B] text-sm"> Providers / Carcass</sub>
+				<sub class="text-[#6B6B6B] text-sm"> Inventory / Carcass</sub>
 			</div>
 			<div class="filter-buttons flex items-start gap-2 sm:gap-5 w-full justify-between">
 				<div

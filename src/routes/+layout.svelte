@@ -4,16 +4,16 @@
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
 	import PageLoader from '$lib/components/PageLoader.svelte';
-	import { showToast, type ToastType } from '$lib/utils';
 </script>
 
 <svelte:head>
 	<title>Spek-N-Boonen</title>
 	<link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet" />
 	<link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
+	<link href="https://fonts.cdnfonts.com/css/poppins" rel="stylesheet" />
 </svelte:head>
 
-<Toaster richColors />
+<Toaster richColors closeButton />
 
 {#if $navigating}
 	<PageLoader />

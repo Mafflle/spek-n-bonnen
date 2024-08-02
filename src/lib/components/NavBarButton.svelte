@@ -4,19 +4,17 @@
 	import Button from './ui/button/button.svelte';
 	import * as Menubar from '$lib/components/ui/menubar';
 	import { currentUser } from '$lib/user';
+	import type { Role } from '$lib/stores';
 
-	export let hidden: boolean;
+	export let hidden: boolean = true;
 	export let route: any;
 	export let alert: boolean = false;
-	export let active: boolean = false;
 	let childActive: boolean = false;
-	let showChildren: boolean = false;
 
-	const toggleChildren = () => {
-		showChildren = !showChildren;
-	};
-
+	export let active: boolean = false;
 	let keepOpen = false;
+	$: console.log($page.url.pathname);
+	$: console.log(route.href);
 
 	function checkIfChildActive() {
 		if (route && route?.children) {
@@ -33,15 +31,13 @@
 		} else keepOpen = false;
 	}
 
-	// console.log(checkIfPermissionsMatch());
-
 	if ($currentUser?.is_superuser) {
 		hidden = false;
 	}
 
-	function check(permission: string, userPermissions = $currentUser?.groups) {
-		if (permission && !$currentUser?.is_superuser) {
-			for (let i = 0; i < userPermissions.length; i++) {
+	function check(permission: string, userPermissions?: Role[]) {
+		if (userPermissions?.length > 0 && permission) {
+			for (let i = 0; i < userPermissions?.length; i++) {
 				let currRole = userPermissions[i];
 				for (let x = 0; x < currRole?.permissions.length; x++) {
 					let currPermission = currRole?.permissions[x];
@@ -51,15 +47,23 @@
 				}
 			}
 			return true;
-		} else {
+		} else if ($currentUser?.is_superuser) {
 			return false;
+		} else if (!permission) {
+			return false;
+		} else {
+			return true;
 		}
+	}
+
+	$: {
+		check(route.permission, $currentUser?.groups);
 	}
 	checkIfChildActive();
 </script>
 
 {#if route}
-	<li class=" {check(route.permission) ? 'hidden' : 'w-full'}">
+	<li class=" {check(route.permission, $currentUser?.groups) ? 'hidden' : 'w-full'}">
 		{#if route.children && route.children.length > 0}
 			<Collapsible.Root
 				onOpenChange={checkIfChildActive}
@@ -67,24 +71,23 @@
 				class="md:w-full lg:flex hidden items-start flex-col "
 			>
 				<Collapsible.Trigger class="" asChild let:builder>
-					<span
+					<Button
+						builders={[builder]}
 						on:mouseenter={() => {
 							if ($page.url.pathname === route.href && active === true) active = false;
 						}}
 						on:mouseleave={() => {
 							if ($page.url.pathname === route.href && active === false) active = true;
 						}}
-						class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
-		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
-							'bg-primary-light text-primary-red'}
+						class="flex w-full md:w-full items-center cursor-pointer text-grey-200 px-3 py-1 justify-around rounded-md
+		hover:bg-grey-200 hover:text-white hover:shadow-inner 
 		"
 					>
 						<span class="side-nav-button w-full text-inherit flex items-center justify-between">
 							<div class="button-content flex items-center gap-2.5 self-stretch">
-								<span class="test-inherit">{@html active ? route.activeIcon : route.icon}</span>
+								<span class="text-inherit">{@html active ? route.activeIcon : route.icon}</span>
 								<span
-									class="button-text {active &&
-										'text-primary-red'} hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
+									class="button-text } hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
 								>
 									{route.pageTitle}
 								</span>
@@ -100,14 +103,11 @@
 							{/if}
 						</span>
 
-						<Button
-							builders={[builder]}
-							class="flex items-center justify-center p-0 {active && 'text-black-100'}"
-						>
+						<span class="flex items-center justify-center p-0">
 							<img src="/icons/Chevron down.svg" alt="arrow down icon" />
-							<span class="sr-only">Toggle</span></Button
+							<span class="sr-only">Toggle</span></span
 						>
-					</span>
+					</Button>
 				</Collapsible.Trigger>
 
 				<Collapsible.Content class="py-2 pl-1 w-full">
@@ -143,9 +143,9 @@
 									</Collapsible.Root>
 								{:else}
 									<a
-										class=" py-2 w-full text-grey-200 {$page.url.pathname === child.href &&
+										class=" py-2 w-full text-grey-200 {$page.url.pathname.startsWith(child.href) &&
 											'bg-primary-light text-primary-red shadow-inner'}
-											 px-3 rounded-sm {check(child.permission)
+											 px-3 rounded-sm {check(child.permission, $currentUser?.groups)
 											? 'hidden'
 											: 'flex'} gap-3 hover:bg-primary-light hover:text-primary-red"
 										href={child.href}
@@ -163,8 +163,10 @@
 			>
 				<Menubar.Menu>
 					<Menubar.Trigger
-						class="p-0 space-x-0 w-full flex items-center justify-center rounded-full {active &&
-							'bg-primary-light text-primary-red'} w-8 h-8"
+						class="flex md:w-full items-center text-grey-200  w-8 h-8  justify-around rounded-full
+		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
+							'bg-primary-light text-primary-red'}
+		"
 					>
 						<a
 							on:mouseenter={() => {
@@ -205,7 +207,8 @@
 							{#if child.childRoutes}
 								<Menubar.Sub>
 									<Menubar.SubTrigger
-										class="{check(child.permission) && !$currentUser?.is_superuser
+										class="{check(child.permission, $currentUser?.groups) &&
+										!$currentUser?.is_superuser
 											? 'hidden'
 											: 'block'} text-xs font-semibold"
 									>

@@ -1,24 +1,42 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { getLoggedInUsers, showToast } from '$lib/utils';
+	import {
+		getLoggedinUser,
+		showToast,
+		type loggedInUser,
+		getRandomColor,
+		updateLoggedInUsers
+	} from '$lib/utils';
 	import { slide } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
-	/**
-	 * @type {boolean}
-	 */
-	let loading = false;
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { currentUser } from '$lib/user';
 
-	/**
-	 * @typedef {object} validationError
-	 * @property {string[]=} email
-	 * @property {string[]=} password
-	 */
+	import { LoggedinUsers } from '$lib/stores';
+	import { browser } from '$app/environment';
+	import Modal from '$lib/components/Modal.svelte';
 
-	/**
-	 * @type {validationError}
-	 */
+	let loading: boolean = false;
+	if (browser) {
+		if ($LoggedinUsers.length < 1) {
+			let users = getLoggedinUser();
+			if (users.length > 0) {
+				$LoggedinUsers = users;
+			}
+		}
+	}
+	let userToLogin: loggedInUser | null;
+	let showModal: boolean = false;
+
+	function toggleModal() {
+		showModal = !showModal;
+	}
+	function selectUserToLogin(user: loggedInUser) {
+		userToLogin = user;
+	}
+
 	let validationErrors: { email?: string; password?: string };
 	// console.log($page.url.searchParams.get('previous'));
 	let currInputType = 'password';
@@ -32,28 +50,20 @@
 			currInputType = 'password';
 		}
 	};
-	const submit: SubmitFunction = async () => {
+	const submit: SubmitFunction = async ({ formData }) => {
+		if (userToLogin?.email) {
+			formData.append('email', `${userToLogin.email}`);
+		}
+
 		const previous = $page.url.searchParams.get('from');
 		loading = true;
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					const existingUsers = getLoggedInUsers();
 					let currentUser = result.data.currUser;
-					console.log(result);
+					updateLoggedInUsers(currentUser);
 
-					const userData = {
-						name: `${currentUser?.first_name} ${currentUser?.last_name}`,
-						email: `${currentUser?.email}`
-					};
-					if (existingUsers.length > 0) {
-						if (!existingUsers.find((user) => user.email === userData?.email)) {
-							existingUsers.push(userData);
-						}
-					} else {
-						existingUsers.push(userData);
-					}
-					localStorage.setItem('loggedInUsers', JSON.stringify(existingUsers));
+					showModal = false;
 					if (previous) {
 						await goto(`${previous}`);
 					} else {
@@ -68,18 +78,17 @@
 				}
 			} finally {
 				loading = false;
-				update();
 			}
 		};
 	};
 
-	$: console.log(currInputType);
+	console.log($LoggedinUsers);
 </script>
 
 <svelte:head>
 	<title>Login - Spek-n-Boonen</title>
 </svelte:head>
-<div class="h-screen w-screen flex justify-center items-center bg-[#F2F2F2]">
+<div class="h-screen w-screen flex flex-col gap-5 justify-center items-center bg-[#F2F2F2]">
 	<form action="?/login" method="post" use:enhance={submit}>
 		<div
 			class="bg-white shadow-none border-none rounded-[16px] py-[50px] px-[30px] text-[#2d2d2d] flex flex-col justify-center items-center gap-10 min-w-[22rem] lg:min-w-[28.25rem]"
@@ -107,7 +116,7 @@
 						name="email"
 						id="email"
 						placeholder="Enter your Email"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -125,7 +134,7 @@
 							name="password"
 							id="password"
 							placeholder="Enter your password"
-							class="h-12 w-full px-4 py-2.5 rounded-md outline-none focus:outline-primary-100 focus:border-1 focus:border-primary-100 focus:shadow-custom border"
+							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
 						<button
 							type="button"
@@ -148,6 +157,7 @@
 					{/if}
 				</div>
 			</div>
+
 			<div class="submit w-full flex flex-col gap-[1.88rem]">
 				<button
 					class="bg-primary-50 py-[0.88rem] px-[0.63rem] rounded-[8px] w-full md:w-[25rem]
@@ -172,4 +182,181 @@
 			</div>
 		</div>
 	</form>
+	{#if $LoggedinUsers.length > 0}
+		<button
+			on:click={toggleModal}
+			class="flex justify-between items-center min-w-[22rem] lg:min-w-[28.25rem] bg-white hover:bg-white/60 p-4 rounded-[16px]"
+		>
+			<section class=" w-full flex gap-3 items-center">
+				<div class="flex items-center -space-x-3">
+					{#each $LoggedinUsers as user}
+						<Avatar.Root class="w-12 h-12">
+							<Avatar.Image
+								class="w-full h-full object-cover"
+								src={user.avatar}
+								alt="User's profile picture"
+							/>
+							<Avatar.Fallback>
+								{#if user.name}
+									<span class="text-2xl">
+										{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+									</span>
+								{:else}
+									<span class="text-2xl">
+										{`${user.email.split('')[0][0].toLocaleUpperCase()}${user.email.split('')[0][1].toLocaleUpperCase()}`}
+									</span>
+								{/if}
+							</Avatar.Fallback>
+						</Avatar.Root>
+					{/each}
+				</div>
+				<span class="font-satoshi text-primary-red">Switch Accounts</span>
+			</section>
+			<iconify-icon class="text-primary-red" width="30" icon="ph:caret-right-thin"></iconify-icon>
+		</button>
+	{/if}
 </div>
+
+<Modal {showModal}>
+	<div
+		class="flex flex-col gap-2 md:p-5 w-full px-3 overflow-hidden py-5 md:min-w-[400px] rounded-2xl items-center"
+		slot="modal-content"
+	>
+		<section class="w-full items-center flex {userToLogin ? 'justify-between' : 'justify-end'}">
+			{#if userToLogin}
+				<button on:click={() => (userToLogin = null)}>
+					<iconify-icon class="text-grey-100" width="25" icon="mingcute:left-line"></iconify-icon>
+				</button>
+			{/if}
+			<button
+				on:click={() => {
+					userToLogin = null;
+					toggleModal();
+				}}
+				class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
+			>
+				<img src="/icons/close.svg" alt="close icon" />
+			</button>
+		</section>
+		{#if userToLogin}
+			<h5 class="text-primary-25 text-xl font-satoshi font-medium mb-12">Login</h5>
+			<form
+				use:enhance={submit}
+				class="w-full flex flex-col justify-center gap-8"
+				action="?/login"
+				method="post"
+			>
+				<div class="flex flex-col items-center gap-2">
+					<Avatar.Root class="w-16 h-16">
+						<Avatar.Image
+							class="w-full h-full object-cover"
+							src={userToLogin.avatar}
+							alt="User's profile picture"
+						/>
+						<Avatar.Fallback>
+							{#if userToLogin.name}
+								<span class="text-2xl">
+									{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
+								</span>
+							{:else}
+								<span class="text-2xl">
+									{`${userToLogin.email.split('')[0][0].toLocaleUpperCase()}${userToLogin.email.split('')[0][1].toLocaleUpperCase()}`}
+								</span>
+							{/if}
+						</Avatar.Fallback>
+					</Avatar.Root>
+					<div class="w-full flex items-center justify-center">
+						<span class="font-satoshi font-medium text-center">{userToLogin.name}</span>
+					</div>
+				</div>
+				<div class=" flex flex-col justify-center items-center gap-6 w-full">
+					<div class="password w-full">
+						<label for="password" class="block mb-1 text-sm font-satoshi font-medium"
+							>Password</label
+						>
+						<div class="w-full relative flex items-center px-0">
+							<input
+								type="password"
+								name="password"
+								id="password"
+								placeholder="Enter your password"
+								class=" w-full px-4 py-2 border-grey-300 rounded-md outline-none focus:outline-primary-100 focus:border-1 focus:border-primary-100 focus:shadow-custom border"
+							/>
+
+							{#if validationErrors?.password}
+								<sub
+									transition:slide={{ delay: 250, duration: 300 }}
+									class="text-rose-500 text-xs tracking-[-0.0075rem]"
+									>{validationErrors.password}</sub
+								>
+							{/if}
+						</div>
+					</div>
+					<div class="submit w-full flex flex-col gap-[1.88rem]">
+						<button
+							class="bg-primary-red py-3 px-3 rounded-[8px] w-full
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+					focus:shadow-custom text-white font-bold font-satoshi text-sm flex gap-1 items-center justify-center
+					"
+							type="submit"
+						>
+							{#if loading}
+								<iconify-icon width="25" icon="eos-icons:three-dots-loading"></iconify-icon>
+							{:else}
+								<span class="button-text">Log in </span>
+								<iconify-icon icon="ep:right" width="15"></iconify-icon>
+							{/if}
+						</button>
+
+						<div class="forgot-password">
+							<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
+								<div class="text-[#9C9C9C]">Forgotten password?</div>
+								<a href="auth/forgot-password" class="hover:underline">Click here to reset</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		{:else if !userToLogin}
+			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
+				{#each $LoggedinUsers as user}
+					<button
+						disabled={$currentUser?.email === user.email}
+						on:click={() => selectUserToLogin(user)}
+						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
+					>
+						<Avatar.Root class="w-10 h-10">
+							<Avatar.Image
+								class="w-full h-full object-cover"
+								src={user.avatar}
+								alt="User's profile picture"
+							/>
+							<Avatar.Fallback>
+								{#if user.name}
+									<span class="text-2xl">
+										{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+									</span>
+								{:else}
+									<span class="text-2xl">
+										{`${user.email.split('')[0][0].toLocaleUpperCase()}${user.email.split('')[0][1].toLocaleUpperCase()}`}
+									</span>
+								{/if}
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="w-full flex items-center justify-between">
+							<span class="text-xl text-start">{user.name}</span>
+							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
+						></iconify-icon> -->
+							{#if $currentUser?.email === user.email}
+								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
+								></iconify-icon>
+							{/if}
+						</div>
+					</button>
+				{/each}
+			</div>
+		{:else if $LoggedinUsers.length < 1}
+			<div>No user added yet</div>
+		{/if}
+	</div>
+</Modal>

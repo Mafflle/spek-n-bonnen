@@ -50,8 +50,11 @@ export const actions: Actions = {
 		const currUrl = formData.get('currUrl');
 		cookies.delete('access', { path: '/' });
 		cookies.delete('refresh', { path: '/' });
-
-		throw redirect(302, `auth/login?from=${currUrl}`);
+		if (currUrl) {
+			throw redirect(302, `auth/login?from=${currUrl}`);
+		} else {
+			throw redirect(302, 'auth/login');
+		}
 	},
 	upload: async ({ fetch, request, url }) => {
 		// console.log(cookies.get('access'));
@@ -157,13 +160,15 @@ export const actions: Actions = {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 				cookies.set('refresh', tokens.refresh, {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/'
+					path: '/',
+					maxAge: 60 * 60 * 24 * 30
 				});
 				const access = cookies.get('access');
 				const getLoggedInUser = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
@@ -184,7 +189,7 @@ export const actions: Actions = {
 				return fail(401, { message: 'Invalid email or password' });
 			} else {
 				console.log(res.status);
-				console.log(await res.json());
+				// console.log(await res.json());
 			}
 		} catch (error) {
 			const toSend = {

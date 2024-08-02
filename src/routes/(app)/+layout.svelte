@@ -6,38 +6,17 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Users } from '$lib/stores.js';
+	import { LoggedinUsers } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
-	import { getLoggedInUsers, showToast, type ToastType } from '$lib/utils.js';
+	import { showToast, updateLoggedInUsers, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
 	export let data;
 	const { permissions, user } = data;
 
-	interface loggedInUser {
-		name: string;
-		email: string;
-	}
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
-
-	if (browser) {
-		if ($Users.length < 1) {
-			let users = getLoggedInUsers();
-			if (users.length > 0) {
-				$Users = users;
-			} else {
-				let currUser = {
-					name: `${$currentUser?.first_name} ${$currentUser?.last_name}`,
-					email: `${$currentUser?.email}`
-				};
-				users.push(currUser);
-				$Users = users;
-				localStorage.setItem('loggedInUsers', JSON.stringify(users));
-			}
-		}
-	}
 
 	onMount(() => {
 		if (message && messageType) {
@@ -52,6 +31,7 @@
 	let userToLogin: loggedInUser | null;
 
 	const unsubscribe = currentUser.subscribe((currUser) => currUser);
+	const unsubscribeLoggedInUsers = LoggedinUsers.subscribe((users) => users);
 	let showModal: boolean = false;
 	let loading: boolean = false;
 
@@ -77,7 +57,6 @@
 					showToast('Login successful', 'success');
 					toggleModal();
 					userToLogin = null;
-					await goto('/');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 				} else if (result.status === 401) {
@@ -92,14 +71,15 @@
 		};
 	};
 
+	updateLoggedInUsers($currentUser);
+
 	onDestroy(() => {
 		unsubscribe();
+		unsubscribeLoggedInUsers();
 	});
-
-	$: console.log(loading);
 </script>
 
-<div class="max-w-screen flex bg-[#F9F9F9]">
+<div class=" flex bg-[#F9F9F9]">
 	<SideNav on:showSwitch={toggleModal} />
 
 	<div class="w-full min-h-screen lg:m-4 md:rounded-lg pt-10 md:p-8 px-5 max-xsm:mb-16 bg-white">
@@ -130,60 +110,35 @@
 		</section>
 		{#if userToLogin}
 			<h5 class="text-primary-25 text-xl font-satoshi font-medium mb-12">Login</h5>
-		{/if}
-		{#if !userToLogin && $Users.length > 0}
-			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
-				{#each $Users as user}
-					<button
-						disabled={$currentUser?.email === user.email}
-						on:click={() => selectUserToLogin(user)}
-						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
-					>
-						<Avatar.Root class="w-10 h-10">
-							<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
-							<Avatar.Fallback>
-								<span class="text-base">
-									{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
-								</span>
-							</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="w-full flex items-center justify-between">
-							<span class="text-xl text-start">{user.name}</span>
-							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
-						></iconify-icon> -->
-							{#if $currentUser?.email === user.email}
-								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
-								></iconify-icon>
-							{/if}
-						</div>
-					</button>
-				{/each}
-				<a
-					href="auth/login"
-					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
-				>
-					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
-					<span class="text-lg font-satoshi block">Add Account</span></a
-				>
-			</div>
-		{:else if userToLogin}
 			<form
 				use:enhance={submit}
 				class="w-full flex flex-col justify-center gap-8"
-				action="?/login"
+				action="/?/login"
 				method="post"
 			>
 				<div class="flex flex-col items-center gap-2">
 					<Avatar.Root class="w-16 h-16">
-						<!-- <Avatar.Image class="w-full h-full" src="https://github.com/shadcn.png" alt="@shadcn" /> -->
+						<Avatar.Image
+							class="w-full h-full"
+							src={userToLogin.avatar}
+							alt="User's profile picture"
+						/>
 						<Avatar.Fallback>
-							<span class="text-2xl">
-								{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
-							</span>
+							{#if userToLogin.name}
+								<span class="text-2xl">
+									{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
+								</span>
+							{:else}
+								<span class="text-2xl">
+									{`${userToLogin.email.split('')[0][0].toLocaleUpperCase()}${userToLogin.email.split('')[0][1].toLocaleUpperCase()}`}
+								</span>
+							{/if}
 						</Avatar.Fallback>
 					</Avatar.Root>
 					<div class="w-full flex items-center justify-center">
-						<span class="font-satoshi font-medium text-center">{userToLogin.name}</span>
+						<span class="font-satoshi font-medium text-center"
+							>{userToLogin.name ?? userToLogin.email}</span
+						>
 					</div>
 				</div>
 				<div class=" flex flex-col justify-center items-center gap-6 w-full">
@@ -244,8 +199,64 @@
 					</div>
 				</div>
 			</form>
-		{:else if $Users.length < 1}
+		{/if}
+		{#if !userToLogin && $LoggedinUsers.length > 0}
+			<div class="flex flex-col items-center justify-center gap-5 w-full mb-6">
+				{#each $LoggedinUsers as user}
+					<button
+						disabled={$currentUser?.email === user.email}
+						on:click={() => selectUserToLogin(user)}
+						class="flex w-full px-4 py-2 items-center gap-3 transition-all rounded hover:badge-ghost"
+					>
+						<Avatar.Root class="w-10 h-10">
+							<Avatar.Image
+								class="w-full h-full object-cover"
+								src={user.avatar}
+								alt="User's profile picture"
+							/>
+							<Avatar.Fallback>
+								{#if user.name}
+									<span class="text-2xl">
+										{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+									</span>
+								{:else}
+									<span class="text-2xl">
+										{`${user.email.split('')[0][0].toLocaleUpperCase()}${user.email.split('')[0][1].toLocaleUpperCase()}`}
+									</span>
+								{/if}
+							</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="w-full flex items-center justify-between">
+							<span class="text-xl text-start">{user.name ?? user.email}</span>
+							<!-- <iconify-icon icon="icon-park:check-one"  style="color: #41AA00;"
+						></iconify-icon> -->
+							{#if $currentUser?.email === user.email}
+								<iconify-icon icon="icon-park-solid:check-one" width="18" style="color: #41AA00"
+								></iconify-icon>
+							{/if}
+						</div>
+					</button>
+				{/each}
+				<form action="/?/logout" method="post" class="w-full">
+					<button
+						type="submit"
+						class="w-full px-4 cursor-pointer py-2 justify-start items-center gap-1 flex text-primary-50"
+					>
+						<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
+						<span class="text-lg font-satoshi block">Add Account</span></button
+					>
+				</form>
+			</div>
+		{:else if $LoggedinUsers.length < 1}
 			<div>No user added yet</div>
 		{/if}
 	</div>
 </Modal>
+
+<!-- <Modal
+	mode="sheet"
+	showModal={showProfileModal}
+	lock={$currentUser?.staff_profile === null}
+	on:close={() => (showProfileModal = false)}
+>
+</Modal> -->

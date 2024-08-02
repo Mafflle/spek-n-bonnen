@@ -2,26 +2,13 @@
 	import { isEqual, type Option } from '$lib/utils';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import Pill from './Pill.svelte';
-	import { container, updateSelectedOptions } from '$lib/stores';
-	export let options: Option[];
+	import { container, updateSelectedOptions, type Permission, type Role } from '$lib/stores';
+	export let options: (Permission | Role)[];
 	export let disableOptions: boolean = false;
-	let selectedArray: Option[] = [];
+	let selectedArray: (Permission | Role)[] = [];
 
 	const dispatch = createEventDispatcher();
-	const onSelected = (option: Option) => {
-		// let updatedArray: Option[] = [];
-		// if (selectedArray.some((item) => isEqual(item, option))) {
-		// 	updatedArray = selectedArray.filter((item) => {
-		// 		return item.value !== option.value;
-		// 	});
-		// } else {
-		// 	updatedArray = [option, ...selectedArray];
-		// }
-		// if (updatedArray.length > 0) {
-		// 	container.set(updatedArray);
-		// 	// console.log($container);
-
-		// }
+	const onSelected = (option) => {
 		dispatch('selected', selectedArray);
 	};
 
@@ -54,10 +41,10 @@
 </script>
 
 <div
-	class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full h-full"
+	class="user-role flex flex-col justify-center items-start gap-[1.25rem] max-w-full w-full max-h-[300px] overflow-y-scroll no-scrollbar h-full"
 >
 	<div
-		class="roles flex items-start gap-[0.625rem] w-full max-w-full overflow-x-scroll no-scrollbar mb-5 flex-wrap"
+		class="roles flex items-start gap-[0.625rem] w-full max-w-full overflow-x-scroll no-scrollbar flex-wrap"
 	>
 		{#each options as option, i (i)}
 			<Pill selected={checkSelected(option)} {option} on:selected={(e) => onSelected(e.detail)} />

@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ fetch, url, cookies }) => {
-	const checkIfAdminExist = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists`);
+	const checkIfAdminExist = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists/`);
 	let currUrl = url.pathname;
 	if (checkIfAdminExist.ok) {
 		const adminExists = await checkIfAdminExist.json();
@@ -14,9 +14,5 @@ export const load: LayoutServerLoad = async ({ fetch, url, cookies }) => {
 
 			throw redirect(302, `/auth/setup-admin`);
 		}
-	} else if (checkIfAdminExist.status === 401) {
-		cookies.delete('access', { path: '/' });
-		cookies.delete('refresh', { path: '/' });
-		throw redirect(302, `/auth/login?from=${currUrl}`);
 	}
 };

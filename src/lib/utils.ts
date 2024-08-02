@@ -1,20 +1,21 @@
-import { goto } from '$app/navigation';
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import axios from 'axios';
 import { toast } from 'svelte-sonner';
-import {
-	passwordConfirmation,
-	passwordModal,
-	inviteUserModal,
-	type Permission,
-	type Role
-} from '$lib/stores';
+import { passwordConfirmation, passwordModal, inviteUserModal, LoggedinUsers } from '$lib/stores';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { cubicOut } from 'svelte/easing';
+import type { TransitionConfig } from 'svelte/transition';
+import type { User } from './user';
+import { browser } from '$app/environment';
+import type { Schedule } from './hrm';
 
 // types
-export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom';
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'promise';
 export type Option = {
 	value: number;
 	label: string;
+	slug: string;
 };
 export type CarcassErrors = {
 	purchase_price?: [string];
@@ -47,33 +48,65 @@ export type CarcassErrors = {
 };
 
 // utility functions
-export const showToast = (message: string, type: ToastType) => {
+export const showToast = (message: string, type: ToastType, promise?) => {
 	if (message) {
 		if (type === 'success') {
 			toast.success(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
+				// class: 'h-[80px] md:w-[468px] w-[200px]  text-white',
+				// classes: {
+				// 	title: 'text-white',
+				// 	success: 'bg-green-main text-white'
+				// }
 			});
 		} else if (type === 'error') {
 			toast.error(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'warning') {
 			toast.warning(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		} else if (type === 'info') {
 			// Blue background with white text
 			toast.info(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true,
+				class: 'bg-yellow-500'
+			});
+		} else if (type === 'promise') {
+			toast.promise(promise, {
+				loading: 'Loading...',
+				success: () => {
+					return message;
+				}
 			});
 		} else {
 			toast(message, {
-				position: 'bottom-right'
+				position: 'top-right',
+				dismissable: true
 			});
 		}
 	}
 };
 
+export function getRandomColor() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+		color += letters[Math.round(Math.random() * 15)];
+	}
+	return color;
+}
+
+export type loggedInUser = {
+	name?: string;
+	email: string;
+	avatar?: string;
+};
 export const client = axios.create({
 	//axios client
 	baseURL: PUBLIC_API_ENDPOINT,
@@ -135,15 +168,16 @@ export const debounce = (cb: Function, delay = 1000) => {
 	};
 };
 
-export const isEqual = (obj1: Option, obj2: Option) => {
-	return obj1.value === obj2.value && obj1.label === obj2.label;
+export const isEqual = (obj1, obj2) => {
+	if (obj1.value) {
+		return obj1.value === obj2.value && obj1.label === obj2.label;
+	} else if (obj1.code_name) {
+		return obj1.id === obj2.id && obj1.code_name === obj2.code_name;
+	} else {
+		return obj1.id === obj2.id && obj1.name === obj2.name;
+	}
 };
 
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import { cubicOut } from 'svelte/easing';
-import type { TransitionConfig } from 'svelte/transition';
-import type { User } from './user';
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
@@ -233,6 +267,83 @@ export function check(permission: string, user: User) {
 		return false;
 	}
 }
-export function getLoggedInUsers() {
-	return JSON.parse(localStorage.getItem('loggedInUsers')) || [];
+export function getLoggedinUser(): { name?: string; email: string; avatar?: string }[] {
+	return JSON.parse(localStorage.getItem('loggedinUsers')) || [];
+}
+
+export const updateLoggedInUsers = (loggedInUser: User) => {
+	if (browser) {
+		let users = getLoggedinUser() as loggedInUser[];
+		if (users.length > 0) {
+			LoggedinUsers.set(users);
+		} else {
+			if (loggedInUser?.staff_profile) {
+				let currUser = {
+					name: `${loggedInUser?.staff_profile.first_name} ${loggedInUser?.staff_profile.last_name}`,
+					email: `${loggedInUser?.email}`,
+					avatar: loggedInUser.staff_profile.profile_picture.image
+				};
+				users.push(currUser);
+				LoggedinUsers.set(users);
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
+			} else {
+				let currUser = {
+					email: loggedInUser?.email as string
+				};
+				users.push(currUser);
+				LoggedinUsers.set(users);
+				localStorage.setItem('loggedinUsers', JSON.stringify(users));
+			}
+		}
+	}
+};
+
+export function shortenText(text: string, maxLength: number = 10): string {
+	if (text.length > maxLength) {
+		return text.substring(0, maxLength); // Extract the first 10 characters
+	} else {
+		return text;
+	}
+}
+export function formatTime(timeStr) {
+	const [hours, minutes] = timeStr.split(':').map(Number);
+
+	let meridian = 'AM';
+	let formattedHours = hours;
+
+	if (hours >= 12) {
+		meridian = 'PM';
+		formattedHours = hours === 12 ? 12 : hours - 12;
+	}
+
+	const formattedTime = `${formattedHours.toString().padStart(2, '0')}:${minutes
+		.toString()
+		.padStart(2, '0')}${meridian}`;
+	return formattedTime;
+}
+
+export function calculateTimeDifference(start_time: string, end_time: string) {
+	// 1. Parse Time (Assuming format: HH:mm)
+	const [startHours, startMinutes] = start_time.split(':').map(Number);
+	const [endHours, endMinutes] = end_time.split(':').map(Number);
+
+	// Calculate minutes
+	const startTotalMinutes = startHours * 60 + startMinutes;
+	const endTotalMinutes = endHours * 60 + endMinutes;
+
+	// 2. Calculate Time Difference in Minutes
+	let timeDifferenceMinutes = endTotalMinutes - startTotalMinutes;
+
+	return timeDifferenceMinutes;
+}
+
+export function calculateTotalTimeDifference(scheduleData: Schedule[]) {
+	let totalDifferenceMinutes = 0;
+
+	for (const entry of scheduleData) {
+		const difference = calculateTimeDifference(entry.start_time, entry.end_time);
+		totalDifferenceMinutes += difference;
+	}
+
+	return totalDifferenceMinutes;
 }

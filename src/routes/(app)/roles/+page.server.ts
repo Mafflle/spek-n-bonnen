@@ -19,13 +19,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 		const roles = await rolesRes.json();
 		// console.log(permissions);
 
-		permissions.results = permissions.results.map((perm) => {
-			return {
-				value: perm.id,
-				label: perm.codename
-			};
-		});
-
+		permissions.results;
 		return {
 			permissions,
 			roles,

@@ -4,8 +4,6 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts,pcss}'],
 
-	plugins: [require('daisyui')],
-
 	darkMode: ['class'],
 	safelist: ['dark'],
 
@@ -19,7 +17,8 @@ const config = {
 				xs: { raw: '(min-width: 200px)' },
 				xsm: { raw: '(min-width: 400px)' },
 				'max-xsm': { raw: '(max-width: 450px)' },
-				'max-xs': { raw: '(max-width: 768px)' }
+				'max-xs': { raw: '(max-width: 768px)' },
+				'max-lg': { raw: '(max-width: 1224px)' }
 			},
 			colors: {
 				// flowbite-svelte
@@ -42,18 +41,26 @@ const config = {
 					900: '#A0000F',
 					red: '#DC5950',
 					light: '#FFE8E7',
+					green: '#DDFFC8',
 					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' },
 					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
 				},
 				secondary: {
 					50: '#9c9c9c',
 					DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
-					foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
+					foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
+					green: '#CFB53B'
+				},
+				active: {
+					green: '#41AA00'
 				},
 				grey: {
 					100: '#6B6B6B',
 					200: '#9c9c9c',
 					300: '#D9D9D9'
+				},
+				green: {
+					main: '#27AE60'
 				},
 				black: {
 					100: '#2D2D2D'
@@ -91,12 +98,10 @@ const config = {
 			},
 			fontFamily: {
 				satoshi: ['Satoshi', 'sans-serif'],
+				poppins: ['poppins', 'sans-serif'],
 				sans: ['Inter', ...fontFamily.sans]
 			}
 		}
-	},
-	daisyui: {
-		themes: ['light']
 	}
 };
 

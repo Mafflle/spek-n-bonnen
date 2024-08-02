@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
-import { isEqual, type Option } from './utils';
+import { isEqual } from './utils';
+
 export type Permission = {
 	id: number;
 	name: string;
@@ -13,22 +14,6 @@ export type Role = {
 	permissions: Permission[];
 };
 
-export type Brand = {
-	[key: string]: any;
-	id: number;
-	name: string;
-	logo: { id: number; title: string; image: string; updated_at: Date; created_at: Date };
-	created_at: Date;
-	updated_at: Date;
-};
-
-export type Manufacturer = {
-	id: number;
-	name: string;
-	created_at: Date;
-	updated_at: Date;
-};
-
 export type Primal = {
 	id: number;
 	name: string;
@@ -39,34 +24,33 @@ export type Primal = {
 	updated_at: Date;
 };
 
-export type Farm = {
-	id: number;
+export enum GroupEnum {
+	AUTO = 'AUTO',
+	MANUAL = 'MANUAL'
+}
+export enum VAT {
+	one = 1,
+	two,
+	three,
+	four
+}
+
+export type MainGroup = {
+	id?: number;
 	name: string;
-	address: string;
-	created_at: Date;
-	updated_at: Date;
+	department: string;
+	vat: VAT;
+	color: string;
+	traceability: GroupEnum;
+	traceability_scenario: string;
+	created_at?: Date;
+	updated_at?: Date;
 };
 
-export type Vendor = {
+export type Tag = {
 	id: number;
+	slug: string;
 	name: string;
-	address: string;
-	phone_number: string;
-	created_at: Date;
-	updated_at: Date;
-};
-
-export type ButcherShop = {
-	id: number;
-	name: string;
-	address: string;
-	created_at: Date;
-	updated_at: Date;
-};
-export type SlaughterHouse = {
-	id: number;
-	name: string;
-	address: string;
 	created_at: Date;
 	updated_at: Date;
 };
@@ -105,18 +89,7 @@ export type CarcassType = {
 	fat_score: string;
 	date_of_slaughter: string;
 	date_received: string;
-	farm: Farm;
-	slaughter_house: SlaughterHouse;
-	butcher_shop: ButcherShop;
-	manufacturer: Manufacturer;
-	brand: Brand;
-	vendor: Vendor;
-	farm_id: string;
-	slaughter_house_id: string;
-	butcher_shop_id: string;
-	manufacturer_id: string;
-	brand_id: string;
-	vendor_id: string;
+
 	created_at: string;
 	updated_at: string;
 };
@@ -124,28 +97,22 @@ export type CarcassType = {
 export let passwordModal = writable(false);
 export let passwordConfirmation = writable(false);
 export let inviteUserModal = writable(false);
-export const container = writable<Option[]>([]);
+export const container = writable<(Permission | Role)[]>([]);
 export let Roles = writable<Role[]>([]);
-export let Brands = writable<Brand[]>([]);
-export let Manufacturers = writable<Manufacturer[]>([]);
 export let Primals = writable<Primal[]>([]);
-export let Users = writable<{ name: string; email: string }[]>([]);
-export let Farms = writable<Farm[]>([]);
-export let Vendors = writable<Vendor[]>([]);
-export let ButcherShops = writable<ButcherShop[]>([]);
-export let SlaughterHouses = writable<SlaughterHouse[]>([]);
+export let LoggedinUsers = writable<{ name?: string; email: string; avatar?: string }[]>([]);
 export let Batches = writable<Batch[]>([]);
-export let currentProvider = writable<
-	Primal | Brand | Vendor | Manufacturer | Farm | ButcherShop | SlaughterHouse | null
->(null);
+export let MainGroups = writable<MainGroup[]>([]);
+export let Tags = writable<any[]>([]);
+export let currentCarcass = writable<CarcassType | null>(null);
 
-export const updateSelectedOptions = (option: Option) => {
-	container.update((items: Option[]) => {
+export const updateSelectedOptions = (option: Permission | Role) => {
+	container.update((items) => {
 		if (items.length > 0) {
 			for (const perms of items) {
 				if (isEqual(perms, option)) {
 					items = items.filter((item) => {
-						return item.value !== option.value;
+						return item.id !== option.id;
 					});
 				} else {
 					items = [...items, option];

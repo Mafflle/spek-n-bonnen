@@ -139,7 +139,7 @@
 			</div>
 			<div class="content">
 				<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-					<h3 class="title text-3xl font-medium tracking-[-0.64px]">No producrs added</h3>
+					<h3 class="title text-3xl font-medium tracking-[-0.64px]">No products added</h3>
 					<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
 						You currently don’t have any producrs stored in your inventory, click the button below
 						to add one
@@ -148,7 +148,7 @@
 			</div>
 			<div class="button">
 				<a
-					href="carcass/manage"
+					href="products/manage"
 					class="px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1"
 				>
 					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
