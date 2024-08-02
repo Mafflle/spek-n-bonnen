@@ -13,8 +13,6 @@
 
 	export let active: boolean = false;
 	let keepOpen = false;
-	$: console.log($page.url.pathname);
-	$: console.log(route.href);
 
 	function checkIfChildActive() {
 		if (route && route?.children) {

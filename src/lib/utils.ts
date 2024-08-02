@@ -274,7 +274,7 @@ export function getLoggedinUser(): { name?: string; email: string; avatar?: stri
 export const updateLoggedInUsers = (loggedInUser: User) => {
 	if (browser) {
 		let users = getLoggedinUser() as loggedInUser[];
-		if (users.length > 0) {
+		if (users.find((user) => loggedInUser?.email === user.email)) {
 			LoggedinUsers.set(users);
 		} else {
 			if (loggedInUser?.staff_profile) {
