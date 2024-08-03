@@ -17,23 +17,25 @@ export const load: PageServerLoad = async ({ fetch, cookies, locals }) => {
 	if (res.ok && rolesRes.ok) {
 		const permissions = await res.json();
 		const roles = await rolesRes.json();
-		// console.log(permissions);
-
-		permissions.results;
 		return {
 			permissions,
 			roles,
 			access,
 			refresh
 		};
-	} else if (!res.ok) {
-		console.log('permissions', res);
-
-		showToast('Error fetching permissions', 'error');
-	} else if (!rolesRes.ok) {
-		console.log('roles', rolesRes);
-
-		// showToast('Error fetching roles', 'error');
+	} else {
+		if (!res.ok) {
+			showToast('Error fetching permissions', 'error');
+		}
+		if (!rolesRes.ok) {
+			showToast('Error fetching roles', 'error');
+		}
+		return {
+			permissions: null,
+			roles: null,
+			access,
+			refresh
+		};
 	}
 };
 
@@ -54,45 +56,38 @@ const roleSchema = z.object({
 });
 
 export const actions: Actions = {
-	create: async ({ fetch, request }) => {
+	manage_role: async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const permArray = formData.getAll('permission');
-
-		const currRoleId = formData.get('role-id');
 		const name = formData.get('name');
-		const permissions = permArray.map((permId) => parseInt(permId));
-		const roleId = parseInt(currRoleId);
+		const permArray = formData.getAll('permissions');
+		const roleId = formData.get('roleId') ? parseInt(formData.get('roleId') as string) : null;
+
+		const permissions = permArray.map((permId) => parseInt(permId as string));
 
 		const dataToValidate = {
 			...(name && { name }),
 			...(permissions && { permissions }),
 			...(roleId && { roleId })
 		};
-		// console.log(dataToValidate);
+
 		try {
 			const validatedData = roleSchema.parse(dataToValidate);
 
-			if (validatedData.roleId) {
-				const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/${roleId}`, {
+			if (roleId && roleId > 0) {
+				const res = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/${roleId}/`, {
 					method: 'PUT',
-					body: JSON.stringify({ name, permissions })
+					body: JSON.stringify(validatedData)
 				});
-				// console.log('editing', res);
 
 				if (res.ok) {
 					const editedRole = await res.json();
-					// console.log('test', editedRole);
-
 					return {
-						role: editedRole,
-						edited: true
+						edited: true,
+						role: editedRole
 					};
-				} else if (!res.ok && res.status === 400) {
-					console.log(res);
-
+				} else {
 					const body = await res.json();
-					console.log('create role request error', body);
 					return fail(400, { message: 'Error while editing role', errors: body });
 				}
 			} else {
@@ -101,18 +96,14 @@ export const actions: Actions = {
 					body: JSON.stringify(validatedData)
 				});
 
-				// console.log('create role', res);
-
 				if (res.ok) {
 					const newRole = await res.json();
-
 					return {
-						role: newRole,
-						edited: false
+						edited: false,
+						role: newRole
 					};
 				} else {
 					const body = await res.json();
-					// console.log('create role request error', body);
 					return fail(400, { message: 'Error while creating new role', errors: body });
 				}
 			}
@@ -124,32 +115,28 @@ export const actions: Actions = {
 			if (error instanceof z.ZodError) {
 				toSend.message = 'Validation error';
 				toSend.errors = error.flatten().fieldErrors;
-				console.log(toSend.errors);
-
 				return fail(400, toSend);
 			}
-
-			console.log('error', error);
 			return fail(500, toSend);
 		}
 	},
 
-	delete: async ({ fetch, request, params }) => {
+	delete: async ({ fetch, request }) => {
 		const formData = await request.formData();
-
 		const id = formData.get('id');
+
 		if (id) {
 			const deleteRole = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/groups/${id}/`, {
-				method: 'delete'
+				method: 'DELETE'
 			});
 
 			if (deleteRole.ok) {
-				return {
-					success: true
-				};
-			} else if (!deleteRole.ok) {
-				console.log(deleteRole);
+				return { success: true };
+			} else {
+				return fail(400, { message: 'Error while deleting role' });
 			}
-		} else return fail(400);
+		} else {
+			return fail(400, { message: 'Role ID is required for deletion' });
+		}
 	}
 };

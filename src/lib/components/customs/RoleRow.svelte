@@ -6,6 +6,9 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
+	import { enhance } from '$app/forms';
+	import { Roles } from '$lib/stores';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 
@@ -55,17 +58,20 @@
 				</DropdownMenu.Item>
 
 				<DropdownMenu.Item>
-					<Button
-						on:click={toggleDetails}
-						class="text-xs font-satoshi text-grey-100 -tracking-[0.14px] flex items-center justify-start py-1 h-auto rounded gap-2"
+					<form
+						action="?/delete"
+						method="post"
+						use:enhance={() => {
+							return async ({ result, update }) => {
+								console.log('result', result);
+								toast.success('Role deleted successfully');
+								Roles.update((roles) => {
+									return roles.filter((role) => role.id !== data.id);
+								});
+							};
+						}}
 					>
-						<iconify-icon width="17" icon="ph:eye-light"></iconify-icon>
-						<span class="text-grey-100">View</span>
-					</Button>
-				</DropdownMenu.Item>
-
-				<DropdownMenu.Item>
-					<form action="?/delete" method="post">
+						<input type="text" bind:value={data.id} class="hidden" name="id" id="id" />
 						<Button
 							class="text-xs font-satoshi -tracking-[0.14px] flex items-center justify-start py-1 h-auto rounded gap-2"
 							type="submit"

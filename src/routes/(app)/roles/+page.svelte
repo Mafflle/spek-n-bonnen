@@ -1,10 +1,7 @@
 <script lang="ts">
 	import CustomTable from '$lib/components/customs/CustomTable.svelte';
 	import RoleRow from '$lib/components/customs/RoleRow.svelte';
-	import TaskRow from '$lib/components/customs/TaskRow.svelte';
 	import ManageRoles from '$lib/components/HRM/forms/ManageRoles.svelte';
-	// import ManageRole from '$lib/components/HRM/forms/ManageRole.svelte';
-	// import RoleTab from '$lib/components/HRM/tabs/RoleTab.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { Roles, container } from '$lib/stores.js';
 	import { createEventDispatcher } from 'svelte';
@@ -14,7 +11,6 @@
 	const dispatch = createEventDispatcher();
 	let showCreate: boolean = false;
 	export let data;
-	console.log('role data', data);
 	Roles.set(data.roles.results);
 
 	function handleToggleEdit(event: CustomEvent) {
@@ -30,11 +26,14 @@
 
 	let tableProps = {
 		columns: [{ name: 'name' }, { name: 'permissions' }, { name: 'actions' }],
-		// RowComponent: RoleTab
 		RowComponent: RoleRow
 	};
 
 	console.log('tableProps', tableProps);
+
+	function handleModalClose(event) {
+		showCreate = false;
+	}
 </script>
 
 <div class="roles-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
@@ -65,15 +64,6 @@
 	</div>
 </div>
 
-<Modal showModal={showCreate} on:close={toggleCreate} mode="sheet">
-	<ManageRoles
-		on:close={(e) => {
-			Roles.set(e.detail.roles);
-			showCreate = !showCreate;
-		}}
-		endpoint="roles"
-		slot="modal-content"
-		access={data.access}
-		role={$currentRole}
-	/>
+<Modal showModal={showCreate} on:close={handleModalClose} mode="sheet">
+	<ManageRoles currRoleId={$currentRole?.id} editRole={$currentRole} {data} slot="modal-content" />
 </Modal>
