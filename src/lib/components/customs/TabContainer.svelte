@@ -25,7 +25,7 @@
 
 <section
 	aria-label="User Profile with Tabs"
-	class="w-full lg:w-[100%] xl:w-[1000px] max-w-full flex flex-col gap-3"
+	class="w-full lg:w-[100%] xl:w-[70%] max-w-full flex flex-col gap-3"
 >
 	<TabController bind:selectedTab {tabs} on:tabChange={(e) => handleTabClick(e.detail)} />
 
