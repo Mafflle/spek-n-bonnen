@@ -41,12 +41,6 @@
 			pageTitle: 'Inventory',
 			children: [
 				{
-					title: 'Carcasses',
-					href: '/inventory/carcass',
-					color: '#FF1C0D',
-					permission: 'view_carcass'
-				},
-				{
 					title: 'Products',
 					href: '/inventory/products',
 					color: '#FF1C0D'
