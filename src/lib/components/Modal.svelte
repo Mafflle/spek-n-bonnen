@@ -36,6 +36,7 @@
 	<Drawer.Root
 		bind:open={showModal}
 		onOpenChange={() => {
+			console.log('modal changing');
 			showModal = false;
 			dispatch('close');
 		}}

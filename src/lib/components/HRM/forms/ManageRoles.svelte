@@ -49,6 +49,11 @@
 		showModal = !showModal;
 	};
 
+	function toggleEdit() {
+		console.log('Dispatching toggleEdit event on manage');
+		dispatch('toggleEdit');
+	}
+
 	if (editRole) {
 		console.log('editRole is active', editRole);
 		name = editRole?.name;
@@ -107,7 +112,7 @@
 					container.set([]);
 					dispatch('close');
 
-					// toggleModal();
+					toggleEdit();
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 					showToast(`${result.data.message}`, 'error');
