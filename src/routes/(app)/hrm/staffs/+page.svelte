@@ -102,12 +102,15 @@
 	</div>
 
 	<!-- <Separator data-separator-root class="hidden md:block" /> -->
-
-	<StaffsTab />
-	<div class="flex items-center gap-4 border-2 rounded-lg absolute mt-1 px-2 right-0">
-		<button>prev</button>
-		<span>page: 1</span>
-		<button>next</button>
+	<div class="flex flex-col gap-2">
+		<StaffsTab />
+		<div
+			class="flex items-center gap-4 border-2 justify-between self-end rounded-lg mt-1 w-52 p-2 right-0"
+		>
+			<button>prev</button>
+			<span> 1</span>
+			<button>next</button>
+		</div>
 	</div>
 </div>
 

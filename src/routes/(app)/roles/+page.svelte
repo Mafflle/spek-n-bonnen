@@ -25,7 +25,7 @@
 	}
 
 	let tableProps = {
-		columns: [{ name: 'name' }, { name: 'permissions' }, { name: 'actions' }],
+		columns: [{ name: 'name' }, { name: 'permissions' }, { name: '' }],
 		RowComponent: RoleRow
 	};
 
