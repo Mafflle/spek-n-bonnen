@@ -78,7 +78,6 @@
 				}
 			} finally {
 				loading = false;
-				update();
 			}
 		};
 	};
@@ -117,7 +116,7 @@
 						name="email"
 						id="email"
 						placeholder="Enter your Email"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 					/>
 					{#if validationErrors?.email}
 						<sub
@@ -135,7 +134,7 @@
 							name="password"
 							id="password"
 							placeholder="Enter your password"
-							class="h-12 w-full px-4 py-2.5 rounded-md outline-none focus:outline-primary-100 focus:border-1 focus:border-primary-100 focus:shadow-custom border"
+							class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 						/>
 						<button
 							type="button"
@@ -296,9 +295,9 @@
 					<div class="submit w-full flex flex-col gap-[1.88rem]">
 						<button
 							class="bg-primary-red py-3 px-3 rounded-[8px] w-full
-						hover:bg-[#C7453C] hover:rounded-[0.625rem]
-						focus:shadow-custom text-white font-bold font-satoshi text-sm flex gap-1 items-center justify-center
-						"
+					hover:bg-[#C7453C] hover:rounded-[0.625rem]
+					focus:shadow-custom text-white font-bold font-satoshi text-sm flex gap-1 items-center justify-center
+					"
 							type="submit"
 						>
 							{#if loading}
@@ -355,13 +354,6 @@
 						</div>
 					</button>
 				{/each}
-				<button
-					on:click={() => toggleModal()}
-					class="w-full px-4 justify-start items-center gap-1 flex text-primary-50"
-				>
-					<iconify-icon icon="lets-icons:add-round" width="20"></iconify-icon>
-					<span class="text-lg font-satoshi block">Add Account</span></button
-				>
 			</div>
 		{:else if $LoggedinUsers.length < 1}
 			<div>No user added yet</div>

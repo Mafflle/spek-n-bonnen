@@ -4,8 +4,6 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts,pcss}'],
 
-	plugins: [require('daisyui')],
-
 	darkMode: ['class'],
 	safelist: ['dark'],
 
@@ -19,7 +17,8 @@ const config = {
 				xs: { raw: '(min-width: 200px)' },
 				xsm: { raw: '(min-width: 400px)' },
 				'max-xsm': { raw: '(max-width: 450px)' },
-				'max-xs': { raw: '(max-width: 768px)' }
+				'max-xs': { raw: '(max-width: 768px)' },
+				'max-lg': { raw: '(max-width: 1224px)' }
 			},
 			colors: {
 				// flowbite-svelte
@@ -42,6 +41,7 @@ const config = {
 					900: '#A0000F',
 					red: '#DC5950',
 					light: '#FFE8E7',
+					green: '#DDFFC8',
 					softPink: { 50: '#ECA6A2', 100: '#FFF4F3' },
 					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
 				},
@@ -102,9 +102,6 @@ const config = {
 				sans: ['Inter', ...fontFamily.sans]
 			}
 		}
-	},
-	daisyui: {
-		themes: ['light']
 	}
 };
 

@@ -38,6 +38,56 @@ h6 {
 	.form-label {
 		@apply mb-2 text-sm font-medium font-satoshi;
 	}
+
+	.calendar-container {
+		/* ... Calendar style */
+	}
+
+	.day-btn {
+		@apply w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200; /* Or any other styling you prefer */
+	}
+
+	.day-btn.current {
+		/* Selected day (single or part of range) */
+		@apply bg-blue-500 text-white;
+	}
+
+	.day-btn.today {
+		/* Today's date */
+		@apply font-bold;
+	}
+
+	.day-btn.not-current-month {
+		/* Days from other months */
+		@apply text-gray-400;
+	}
+	.day-btn.disabled {
+		@apply opacity-50 cursor-not-allowed;
+	}
+
+	.day-btn.start-date {
+		/* Start of the range */
+		@apply bg-primary-100 font-medium text-white rounded-l-full;
+	}
+
+	.day-btn.end-date {
+		/* End of the range */
+		@apply bg-primary-100 font-medium text-white rounded-r-full;
+	}
+
+	.day-btn.in-range {
+		/* Days between start and end */
+		@apply font-medium text-primary-red rounded-none;
+	}
+
+	.prev-btn,
+	.next-btn {
+		@apply px-2 py-1 rounded-md hover:bg-gray-200; /* Basic button styles */
+	}
+
+	.day-btn {
+		@apply w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200;
+	}
 }
 
 @layer base {

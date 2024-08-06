@@ -8,6 +8,7 @@ import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import type { User } from './user';
 import { browser } from '$app/environment';
+import type { Schedule } from './hrm';
 
 // types
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'custom' | 'promise';
@@ -73,7 +74,8 @@ export const showToast = (message: string, type: ToastType, promise?) => {
 			// Blue background with white text
 			toast.info(message, {
 				position: 'top-right',
-				dismissable: true
+				dismissable: true,
+				class: 'bg-yellow-500'
 			});
 		} else if (type === 'promise') {
 			toast.promise(promise, {
@@ -272,7 +274,7 @@ export function getLoggedinUser(): { name?: string; email: string; avatar?: stri
 export const updateLoggedInUsers = (loggedInUser: User) => {
 	if (browser) {
 		let users = getLoggedinUser() as loggedInUser[];
-		if (users.length > 0) {
+		if (users.find((user) => loggedInUser?.email === user.email)) {
 			LoggedinUsers.set(users);
 		} else {
 			if (loggedInUser?.staff_profile) {
@@ -295,3 +297,53 @@ export const updateLoggedInUsers = (loggedInUser: User) => {
 		}
 	}
 };
+
+export function shortenText(text: string, maxLength: number = 10): string {
+	if (text.length > maxLength) {
+		return text.substring(0, maxLength); // Extract the first 10 characters
+	} else {
+		return text;
+	}
+}
+export function formatTime(timeStr) {
+	const [hours, minutes] = timeStr.split(':').map(Number);
+
+	let meridian = 'AM';
+	let formattedHours = hours;
+
+	if (hours >= 12) {
+		meridian = 'PM';
+		formattedHours = hours === 12 ? 12 : hours - 12;
+	}
+
+	const formattedTime = `${formattedHours.toString().padStart(2, '0')}:${minutes
+		.toString()
+		.padStart(2, '0')}${meridian}`;
+	return formattedTime;
+}
+
+export function calculateTimeDifference(start_time: string, end_time: string) {
+	// 1. Parse Time (Assuming format: HH:mm)
+	const [startHours, startMinutes] = start_time.split(':').map(Number);
+	const [endHours, endMinutes] = end_time.split(':').map(Number);
+
+	// Calculate minutes
+	const startTotalMinutes = startHours * 60 + startMinutes;
+	const endTotalMinutes = endHours * 60 + endMinutes;
+
+	// 2. Calculate Time Difference in Minutes
+	let timeDifferenceMinutes = endTotalMinutes - startTotalMinutes;
+
+	return timeDifferenceMinutes;
+}
+
+export function calculateTotalTimeDifference(scheduleData: Schedule[]) {
+	let totalDifferenceMinutes = 0;
+
+	for (const entry of scheduleData) {
+		const difference = calculateTimeDifference(entry.start_time, entry.end_time);
+		totalDifferenceMinutes += difference;
+	}
+
+	return totalDifferenceMinutes;
+}

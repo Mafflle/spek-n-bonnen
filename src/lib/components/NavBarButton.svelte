@@ -9,10 +9,9 @@
 	export let hidden: boolean = true;
 	export let route: any;
 	export let alert: boolean = false;
-	export let active: boolean = false;
 	let childActive: boolean = false;
-	let showChildren: boolean = false;
 
+	export let active: boolean = false;
 	let keepOpen = false;
 
 	function checkIfChildActive() {
@@ -29,8 +28,6 @@
 			}
 		} else keepOpen = false;
 	}
-
-	// console.log(checkIfPermissionsMatch());
 
 	if ($currentUser?.is_superuser) {
 		hidden = false;
@@ -72,24 +69,23 @@
 				class="md:w-full lg:flex hidden items-start flex-col "
 			>
 				<Collapsible.Trigger class="" asChild let:builder>
-					<span
+					<Button
+						builders={[builder]}
 						on:mouseenter={() => {
 							if ($page.url.pathname === route.href && active === true) active = false;
 						}}
 						on:mouseleave={() => {
 							if ($page.url.pathname === route.href && active === false) active = true;
 						}}
-						class="flex w-full md:w-full items-center text-grey-200 px-3 py-1 justify-around rounded-md
-		hover:bg-grey-200 hover:text-white hover:shadow-inner {active &&
-							'bg-primary-light text-primary-red'}
+						class="flex w-full md:w-full items-center cursor-pointer text-grey-200 px-3 py-1 justify-around rounded-md
+		hover:bg-grey-200 hover:text-white hover:shadow-inner 
 		"
 					>
 						<span class="side-nav-button w-full text-inherit flex items-center justify-between">
 							<div class="button-content flex items-center gap-2.5 self-stretch">
 								<span class="text-inherit">{@html active ? route.activeIcon : route.icon}</span>
 								<span
-									class="button-text {active &&
-										'text-primary-red'} hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
+									class="button-text } hidden md:flex flex-col justify-center flex-shrink-0 self-stretch text-sm"
 								>
 									{route.pageTitle}
 								</span>
@@ -105,14 +101,11 @@
 							{/if}
 						</span>
 
-						<Button
-							builders={[builder]}
-							class="flex items-center justify-center p-0 {active && 'text-black-100'}"
-						>
+						<span class="flex items-center justify-center p-0">
 							<img src="/icons/Chevron down.svg" alt="arrow down icon" />
-							<span class="sr-only">Toggle</span></Button
+							<span class="sr-only">Toggle</span></span
 						>
-					</span>
+					</Button>
 				</Collapsible.Trigger>
 
 				<Collapsible.Content class="py-2 pl-1 w-full">
@@ -148,7 +141,7 @@
 									</Collapsible.Root>
 								{:else}
 									<a
-										class=" py-2 w-full text-grey-200 {$page.url.pathname === child.href &&
+										class=" py-2 w-full text-grey-200 {$page.url.pathname.startsWith(child.href) &&
 											'bg-primary-light text-primary-red shadow-inner'}
 											 px-3 rounded-sm {check(child.permission, $currentUser?.groups)
 											? 'hidden'

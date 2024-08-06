@@ -5,6 +5,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let tabs: { title: string; id: string }[];
+	export let withImage: boolean = true;
 	export let selectedTab: string;
 	const dispatch = createEventDispatcher();
 	let tabList: HTMLDivElement;
@@ -16,11 +17,11 @@
 	function handleTabClick(index: number) {
 		tabList.querySelector(`button:nth-child(${index + 1})`)?.focus();
 	}
-	$: console.log(selectedTab);
+	// $: console.log(selectedTab);
 </script>
 
 <div
-	class="staff_profile-tab-controls h-24 xl:h-[118px] w-full bg-[#F7F7F7] flex items-center xl:space-x-6 rounded-[8px] px-6 lg:px-8 xl:px-10 relative z-20"
+	class="staff_profile-tab-controls h-24 xl:h-[118px] w-full bg-[#F7F7F7] flex items-center xl:space-x-4 rounded-[8px] px-6 xl:px-8 relative z-20"
 >
 	<div
 		class="staff_profile-section border-white border-[8px] shadow-sm lg:border-[10px] rounded-full relative -bottom-[50%]"
@@ -36,7 +37,7 @@
 	<div
 		role="tablist"
 		aria-label="Tabs"
-		class="tab-list flex items-center justify-center flex-1 space-x-2 lg:space-x-14 xl:space-x-20"
+		class="tab-list flex items-center justify-center flex-1 space-x-2 lg:space-x-14 xl:space-x-16"
 		bind:this={tabList}
 	>
 		{#each tabs as tab, index}

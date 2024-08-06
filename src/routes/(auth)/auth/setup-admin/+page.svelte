@@ -90,7 +90,7 @@
 						id="email"
 						name="email"
 						placeholder="Enter your Email"
-						class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+						class="w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi"
 					/>
 					{#if validationErrors?.email}
 						<sub

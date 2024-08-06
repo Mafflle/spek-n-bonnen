@@ -8,16 +8,17 @@
 	export let searchEndpoint: string;
 	export let placeholder: string = 'Search...';
 	export let className: string = '';
+	export let query: string = '';
 
 	let searching = false;
 	const dispatch = createEventDispatcher();
+
 	const search = debounce(async (search: string) => {
-		// if (!search.trim()) return (validationErrors.search = 'Search keyword is required');
 		searching = true;
 		dispatch('searching', searching);
 		try {
 			const res = await fetch(`${endpoint}?search=${search}`, {
-				headers: { access: `${token}`, to: searchEndpoint }
+				headers: { access: `${token}`, to: searchEndpoint, ...(query && { query }) }
 			});
 
 			if (res.ok) {
@@ -25,6 +26,9 @@
 
 				dispatch('searched', searchResult);
 			} else {
+				const body = await res.json();
+
+				return [];
 			}
 		} finally {
 			searching = false;
