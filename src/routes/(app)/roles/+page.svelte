@@ -25,7 +25,7 @@
 	}
 
 	let tableProps = {
-		columns: [{ name: 'name' }, { name: 'permissions' }, { name: 'actions' }],
+		columns: [{ name: 'name' }, { name: 'permissions' }, { name: '' }],
 		RowComponent: RoleRow
 	};
 
@@ -65,5 +65,11 @@
 </div>
 
 <Modal showModal={showCreate} on:close={handleModalClose} mode="sheet">
-	<ManageRoles currRoleId={$currentRole?.id} editRole={$currentRole} {data} slot="modal-content" />
+	<ManageRoles
+		currRoleId={$currentRole?.id}
+		editRole={$currentRole}
+		{data}
+		on:toggleEdit={handleModalClose}
+		slot="modal-content"
+	/>
 </Modal>
