@@ -28,6 +28,9 @@
 
 	function selectTimeline() {
 		startDateTimeString = dayjs(`${startDate.format('YYYY-MM-DD')} ${startTime}`).toISOString();
+		if (!endDate) {
+			endDate = startDate;
+		}
 		endDateTimeString = dayjs(`${endDate.format('YYYY-MM-DD')} ${endTime}`).toISOString();
 
 		dispatch('datePicked', {
@@ -78,7 +81,7 @@
 				<label for="start_time" class="text-sm mb-1 font-medium font-satoshi">Start time</label>
 
 				<input
-					disabled={!startDate || !endDate}
+					disabled={!startDate}
 					type="time"
 					class="border px-3 py-2 rounded-md"
 					name="start-time"
@@ -89,7 +92,7 @@
 				<label for="start_time" class="text-sm mb-1 font-medium font-satoshi">End time</label>
 
 				<input
-					disabled={!endDate || !startDate}
+					disabled={!startTime}
 					type="time"
 					class="border px-3 py-2 rounded-md"
 					name="end-time"
@@ -99,7 +102,7 @@
 		</div>
 		<div class="flex w-full items-center justify-center mt-5">
 			<button
-				disabled={!startDate || !startTime || !endDate || !endTime}
+				disabled={!startDate || !startTime || !endTime}
 				on:click={selectTimeline}
 				type="button"
 				class="bg-primary-red text-white transition duration-200 disabled:bg-pGrey py-2 px-6 disabled:text-grey-200 disabled:cursor-not-allowed text-sm rounded-md font-medium"
