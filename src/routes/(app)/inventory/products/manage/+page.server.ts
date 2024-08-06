@@ -4,44 +4,7 @@ import type { PageServerLoad } from './$types';
 import { data } from 'autoprefixer';
 import { z } from 'zod';
 
-export const load: PageServerLoad = async ({ fetch }) => {
-	const getPrimals = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/primals/`);
-	const getTags = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/tags/`);
-	// const getMainGroups = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/main_groups/`);
-	const getVendors = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/vendors/`);
-
-	// console.log(getPrimals.statusText);
-	if (getPrimals.ok && getTags.ok && getVendors.ok) {
-		let primals = await getPrimals.json();
-		const tags = await getTags.json();
-		let vendors = await getVendors.json();
-
-		primals.results = primals.results.map((primal) => {
-			return {
-				value: primal.id,
-				label: primal.name
-			};
-		});
-		tags.results = tags.results.map((tag) => {
-			return {
-				value: tag.id,
-				label: tag.name,
-				slug: tag.slug
-			};
-		});
-		vendors.results = vendors.results.map((vendor) => {
-			return {
-				value: vendor.id,
-				label: vendor.name
-			};
-		});
-		return {
-			primals: primals.results,
-			tags: tags.results,
-			vendors: vendors.results
-		};
-	}
-};
+export const load: PageServerLoad = async ({ fetch }) => {};
 
 interface Errors {
 	name?: [string];

@@ -29,7 +29,7 @@
 		RowComponent: RoleRow
 	};
 
-	console.log('tableProps', tableProps);
+	// console.log('tableProps', tableProps);
 
 	function handleModalClose(event) {
 		showCreate = false;
@@ -70,6 +70,7 @@
 		editRole={$currentRole}
 		{data}
 		on:toggleEdit={handleModalClose}
+		on:close={handleModalClose}
 		slot="modal-content"
 	/>
 </Modal>

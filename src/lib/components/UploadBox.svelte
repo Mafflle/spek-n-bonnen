@@ -87,14 +87,13 @@
 </script>
 
 <div
-	class=" {small ? 'h-[90px] ' : ' min-h-[200px] min-w-full '} {previewImage
+	class=" {small ? 'h-[90px] w-[90px] ' : ' min-h-[200px] min-w-full '} {previewImage
 		? 'w-[90px] '
 		: 'w-[230px]'}"
 >
 	<div
-		class=" relative w-full h-full {small ?? 'justify-center '} {previewImage && small
-			? ' px-1 justify-center rounded-full '
-			: 'rounded-2xl'} flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
+		class=" relative w-full h-full {small &&
+			'rounded-full justify-center '}  flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
 			? 'border-primary-softPink-50 border-2'
 			: 'border-grey-300 border-2'} hover:border-primary-red border-dashed"
 	>
@@ -127,7 +126,7 @@
 		/>
 		<div
 			class="upload-box-info h-full w-full flex {small
-				? 'flex-row items-center '
+				? 'flex-row items-center justify-center '
 				: 'flex-col justify-center'} {previewImage ? 'px-0' : 'px-3'}  items-center gap-2"
 		>
 			{#if previewImage}
@@ -148,7 +147,7 @@
 								src={previewImage}
 								alt=""
 								style="aspect-ratio: 1/1"
-								class="w-full h-full object-fit pointer-events-none rounded-xl"
+								class="w-full h-full object-fit pointer-events-none rounded-full"
 							/>
 							{#if allowMultiple && files.length > 1}
 								<section
@@ -165,34 +164,25 @@
 					{/if}
 				</section>
 			{/if}
-			<div
-				class="{small ? 'w-14 h-14' : ' w-7 h-7'} rounded-full {previewImage
-					? 'hidden'
-					: 'flex'} justify-center items-center"
-			>
-				<img
-					class="w-full h-full"
-					src="/icons/{small ? 'image-upload-2' : 'image-upload-vector'}.svg"
-					alt="file upload icon"
-				/>
-			</div>
-			<span
-				class="w-fit {small
-					? 'text-black-100 text-sm'
-					: 'max-w-[70%] text-grey-100 text-xs'}  {previewImage
-					? 'hidden'
-					: 'block'} font-satoshi text-center text-clip"
-			>
-				{#if small}
-					{smallText}
-				{:else}
+			{#if !previewImage}
+				<div class="{small ? 'w-14 h-14' : ' w-7 h-7'} flex justify-center items-center">
+					<img
+						class="w-full h-full"
+						src="/icons/{small ? 'image-upload-2' : 'image-upload-vector'}.svg"
+						alt="file upload icon"
+					/>
+				</div>
+			{/if}
+			{#if !small}
+				<span
+					class="w-fit
+					max-w-[70%] text-grey-100 text-xs {previewImage
+						? 'hidden'
+						: 'block'} font-satoshi text-center text-clip"
+				>
 					Drop your image here or click here to upload
-				{/if}
-			</span>
-			<!-- <span>or</span> -->
-			<!-- <button class="bg-primary-red py-2.5 px-4 text-sm font-medium text-white rounded-[30px]"
-				>Import from your computer</button
-			> -->
+				</span>
+			{/if}
 		</div>
 	</div>
 
