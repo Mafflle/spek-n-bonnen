@@ -52,7 +52,7 @@
 			</div>
 			<div class="content">
 				<div class="text flex flex-col gap-3 justify-center items-center text-grey-300">
-					<h3 class="title text-3xl font-medium tracking-[-0.64px]">No Provider added</h3>
+					<h3 class="title text-3xl font-medium tracking-[-0.64px]">No Supplier added</h3>
 					<div class="info text-center text-sm font-medium leading-5 tracking-[-0.13px]">
 						You currently don’t have any supplier saved, click the button below to create one
 					</div>

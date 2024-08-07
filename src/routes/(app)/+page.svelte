@@ -10,5 +10,5 @@
 </script>
 
 <div class=" lg:p-0 md:p-4 w-full grid">
-	<TasksCalendar tasks={tasks.results} />
+	<!-- <TasksCalendar tasks={tasks.results} /> -->
 </div>

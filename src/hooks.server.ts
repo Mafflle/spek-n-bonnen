@@ -1,12 +1,12 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import type { HandleFetch } from '@sveltejs/kit';
 
-import type { Cookies } from '@sveltejs/kit';
 import type { RequestEvent } from './routes/$types';
 
 // Helper functions for token management
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
+	6;
 	let access = event.cookies.get('access');
 
 	// if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
@@ -77,6 +77,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 	// Retry if 401 Unauthorized
 	if (response.status === 401 && !request.url.includes('auth')) {
+		console.log(response.status);
+
 		await refreshAndRetry(5);
 		access = event.cookies.get('access');
 		request.headers.set('Authorization', `Bearer ${access}`);
