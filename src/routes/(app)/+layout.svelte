@@ -79,9 +79,11 @@
 	});
 </script>
 
-<div class="flex min-h-screen w-screen bg-[#F9F9F9]">
+<div class="flex max-h-screen h-full overflow-hidden max-w-[100vw] w-full bg-[#F9F9F9]">
 	<SideNav on:showSwitch={toggleModal} />
-	<div class=" flex-1 lg:m-4 md:rounded-lg pt-10 md:p-8 px-5 max-xsm:mb-16 bg-white">
+	<div
+		class="flex-1 overflow-y-scroll h-screen relative lg:m-4 md:rounded-lg pt-10 md:p-8 px-5 max-xsm:mb-16 bg-white"
+	>
 		<slot />
 	</div>
 </div>

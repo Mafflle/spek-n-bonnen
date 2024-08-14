@@ -301,7 +301,7 @@
 {#if loading}
 	<PageLoader />
 {/if}
-<div class="">
+<div class="max-w-full w-full">
 	<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers flex flex-col items-start gap-[0.25rem]">
 			<h2 class="text-3xl font-semibold">

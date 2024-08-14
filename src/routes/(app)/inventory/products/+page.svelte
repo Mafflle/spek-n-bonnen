@@ -7,6 +7,8 @@
 
 	productsStore.set(data.products.results);
 	productTypes.set(data.productTypes.results);
+
+	console.log(data);
 </script>
 
 {#if $productsStore.length > 0}
@@ -56,7 +58,7 @@
 				</div>
 
 				<a
-					href="products/manage"
+					href="products/manage/product"
 					class="px-3 py-2 bg-primary-100 text-sm text-white rounded-md flex items-center gap-1"
 				>
 					<img src="/icons/plus.svg" alt="Plus icon to represent adding" />
@@ -80,7 +82,8 @@
 				</div>
 			</div>
 			<div class="button">
-				<button
+				<a
+					href="products/manage/product"
 					class=" px-2.5 py-2.5 bg-primary-50 rounded-md justify-center items-center gap-2.5 inline-flex
 			hover:bg-[#C7453C]
 			focus:bg-[#C7453C] focus:shadow-custom focus:border-[#DA4E45]"
@@ -89,7 +92,7 @@
 						<img src="/icons/plus.svg" alt="user-plus" />
 					</div>
 					<p class="text-white text-sm font-bold">Add product</p>
-				</button>
+				</a>
 			</div>
 		</div>
 	</div>

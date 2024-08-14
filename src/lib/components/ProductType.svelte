@@ -64,7 +64,7 @@
 			</div>
 		</div>
 
-		<Separator />
+		<!-- <Separator />
 		<div class="type__options flex gap-6 max-h-5 text-grey-200 items-center">
 			<Button variant="ghost">
 				<Trash2 />
@@ -74,7 +74,7 @@
 				<span class="text-sm leading-5 text-black-100">Required</span>
 				<Switch class="bg-primary-100" />
 			</div>
-		</div>
+		</div> -->
 	</div>
 
 	<Button class="create-new flex items-center gap-2 text-grey-200 p-0 hover:text-primary-100">

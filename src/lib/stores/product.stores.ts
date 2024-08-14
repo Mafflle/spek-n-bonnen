@@ -61,11 +61,11 @@ export interface Product {
 	images?: string[]; // Optional array of image URLs
 }
 export interface BatchAttr {
-	id: number;
+	id?: number;
 	name: string;
 	is_required: boolean;
 	default_value?: any; // Could be string, number, boolean, etc.
-	data_type: 'string' | 'number' | 'boolean' | 'date';
+	data_type: dataType;
 	choice_list?: string[]; // Array of choices (if data_type is string)
 }
 
@@ -76,6 +76,15 @@ export interface ProductType {
 	is_enabled: boolean;
 	created_at: string | Date; // You can use either string (ISO format) or Date object
 	updated_at: string | Date;
+}
+
+// Product type
+
+export type dataType = 'text' | 'select' | 'boolean' | 'multi-select' | 'date' | 'number';
+export interface typeObject {
+	value: dataType;
+	label: string;
+	icon: any;
 }
 
 export const productsStore = writable<Product[]>([]);
