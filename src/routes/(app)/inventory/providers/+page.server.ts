@@ -1,29 +1,29 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { ProviderType } from '$lib/stores/providers.stores';
 import { fail, type Actions } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 
 const providerSchema = z.object({
-	name: z
-		.string({ required_error: 'Provider name is required' })
-		.min(3, { message: 'Provider name should be at least 3 characters' })
+	company_name: z
+		.string({ required_error: 'Supplier company name is required' })
+		.min(3, { message: 'Supplier company name should be at least 3 characters' })
 		.trim(),
-	image_id: z.number().optional(),
-	type: z.nativeEnum(ProviderType, {
-		errorMap: (issue, _ctx) => {
-			switch (issue.code) {
-				case 'invalid_type':
-					return { message: "Provider type is required' " };
-				case 'invalid_enum_value':
-					return { message: 'Provider type is invalid' };
-				default:
-					return { message: 'Provider type is invalid' };
-			}
-		}
-	}),
-	address: z.string().min(3, { message: 'Provider address should be longer' }).trim().optional(),
-	phone_number: z
+	contact_person: z
+		.string()
+		.min(3, { message: 'Supplier company name should be at least 3 characters' })
+		.trim()
+		.optional(),
+	email: z
+		.string({ required_error: 'Email is required' })
+		.trim()
+		.email({ message: 'Not a valid email' }),
+	logo: z.number().optional(),
+
+	address: z
+		.string({ required_error: 'Supplier address is required' })
+		.min(3, { message: 'Supplier address should be longer' })
+		.trim(),
+	phone: z
 		.string({ required_error: 'Phone number is required' })
 		.regex(
 			/\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/,
@@ -35,16 +35,17 @@ const providerSchema = z.object({
 });
 
 interface Errors {
-	name?: [string];
-	type?: [string];
+	company_name?: [string];
+	contact_person?: [string];
+	email?: [string];
 	address?: [string];
 	phone_number?: [string];
-	image_id?: [string];
+	logo?: [string];
 	server?: [string];
 }
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const getAllProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/`);
+	const getAllProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/supplier/`);
 
 	if (getAllProvider.ok) {
 		const allProviders = await getAllProvider.json();
@@ -59,24 +60,28 @@ export const actions: Actions = {
 	'manage-providers': async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const name = formData.get('name') as string;
-		const image_id = parseInt(formData.get('image_id') as string);
-		const type = formData.get('type');
+		const company_name = formData.get('company_name') as string;
+		const contact_person = formData.get('contact_person') as string;
+		const logo = parseInt(formData.get('logo') as string);
+		const email = formData.get('email') as string;
+
 		const address = formData.get('address') as string;
-		const phone_number = formData.get('phone_number') as string;
-		const slug = formData.get('slug') as string;
+		const phone = formData.get('phone') as string;
+		const id = formData.get('id') as string;
 
 		const dataToValidate = {
-			...(name && { name }),
-			...(image_id && { image_id }),
-			...(type && { type }),
+			...(company_name && { company_name }),
+			...(contact_person && { contact_person }),
+			...(email && { email }),
+			...(logo && { logo }),
+			...(email && { email }),
 			...(address && { address }),
-			...(phone_number && { phone_number })
+			...(phone && { phone })
 		};
 		try {
 			const validatedData = providerSchema.parse(dataToValidate);
-			if (slug) {
-				const editProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/${slug}/`, {
+			if (id) {
+				const editProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/supplier/${id}/`, {
 					method: 'put',
 					body: JSON.stringify(validatedData)
 				});
@@ -88,7 +93,7 @@ export const actions: Actions = {
 					console.log(editProvider.status, editProvider);
 				}
 			} else {
-				const createProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/`, {
+				const createProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/supplier/`, {
 					method: 'post',
 					body: JSON.stringify(validatedData)
 				});
@@ -113,9 +118,9 @@ export const actions: Actions = {
 	delete: async ({ fetch, request }) => {
 		const formData = await request.formData();
 
-		const slug = formData.get('slug') as string;
+		const id = formData.get('id') as string;
 
-		const deleteProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/providers/${slug}/`, {
+		const deleteProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/inventory/supplier/${id}/`, {
 			method: 'delete'
 		});
 		if (deleteProvider.ok) {

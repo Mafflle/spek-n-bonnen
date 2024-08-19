@@ -8,12 +8,12 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import PageLoader from './PageLoader.svelte';
-	import { Providers, type Provider } from '$lib/stores/providers.stores';
+	import { Suppliers, type Supplier } from '$lib/stores/suppliers.stores';
 	import * as Avatar from './ui/avatar';
 	import DeleteModal from './DeleteModal.svelte';
 	dayjs.extend(relativeTime);
 
-	export let provider: Provider;
+	export let data: Supplier;
 	let loading: boolean = false;
 	let showModal: boolean = false;
 
@@ -21,14 +21,14 @@
 		showModal = !showModal;
 	}
 
-	const deleteProvider: SubmitFunction = async ({ formData }) => {
+	const deleteSupplier: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		formData.append('slug', `${provider.slug}`);
+		formData.append('slug', `${data.id}`);
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
-					Providers.update((providers) => providers.filter((item) => item.id !== provider.id));
-					showToast('Provider deleted successfully', 'success');
+					Suppliers.update((suppliers) => suppliers.filter((item) => item.id !== data.id));
+					showToast('Supplier deleted successfully', 'success');
 					toggleDelete();
 				} else {
 					showToast('Ooops something went wrong', 'error');
@@ -41,8 +41,8 @@
 	};
 
 	const dispatch = createEventDispatcher();
-	const edit = (provider: Provider) => {
-		dispatch('edit', provider);
+	const edit = (data: Supplier) => {
+		dispatch('toggleEdit', data);
 	};
 </script>
 
@@ -55,29 +55,37 @@
 		<div class="ustify-start items-center gap-3 inline-flex">
 			<div class="w-[38px] h-[38px] bg-neutral-100 rounded-full">
 				<Avatar.Root>
-					{#if provider.image}
-						<Avatar.Image
-							class="object-cover"
-							src={provider.image ? provider.image.image : '/icons/human.jpg'}
-						></Avatar.Image>
-						<Avatar.Fallback>{provider.type[0].toLocaleUpperCase()}</Avatar.Fallback>
-					{/if}
+					<Avatar.Image
+						class="object-cover"
+						src={data.logo?.image ? data.logo.image : '/icons/Supplier.svg'}
+					></Avatar.Image>
 				</Avatar.Root>
 			</div>
-			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
-				{provider.name}
-			</span>
 		</div>
 	</td>
 	<td class="w-fit">
-		{#if provider.address}
-			<span class="w-full">{provider.address}</span>
+		<span>{data.company_name}</span>
+	</td>
+	<td class="w-fit">
+		<span>{data.contact_person}</span>
+	</td>
+	<td class="w-fit">
+		<span>{data.email}</span>
+	</td>
+	<td class="w-fit">
+		{#if data.phone}
+			<span>{data.phone}</span>
+		{:else}
+			<span>-----</span>
+		{/if}
+	</td>
+	<td class="w-fit">
+		{#if data.address}
+			<span class="w-full">{data.address}</span>
 		{:else}
 			<span class="italic text-grey-200"> No address provided </span>
 		{/if}
 	</td>
-	<td>{provider.type}</td>
-	<td class=""><span class="line-clamp-1">{dayjs(provider.updated_at).fromNow()}</span></td>
 	<td class="table-cell">
 		<DropdownMenu.Root>
 			<!-- <button class=" px-1.5 flex justify-center items-center">
@@ -93,14 +101,14 @@
 			<DropdownMenu.Content class="py-3 flex flex-col justify-start gap-1">
 				<DropdownMenu.Item class="full">
 					<Button
-						on:click={() => edit(provider)}
+						on:click={() => edit(data)}
 						class="text-sm font-satoshi -tracking-[0.14px] w-full  flex items-center justify-start py-1  rounded gap-2"
 					>
 						<img src="/icons/edit.svg" alt="edit icon" />
 						<span class="text-grey-100">Edit detail</span>
 					</Button>
 				</DropdownMenu.Item>
-				<form action="?/delete" method="post" use:enhance={deleteProvider} class="">
+				<form action="?/delete" method="post" use:enhance={deleteSupplier} class="">
 					<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
 					<DropdownMenu.Item>
 						<Button
@@ -118,13 +126,13 @@
 </tr>
 <DeleteModal
 	showDeleteModal={showModal}
-	deleteItem={deleteProvider}
+	deleteItem={deleteSupplier}
 	endPoint="delete"
-	id={provider.slug}
+	id={data.id}
 	{toggleDelete}
 	isDeleting={loading}
-	mainNameForHeader="Provider"
-	mainNameForSub="provider"
+	mainNameForHeader="Supplier"
+	mainNameForSub="data"
 />
 
 <style>

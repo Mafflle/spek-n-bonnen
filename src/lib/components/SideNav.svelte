@@ -93,7 +93,7 @@
 </script>
 
 <aside
-	class="side-nav w-[18rem] sticky top-0 h-screen overflow-scroll no-scrollbar hidden lg:flex flex-col gap-5 bg-black-100 text-white"
+	class="side-nav w-full max-w-64 sticky top-0 h-screen overflow-scroll no-scrollbar hidden lg:flex flex-col gap-5 bg-black-100 text-white"
 >
 	<div class="sidebar-logo flex flex-col items-start mb-10 px-5 pt-10">
 		<h3 class="text-center text-sm font-bold text-primary-50">Spek-n-Bonnen</h3>

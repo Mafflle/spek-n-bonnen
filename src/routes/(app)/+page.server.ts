@@ -1,7 +1,6 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 import { redirect, type Actions, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { currentUser } from '$lib/user';
 import { z } from 'zod';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -28,6 +27,7 @@ const uploadSchema = z.object({
 		.min(3, { message: 'Media name should be at least 3 characters ' }),
 	logo: imageSchema
 });
+
 const loginSchema = z.object({
 	email: z
 		.string({ required_error: 'Email is required' })
@@ -43,6 +43,18 @@ type LoginErrors = {
 	email?: [string];
 	password?: [string];
 };
+
+export const load: PageServerLoad = async ({ fetch }) => {
+	const getTasks = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`);
+	if (getTasks.ok) {
+		const allTasks = await getTasks.json();
+
+		return {
+			tasks: allTasks
+		};
+	}
+};
+
 export const actions: Actions = {
 	logout: async ({ cookies, url, request }) => {
 		const formData = await request.formData();
