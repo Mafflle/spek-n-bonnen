@@ -9,9 +9,6 @@ export const load: LayoutServerLoad = async ({ fetch, url, cookies }) => {
 		const adminExists = await checkIfAdminExist.json();
 
 		if (adminExists.admin_exists === false && currUrl !== 'setup-admin') {
-			cookies.delete('access', { path: '/' });
-			cookies.delete('refresh', { path: '/' });
-
 			throw redirect(302, `/auth/setup-admin`);
 		}
 	}

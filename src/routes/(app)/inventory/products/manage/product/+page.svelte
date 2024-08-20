@@ -65,8 +65,8 @@
 
 	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
-	const allTabs = ['physical-info', 'nutrition', 'traceability', 'finance'];
-	let currentTab: string = 'physical-info';
+	const allTabs = ['nutrition', 'traceability', 'finance'];
+	let currentTab: string = 'nutrition';
 	let currentTabInfo;
 	let currTagName: string | undefined;
 	let currTag: string | undefined;
@@ -194,43 +194,6 @@
 		}
 		return true;
 	};
-	const checkIfFormFilled = () => {
-		// let tabs = currentTabInfo?.children[1].children;
-		// let buttons = currentTabInfo?.children[0].children[0].children;
-		// if (tabs) {
-		// 	for (let i = 0; i < tabs.length; i++) {
-		// 		if (tabs[i].attributes[1]?.value === currentTab) {
-		// 			const requiredInputs = tabs[i].querySelectorAll('input[required]');
-		// 			for (const button of buttons) {
-		// 				if (button.attributes['data-value']?.value !== currentTab) {
-		// 					// console.log(validateInputs(requiredInputs));
-		// 					if (validateInputs(requiredInputs)) {
-		// 						button.removeAttribute('disabled');
-		// 					} else {
-		// 						button.setAttribute('disabled', 'disabled');
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-	};
-
-	onMount(() => {
-		// let tabs = currentTabInfo?.children[1].children;
-		// if (tabs) {
-		// 	for (let i = 0; i < tabs.length; i++) {
-		// 		if (tabs[i].attributes[1]?.value === currentTab) {
-		// 			const inputs = tabs[i].querySelectorAll('input[required]');
-		// 			inputs.forEach((input) => {
-		// 				input.addEventListener('input', checkIfFormFilled());
-		// 			});
-		// 		}
-		// 	}
-		// }
-	});
-
-	// $: console.log(showTagsModal);
 
 	let action_shot: number;
 	let background_shot: number;
@@ -328,28 +291,33 @@
 							<label for="action_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Action Shot</label
 							>
-							<UploadBox
-								on:imageSelected={(e) => (action_shot = e.detail.imageId)}
-								error={imageValidationError}
-								inputName="action_shot"
-							/>
+							<div class="h-[200px]">
+								<UploadBox
+									on:imageSelected={(e) => (action_shot = e.detail.imageId)}
+									error={imageValidationError}
+									inputName="action_shot"
+								/>
+							</div>
 						</div>
 						<div class="background-shot flex flex-col">
 							<label for="background_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Background Shot</label
 							>
-							<UploadBox
-								on:imageSelected={(e) => (background_shot = e.detail.imageId)}
-								error={imageValidationError}
-								inputName="background_shot"
-							/>
+							<div class="h-[200px]">
+								<UploadBox
+									on:imageSelected={(e) => (background_shot = e.detail.imageId)}
+									error={imageValidationError}
+									inputName="background_shot"
+								/>
+							</div>
 						</div>
 					</div>
-					<div class="flex items-center gap-3">
+					<div class="grid grid-cols-2 gap-2">
 						<div class="w-full flex flex-col">
 							<label for="closeup_shot" class="mb-1 text-sm font-medium font-satoshi"
 								>Close Up Shots</label
 							>
+
 							<UploadBox
 								allowMultiple={true}
 								on:imageSelected={(e) => (closeup_shot = e.detail.imageId)}
@@ -475,10 +443,10 @@
 						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
 					>
 						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
-							<Tabs.Trigger
+							<!-- <Tabs.Trigger
 								class="md:w-full data-[state=active]:font-bold  data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
 								value="physical-info">Physical information</Tabs.Trigger
-							>
+							> -->
 
 							<Tabs.Trigger
 								class="md:w-full data-[state=active]:font-bold  data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "

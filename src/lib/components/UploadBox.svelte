@@ -87,15 +87,14 @@
 </script>
 
 <div
-	class=" {small ? 'h-[90px] w-[90px] ' : ' min-h-[200px] min-w-full '} {previewImage
-		? 'w-[90px] '
-		: 'w-[230px]'}"
+	class=" {small ? 'h-[90px] w-[90px] ' : ' min-h-[200px] h-full  min-w-full '} {previewImage &&
+		'w-[90px]'}"
 >
 	<div
 		class=" relative w-full h-full {small &&
 			'rounded-full justify-center '}  flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
 			? 'border-primary-softPink-50 border-2'
-			: 'border-grey-300 border-2'} hover:border-primary-red border-dashed"
+			: 'border-grey-300 border-2  rounded'} hover:border-primary-red border-dashed"
 	>
 		<input
 			bind:files={images}
