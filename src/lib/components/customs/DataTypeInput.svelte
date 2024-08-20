@@ -5,6 +5,7 @@
 	import Separator from '../ui/separator/separator.svelte';
 	import type { BatchAttr, typeObject } from '$lib/stores/product.stores';
 	import { createEventDispatcher } from 'svelte';
+	import MultiChoice from './MultiChoice.svelte';
 
 	export let data: BatchAttr;
 	export let showCreate: boolean = false;
@@ -25,7 +26,7 @@
 
 	$: if (selectedType) {
 		if (selectedType.value === 'multi-select' || selectedType.value === 'select') {
-			data.choice_list = [];
+			data.choice_list = [''];
 		}
 	}
 
@@ -66,6 +67,36 @@
 		dispatch('createNew', { id: attributeId, ...data, name: parsedName }); // Dispatch the createNew event
 	}
 
+	function handleAddChoice(event: CustomEvent<string>) {
+		if (data.data_type !== 'select' && data.data_type !== 'multi-select') return;
+		console.log(event.detail);
+
+		let newChoice = event.detail;
+		if (newChoice.trim().length > 1) {
+			if (!data.choice_list) data.choice_list = [];
+			if (data.choice_list[data.choice_list.length - 1] === '') {
+				data.choice_list.pop();
+			}
+
+			// Create a new array with the updated choices, including a new empty choice at the end
+			const updatedChoices = [...data.choice_list, newChoice, ''];
+
+			// Update data.choice_list and create a new data object reference
+			data = { ...data, choice_list: updatedChoices };
+		}
+	}
+
+	// $: console.log(data);
+	function handleRemoveChoice(event: CustomEvent<number>) {
+		const indexToRemove = event.detail;
+		if (data.choice_list && data.choice_list.length > 1) {
+			console.log(data.choice_list);
+			data.choice_list.splice(indexToRemove, 1);
+			data.choice_list = [...data.choice_list];
+			console.log(data.choice_list);
+		}
+	}
+
 	let selectedType: typeObject;
 
 	$: if (selectedType && selectedType.value) {
@@ -75,7 +106,7 @@
 
 <div class=" h-full flex flex-col w-[523px] gap-2">
 	<div
-		class="flex flex-col gap-4 shadow px-5 pt-5 items-end w-full min-h-[166px] border-l-4 border-l-yellow-300 rounded"
+		class="flex flex-col gap-4 shadow px-5 pt-5 w-full min-h-[166px] border-l-4 border-l-yellow-300 rounded"
 	>
 		<section class="grid gap-2 grid-cols-8 w-full">
 			<div class="form-group w-full col-span-5">
@@ -92,7 +123,7 @@
 
 			<div class="form-group w-full col-span-3">
 				<label for="dataType" class="font-satoshi text-sm font-medium mb-1">Data type </label>
-				<Select.Root bind:selected={selectedType}>
+				<Select.Root disabled={!data.name} bind:selected={selectedType}>
 					<Select.Trigger class="border-[#D9D9D9] w-full flex items-center h-[45px]">
 						<Select.Value class="text-gray-400" placeholder="Select data type" />
 					</Select.Trigger>
@@ -118,6 +149,20 @@
 				</Select.Root>
 			</div>
 		</section>
+		<section class="w-8/12">
+			{#if selectedType && selectedType.value === 'multi-select'}
+				{#each data.choice_list as choice, index (index)}
+					<MultiChoice
+						{index}
+						value={choice}
+						on:deleteChoice={handleRemoveChoice}
+						on:addChoice={handleAddChoice}
+						showAddChoiceButton={index === data.choice_list.length - 1}
+					/>
+				{/each}
+			{/if}
+		</section>
+
 		<Separator class="w-full" />
 		<section class="flex justify-end gap-5 items-center">
 			<button type="button" on:click={() => dispatch('delete', attributeId)}>

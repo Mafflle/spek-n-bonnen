@@ -66,7 +66,7 @@ export interface BatchAttr {
 	is_required: boolean;
 	default_value?: any; // Could be string, number, boolean, etc.
 	data_type: dataType;
-	choice_list?: string[]; // Array of choices (if data_type is string)
+	choice_list?: any[];
 }
 
 export interface ProductType {
@@ -74,7 +74,7 @@ export interface ProductType {
 	batch_attributes: BatchAttr[];
 	name: string;
 	is_enabled: boolean;
-	created_at: string | Date; // You can use either string (ISO format) or Date object
+	created_at: string | Date;
 	updated_at: string | Date;
 }
 

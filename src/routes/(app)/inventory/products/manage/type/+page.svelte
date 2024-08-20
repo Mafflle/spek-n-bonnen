@@ -25,7 +25,7 @@
 			formData.set('batch_attributes', JSON.stringify(batch_attributes));
 		}
 
-		// console.log(batchAttributes);
+		console.log(batchAttributes);
 
 		return async ({ result, update }) => {
 			try {
