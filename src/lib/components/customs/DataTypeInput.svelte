@@ -6,6 +6,8 @@
 	import type { BatchAttr, typeObject } from '$lib/stores/product.stores';
 	import { createEventDispatcher } from 'svelte';
 	import MultiChoice from './MultiChoice.svelte';
+	import Sortable from 'sortablejs';
+	import { onMount } from 'svelte';
 
 	export let data: BatchAttr;
 	export let showCreate: boolean = false;
@@ -65,7 +67,7 @@
 		}
 
 		const parsedName = data.name.trim().replace(/\s+/g, '_');
-		dispatch('createNew', { id: attributeId, ...data, name: parsedName }); // Dispatch the createNew event
+		dispatch('createNew', { id: attributeId, ...data, name: parsedName });
 	}
 
 	function handleAddChoice(event: CustomEvent<string>) {
@@ -79,10 +81,8 @@
 				data.choice_list.pop();
 			}
 
-			// Create a new array with the updated choices, including a new empty choice at the end
 			const updatedChoices = [...data.choice_list, newChoice, ''];
 
-			// Update data.choice_list and create a new data object reference
 			data = { ...data, choice_list: updatedChoices };
 		}
 	}
@@ -103,6 +103,19 @@
 	$: if (selectedType && selectedType.value) {
 		data.data_type = selectedType.value;
 	}
+
+	onMount(() => {
+		var el = document.getElementById('multichoice');
+		var sortable = Sortable.create(el, {
+			handle: '.handle',
+			animation: 150,
+			onUpdate: function (e) {
+				const itemMoved = data.choice_list.splice(e.oldIndex, 1)[0];
+				data.choice_list.splice(e.newIndex, 0, itemMoved);
+				data.choice_list = [...data.choice_list];
+			}
+		});
+	});
 </script>
 
 <div class=" h-full flex flex-col w-[523px] gap-2">
@@ -150,16 +163,21 @@
 				</Select.Root>
 			</div>
 		</section>
-		<section class="w-8/12">
+		<section class="w-full" id="multichoice">
 			{#if selectedType && selectedType.value === 'multi-select'}
 				{#each data.choice_list as choice, index (index)}
-					<MultiChoice
-						{index}
-						value={choice}
-						on:deleteChoice={handleRemoveChoice}
-						on:addChoice={handleAddChoice}
-						showAddChoiceButton={index === data.choice_list.length - 1}
-					/>
+					<div class="flex items-center gap-1">
+						<span class="handle">::</span>
+
+						<MultiChoice
+							{index}
+							value={choice}
+							on:deleteChoice={handleRemoveChoice}
+							on:addChoice={handleAddChoice}
+							showAddChoiceButton={index === data.choice_list.length - 1}
+							lastIndex={index === data.choice_list.length - 1}
+						/>
+					</div>
 				{/each}
 			{/if}
 		</section>
@@ -177,7 +195,7 @@
 			<Separator orientation="vertical" class="h-5 border-1" />
 			<div class="flex items-center gap-2">
 				<span class="text-xs">Required</span>
-				<Switch bind:checked={data.is_required} />
+				<Switch bind:checked={data.is_required} class="bg-primary-red" />
 			</div>
 		</section>
 	</div>

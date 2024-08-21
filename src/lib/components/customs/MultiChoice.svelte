@@ -6,6 +6,7 @@
 	export let value: string | any = '';
 	export let showAddChoiceButton = false;
 	export let index: number;
+	export let lastIndex = true;
 
 	function handleDelete() {
 		console.log('delete');
@@ -21,7 +22,7 @@
 	<iconify-icon width="20" icon="akar-icons:radio" />
 
 	<input
-		type="text"
+		type="text w-full"
 		placeholder="Enter option"
 		bind:value
 		class="focus:outline-none text-sm w-full py-2 text-black-100"
@@ -37,11 +38,11 @@
 	</button>
 	<!-- {/if} -->
 </div>
-{#if showAddChoiceButton}
+{#if showAddChoiceButton && lastIndex}
 	<button
 		type="button"
 		on:click={handleAddChoice}
-		class="w-fit mt-2 text-grey-100 italic text-xs flex gap-1 items-center"
+		class="w-fit mt-2 text-grey-100 italic text-xs flex gap-1 items-center block"
 	>
 		<span> "Add Choice" </span>
 	</button>
