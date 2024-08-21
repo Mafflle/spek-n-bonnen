@@ -4149,6 +4149,7 @@ __metadata:
     svelte: "npm:^4.0.5"
     svelte-calendar: "npm:^3.1.6"
     svelte-check: "npm:^3.6.0"
+    svelte-dnd-action: "npm:^0.9.50"
     svelte-file-dropzone: "npm:^2.0.2"
     svelte-headless-table: "npm:^0.18.1"
     svelte-legos: "npm:^0.2.2"
@@ -4321,6 +4322,15 @@ __metadata:
   bin:
     svelte-check: bin/svelte-check
   checksum: 10c0/59c97c927df6a9ddab13f41a563da2b5b8d7bc004bfb7143e9b149b3cca94c65e7fdc9a447fd29dfcdf588364b325a420952153adbe95985a94f520e6cce39fa
+  languageName: node
+  linkType: hard
+
+"svelte-dnd-action@npm:^0.9.50":
+  version: 0.9.50
+  resolution: "svelte-dnd-action@npm:0.9.50"
+  peerDependencies:
+    svelte: ">=3.23.0 || ^5.0.0-next.0"
+  checksum: 10c0/41dbc25502e645fecacba607132c08cafab8b9041572a73f3931c33e923dfef9c6ec60416dcde192e6de1c474a8f7036d7a69c9ff038e08a964e2057677d233a
   languageName: node
   linkType: hard
 

@@ -10,10 +10,13 @@
 	export let data: BatchAttr;
 	export let showCreate: boolean = false;
 	export let attributeId: string | number;
+	export let deleteEnabled: boolean = true;
 
 	const dispatch = createEventDispatcher();
 
 	let displayedName = data.name ? data.name.trim().replace(/\s+/g, '_') : '';
+	let inputType: string = 'text';
+	let typeInput: HTMLInputElement;
 
 	// Reactive statement to update displayedName whenever data.name changes
 	$: if (data.name) {
@@ -23,10 +26,18 @@
 	}
 
 	$: dispatch('updateAttribute', { id: attributeId, ...data });
+	const setType = (node, type) => {
+		node.type = type;
+	};
 
 	$: if (selectedType) {
 		if (selectedType.value === 'multi-select' || selectedType.value === 'select') {
 			data.choice_list = [''];
+		}
+		if (selectedType.value === 'number') {
+			setType(typeInput, 'number');
+		} else {
+			setType(typeInput, 'text');
 		}
 	}
 
@@ -116,6 +127,7 @@
 					name="name"
 					id="name"
 					bind:value={data.name}
+					bind:this={typeInput}
 					placeholder="Enter name"
 					class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 				/>
@@ -165,7 +177,12 @@
 
 		<Separator class="w-full" />
 		<section class="flex justify-end gap-5 items-center">
-			<button type="button" on:click={() => dispatch('delete', attributeId)}>
+			<button
+				class="disabled:opacity-50 disabled:cursor-not-allowed"
+				type="button"
+				on:click={() => dispatch('delete', attributeId)}
+				disabled={!deleteEnabled}
+			>
 				<iconify-icon class="text-grey-200" icon="lucide:trash-2"></iconify-icon>
 			</button>
 			<Separator orientation="vertical" class="h-5 border-1" />

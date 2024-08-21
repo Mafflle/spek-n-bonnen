@@ -143,6 +143,7 @@
 						bind:data={batchAttribute}
 						showCreate={attributeId ===
 							Object.keys(batchAttributes)[Object.keys(batchAttributes).length - 1]}
+						deleteEnabled={Object.keys(batchAttributes).length > 1}
 					/>
 				{/each}
 				<input
