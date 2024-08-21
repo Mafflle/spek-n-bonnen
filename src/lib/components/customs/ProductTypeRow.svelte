@@ -7,12 +7,12 @@
 	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
 	import { enhance } from '$app/forms';
-	import { Roles } from '$lib/stores';
+	import { ProductTypes } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 
 	export let data;
 
-	// console.log('role row', data);
+	console.log('product type row', data);
 
 	let showMoreDetails: boolean = false;
 	const dispatch = createEventDispatcher();
@@ -35,7 +35,10 @@
 	</Table.Cell>
 
 	<Table.Cell class="font-medium text-grey-100 ">
-		<span>{data.permissions[0].name} + {data.permissions.length - 1}</span>
+		<span>{data.id}</span>
+	</Table.Cell>
+	<Table.Cell class="font-medium text-grey-100 ">
+		<span>{data.is_enabled ? 'Available' : 'Unavailable'}</span>
 	</Table.Cell>
 
 	<Table.Cell class="flex justify-end">
@@ -59,14 +62,14 @@
 
 				<DropdownMenu.Item>
 					<form
-						action="?/delete"
+						action="?/delete_type"
 						method="post"
 						use:enhance={() => {
 							return async ({ result, update }) => {
 								console.log('result', result);
-								toast.success('Role deleted successfully');
-								Roles.update((roles) => {
-									return roles.filter((role) => role.id !== data.id);
+								toast.success('product type deleted successfully');
+								ProductTypes.update((ProductTypes) => {
+									return ProductTypes.filter((productType) => productType.id !== data.id);
 								});
 							};
 						}}
@@ -86,12 +89,14 @@
 	</Table.Cell>
 </Table.Row>
 
-<!-- <Modal showModal={showMoreDetails} on:close={toggleDetails}>
+<Modal showModal={showMoreDetails} on:close={toggleDetails}>
 	<div class="bg-white w-[800px] rounded-md grid grid-cols-1 pt-4 pb-16" slot="modal-content">
 		<section
 			class="flex items-center justify-between px-6 pb-6 mb-5 border-b-[0.5px] border-grey-300"
 		>
-			<h6 class="font-medium text-sm text-grey-100 font-satoshi">Role Management / More Details</h6>
+			<h6 class="font-medium text-sm text-grey-100 font-satoshi">
+				Product type Management / More Details
+			</h6>
 			<button
 				on:click={toggleDetails}
 				type="button"
@@ -150,4 +155,4 @@
 			</div>
 		</section>
 	</div>
-</Modal> -->
+</Modal>
