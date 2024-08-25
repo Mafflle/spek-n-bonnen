@@ -4,6 +4,7 @@
 	import dayjs from 'dayjs';
 	import { createEventDispatcher } from 'svelte';
 	import ManageProfile from '../forms/ManageProfile.svelte';
+	import { page } from '$app/stores';
 
 	export let currentProfile: User;
 	export let view: 'employee' | 'manager' = 'employee';
@@ -11,6 +12,12 @@
 	const dispatch = createEventDispatcher();
 
 	let showEditModal: boolean = false;
+
+	let staff_profile = $page.url.searchParams.get('staff_profile');
+
+	if (staff_profile || currentProfile?.staff_profile === null) {
+		showEditModal = true;
+	}
 
 	$: name = `${currentProfile?.staff_profile?.first_name} ${currentProfile?.staff_profile?.last_name}`;
 	$: emergencyContactName = `${currentProfile?.staff_profile?.emergency_contact_name}`;
@@ -133,7 +140,12 @@
 	</section>
 </div>
 
-<Modal mode="sheet" showModal={showEditModal} on:close={() => (showEditModal = false)}>
+<Modal
+	mode="sheet"
+	showModal={showEditModal}
+	lock={!!staff_profile}
+	on:close={() => (showEditModal = false)}
+>
 	<ManageProfile
 		on:updated={(e) => {
 			updatedProfile(e.detail.user);

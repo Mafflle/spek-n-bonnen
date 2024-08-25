@@ -80,6 +80,9 @@ export const actions: Actions = {
 			...(name && { name }),
 			...(logo && { logo })
 		};
+
+		console.log(dataToValidate);
+
 		try {
 			uploadSchema.parse(dataToValidate);
 
@@ -100,9 +103,7 @@ export const actions: Actions = {
 				} else if (createMedia.status === 400) {
 					//TODO: Handle Bad Request
 					console.log(createMedia);
-				} else if (createMedia.status === 401) {
-					throw redirect(302, `/auth/login?from=${url.pathname}`);
-					//TODO: Return "Something went wrong..." message
+				} else {
 					console.log(createMedia);
 				}
 			}

@@ -66,6 +66,7 @@
 	action={formaction}
 	use:enhance={submit}
 	method="post"
+	enctype="multipart/form-data"
 	class="w-full max-xsm:pb-4 pb-6 h-fit max-h-full overflow-x-scroll no-scrollbar flex flex-col gap-5 items-start justify-between bg-white rounded-lg"
 >
 	<section class="md:h-full w-full">

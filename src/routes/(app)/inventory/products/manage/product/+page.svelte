@@ -8,21 +8,29 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
 
 	import { slide } from 'svelte/transition';
 	import Selector from '$lib/components/Selector.svelte';
 
-	import { cut_categories } from '$lib/stores/cuts.stores.js';
-	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import Modal from '$lib/components/Modal.svelte';
 	import { showToast, type CarcassErrors } from '$lib/utils.js';
 	import DeleteModal from '$lib/components/DeleteModal.svelte';
 
 	export let data;
 
-	let { tags, primals, vendors } = data;
+	let { types, allSupplier } = data;
+
+	if (types.results?.length > 0) {
+		types = types.results.map((type) => {
+			return (type = { label: type.name, value: type.id });
+		});
+	}
+
+	if (allSupplier.results?.length > 0) {
+		allSupplier = allSupplier.results.map((supplier) => {
+			return (supplier = { label: supplier.company_name, value: supplier.id });
+		});
+	}
 
 	// temp for UI
 	let carcassToEdit: {
@@ -50,18 +58,6 @@
 	};
 
 	let imageValidationError: string;
-
-	let status = [
-		{ value: 'Available', label: 'Available' },
-		{ value: 'Discontinued', label: 'Discontinued' },
-		{ value: 'Limited', label: 'Limited' }
-	];
-
-	let unit_status = [
-		{ value: 'PIECE', label: 'piece' },
-		{ value: 'KG', label: 'kilogram' },
-		{ value: 'LBS', label: 'pound' }
-	];
 
 	let currCarcassId = $page.url.searchParams.get('editing');
 	let validationErrors: CarcassErrors;
@@ -102,23 +98,22 @@
 
 	const manageProduct: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		if (carcassToEdit && currCarcassId) {
-			formData.append('currCarcassId', `${currCarcassId}`);
-		}
+
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
 					console.log(result.data);
 
-					// if (result.data.edited) {
-					// 	const editedProduct = result.data.editedProduct;
-					// 	showToast('Product edited successfully', 'success');
-					// } else {
-					// 	const newProduct = result.data.newProduct;
-					// 	showToast('Product added successfully', 'success');
-					// 	Carcasses.update((items) => [newCarcass, ...items]);
-					// }
-					// await goto('/inventory/carcass');
+					if (result.data.edited) {
+						const editedProduct = result.data.editedProduct;
+						showToast('Product edited successfully', 'success');
+					} else {
+						const newProduct = result.data.newProduct;
+						console.log(newProduct);
+
+						showToast('Product added successfully', 'success');
+					}
+					await goto('/inventory/products/');
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
 
@@ -200,31 +195,6 @@
 	let closeup_shot: number;
 	let lifestyle_shot: number;
 
-	let sexCategoryOptions = [
-		{ value: 'M', label: 'Male' },
-		{ value: 'F', label: 'Female' },
-		{ value: 'C', label: 'Castrated' }
-	];
-	let ageing_duration = [
-		{ value: 'one_week', label: 'One week' },
-		{ value: 'two_weeks', label: 'Two weeks' },
-		{ value: 'three_weeks', label: 'Three weeks' },
-		{ value: 'four_weeks', label: 'Four weeks' },
-		{ value: 'three_days', label: 'Three days' }
-	];
-	let sellingTax = [
-		{ value: '0', label: '0%' },
-		{ value: '6', label: '6%' },
-		{ value: '12', label: '12%' },
-		{ value: '21', label: '21%' }
-	];
-
-	let primal_quarters = [
-		{ value: 'hind', label: 'Hindquarter' },
-		{ value: 'middle', label: 'Middle' },
-		{ value: 'fore', label: 'Forequarter' }
-	];
-
 	let showDeleteModal: boolean = false;
 	let isDeleting: boolean = false;
 	let itemId;
@@ -274,9 +244,15 @@
 		</div>
 	</div>
 	<Separator class="my-8 md:block hidden" />
-	<form action="?/manage-product" method="post" use:enhance={manageProduct} class="w-full">
+	<form
+		action="?/manage-product"
+		enctype="multipart/form-data"
+		method="post"
+		use:enhance={manageProduct}
+		class="w-full"
+	>
 		<section
-			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-8"
+			class="  flex flex-col md:flex-row md:justify-between items-start md:h-[680px] xl:h-[800px] min-h-auto sticky top-0 justify-center text-sm w-full lg:gap-4 xl:gap-10"
 		>
 			<!-- Providers -->
 			<section class="flex-auto h-full overflow-y-scroll no-scrollbar w-full sticky top-3">
@@ -285,17 +261,17 @@
 						PRIMARY INFORMATION
 					</h3>
 				</div>
-				<div class="mb-8 flex flex-col gap-9 w-full">
+				<div class="mb-8 flex flex-col px-3 gap-6 w-full">
 					<div class="flex flex-col gap-4 2xl:grid xl:grid-cols-2 2xl:gap-3">
 						<div class="action-shot flex flex-col">
 							<label for="action_shot" class="mb-1 text-sm font-medium font-satoshi"
-								>Action Shot</label
+								>Featured image</label
 							>
 							<div class="h-[200px]">
 								<UploadBox
 									on:imageSelected={(e) => (action_shot = e.detail.imageId)}
 									error={imageValidationError}
-									inputName="action_shot"
+									inputName="featured_img"
 								/>
 							</div>
 						</div>
@@ -307,7 +283,7 @@
 								<UploadBox
 									on:imageSelected={(e) => (background_shot = e.detail.imageId)}
 									error={imageValidationError}
-									inputName="background_shot"
+									inputName="image"
 								/>
 							</div>
 						</div>
@@ -319,10 +295,9 @@
 							>
 
 							<UploadBox
-								allowMultiple={true}
 								on:imageSelected={(e) => (closeup_shot = e.detail.imageId)}
 								error={imageValidationError}
-								inputName="closeup_shots"
+								inputName="image"
 							/>
 						</div>
 						<div class="w-full flex flex-col">
@@ -330,92 +305,84 @@
 								>Lifestyle Shots</label
 							>
 							<UploadBox
-								allowMultiple={true}
 								on:imageSelected={(e) => (lifestyle_shot = e.detail.imageId)}
 								error={imageValidationError}
-								inputName="lifestyle_shots"
+								inputName="image"
 							/>
 						</div>
 					</div>
 
-					<div class="item-name">
-						<p class="mb-4 text-sm font-medium font-satoshi">Item name</p>
-						<LocaleInput inputName="name" />
-					</div>
-
 					<div class="status w-full flex flex-col">
-						<label class="mb-4 text-sm font-medium font-satoshi" for="status">Status</label>
+						<label class="mb-4 text-sm font-medium font-satoshi" for="status">Product type</label>
 
 						<Selector
-							placeholder="Select status"
-							options={status}
-							inputName="status"
+							placeholder="Select product type"
+							options={types}
+							inputName="product_type"
 							required={true}
 						/>
 					</div>
 
-					<div class="slug flex flex-col">
-						<label class="mb-2 text-sm font-medium font-satoshi" for="slug">Slug </label>
-						<input
-							placeholder="Enter slug"
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-							id="slug"
-							name="slug"
+					<div class="item-name">
+						<p class="mb-4 text-sm font-medium font-satoshi">Name</p>
+						<LocaleInput inputName="name" />
+					</div>
+
+					<div class="form-group">
+						<label for="preferred_vendor" class="form-label">Preffered Supplier</label>
+						<Selector
+							inputName="preferred_vendor"
+							options={allSupplier}
+							placeholder="Select preffered vendor"
 						/>
 					</div>
 
-					<div class="short-desc flex flex-col">
-						<label for="short_desc" class="mb-4 text-sm font-medium font-satoshi"
-							>Short description</label
+					<div class="flex flex-col">
+						<label
+							for="short_customer_facing_description"
+							class="mb-4 text-sm font-medium font-satoshi">Short customer facing description</label
 						>
 						<LocaleInput
-							inputName="short_description"
+							inputName="short_customer_facing_description"
 							enPlaceholder="Enter short description"
 							frPlaceholder="Entrez une brève description"
 							duPlaceholder="Voer een korte beschrijving in"
 						/>
 					</div>
 
-					<div class="long-desc flex flex-col">
-						<p class="mb-4 text-sm font-medium font-satoshi">Long description</p>
+					<div class="flex flex-col">
+						<label
+							for="long_customer_facing_description"
+							class="mb-4 text-sm font-medium font-satoshi">Long customer facing description</label
+						>
 						<LocaleInput
-							inputName="long_description"
+							inputName="long_customer_facing_description"
 							duPlaceholder="Voer een lange beschrijving in"
 							frPlaceholder="Entrez une longue description"
-							enPlaceholder="Enter long description"
+							enPlaceholder="Enter long customer facing description"
 							textarea={true}
 						/>
 					</div>
 
-					<div class="abhd-desc flex flex-col">
-						<p class="mb-4 text-sm font-medium font-satoshi">ABHD description</p>
+					<div class=" flex flex-col">
+						<p class="mb-4 text-sm font-medium font-satoshi">Short internal use description</p>
 						<LocaleInput
-							inputName="ahdb_description"
-							enPlaceholder="Enter AHDB description"
+							inputName="short_internal_use_description"
+							enPlaceholder="Enter short internal use description"
 							frPlaceholder="Entrez la description AHDB"
 							duPlaceholder="Voer de AHDB-beschrijving in"
 							textarea={true}
 						/>
 					</div>
-
-					<div class="flex flex-col items-start w-full">
-						<div class="pb-3 sticky top-0 w-full bg-white flex flex-col">
-							<h3 class="text-sm font-satoshi text-grey-200 font-medium capitalize mb-2">
-								MARKETING
-							</h3>
-						</div>
-
-						<div class="seo flex flex-col w-full">
-							<label for="seo" class="mb-2 text-sm font-medium font-satoshi">SEO</label>
-
-							<input
-								placeholder="Enter SEO"
-								class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-								id="seo"
-								name="seo"
-								required
-							/>
-						</div>
+					<div class=" flex flex-col">
+						<p class="mb-4 text-sm font-medium font-satoshi">Long internal use description</p>
+						<LocaleInput
+							inputName="long_internal_use_description"
+							enPlaceholder="Enter long internal use description"
+							frPlaceholder="Entrez la description AHDB"
+							duPlaceholder="Voer de AHDB-beschrijving in"
+							textarea={true}
+						/>
 					</div>
 				</div>
 			</section>
@@ -423,10 +390,12 @@
 
 			<!-- More Details -->
 			<!-- Separator -->
-			<Separator orientation="vertical" class="" />
+			<Separator orientation="vertical" class=" " />
 			<!-- Separator -->
-			<section class="md:px-2 flex-auto flex flex-col items-start h-full w-full">
-				<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MORE DETAILS</h3>
+			<section class=" flex-auto flex flex-col items-start h-full w-full">
+				<div class="pb-3 sticky top-0 w-full bg-white z-10 px-2">
+					<h3 class="text-sm font-satoshi text-grey-200 capitalize mb-5">MORE DETAILS</h3>
+				</div>
 
 				<!-- Tabs -->
 				<Tabs.Root
@@ -436,12 +405,10 @@
 					}}
 					bind:value={currentTab}
 					bind:el={currentTabInfo}
-					class="relative w-full h-full overflow-y-scroll no-scrollbar"
+					class="relative w-full px-3  h-full overflow-y-scroll no-scrollbar"
 				>
 					<!-- Tabs trigger -->
-					<section
-						class="md:sticky top-0 md:px-1 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10"
-					>
+					<section class="md:sticky top-0 py-4 w-full bg-white overflow-x-scroll no-scrollbar z-10">
 						<Tabs.List class=" bg-[#F7F7F7] py-2.5 px-1 w-full ">
 							<!-- <Tabs.Trigger
 								class="md:w-full data-[state=active]:font-bold  data-[state=active]:bg-background data-[state=active]:text-grey-100 data-[state=active]:shadow "
@@ -466,197 +433,9 @@
 					<!-- Tabs trigger -->
 
 					<section class="w-full">
-						<!-- Physical info -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full" value="physical-info">
-							<div
-								on:change={(e) => {
-									checkIfFormFilled();
-								}}
-								class="flex flex-col gap-8"
-							>
-								<div class="form-group">
-									<label for="unit_status" class="form-label mb-4">Unit status</label>
-
-									<Selector
-										placeholder="Select unit status"
-										options={unit_status}
-										inputName="unit_status"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="quantity_unit" class="form-label mb-4">Quantity unit</label>
-									<input
-										name="quantity_unit"
-										type="number"
-										placeholder="Enter quantity unit eg - (kg, g)"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="marbling" class="form-label mb-4">Marbling</label>
-									<input
-										name="marbling"
-										type="text"
-										required
-										placeholder="Enter marbling"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-
-								<div class="form-group">
-									<label for="sex" class="form-label">Sex</label>
-									<Selector
-										on:selected={() => checkIfFormFilled()}
-										prop={sexCategoryOptions[
-											sexCategoryOptions.findIndex(
-												(option) => option.value == carcassToEdit?.sex_category
-											)
-										]}
-										required={true}
-										inputName="sex"
-										placeholder="Select sex"
-										options={sexCategoryOptions}
-									/>
-									{#if validationErrors?.sex_category}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.sex_category}</sub
-										>
-									{/if}
-								</div>
-
-								<div class="form-group">
-									<label for="age" class="form-label">Age</label>
-									<input
-										required
-										name="age"
-										type="number"
-										placeholder="Enter age"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="livestock_breed" class="form-label mb-4">Livestock breed</label>
-									<input
-										name="livestock_breed"
-										type="text"
-										required
-										placeholder="Enter livestock breed"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-
-								<div class="form-group">
-									<label for="cut_type" class="form-label">Cut type</label>
-									<Selector
-										on:selected={() => checkIfFormFilled()}
-										required={true}
-										inputName="cut_type"
-										placeholder="Select cut type"
-										options={[
-											{ label: 'Basic', value: 'basic' },
-											{ label: 'Advanced', value: 'advanced' }
-										]}
-									/>
-									{#if validationErrors?.sex_category}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.sex_category}</sub
-										>
-									{/if}
-								</div>
-								<div class="form-group">
-									<label for="cut_category" class="form-label">Cut category</label>
-									<Selector
-										on:selected={() => checkIfFormFilled()}
-										required={true}
-										inputName="cut_category"
-										placeholder="Select cut category"
-										options={cut_categories}
-									/>
-									{#if validationErrors?.sex_category}
-										<sub
-											transition:slide={{ delay: 250, duration: 300 }}
-											class="text-rose-500 text-xs tracking-[-0.0075rem]"
-											>{validationErrors.sex_category}</sub
-										>
-									{/if}
-								</div>
-
-								<div class="form-group">
-									<label for="color" class="form-label mb-4">Color</label>
-									<input
-										name="color"
-										type="text"
-										placeholder="Enter color"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="texture" class="form-label mb-4">Texture</label>
-									<input
-										name="texture"
-										type="text"
-										required
-										placeholder="Enter texture"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="tenderness" class="form-label mb-4">Tenderness</label>
-									<input
-										name="tenderness"
-										required
-										type="text"
-										placeholder="Enter tenderness"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="primal" class="form-label mb-4">Primal</label>
-									<Selector options={primals} placeholder="Select primal" inputName="primal" />
-								</div>
-								<div class="flex gap-3">
-									<label for="qualifies_for_return" class="form-label mb-4"
-										>Qualifies for return:</label
-									>
-									<!-- <input
-										name="qualifies_for_return"
-										type="text"
-										placeholder="Enter livestock breed"
-										class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/> -->
-									<Checkbox id="qualifies_for_return" class="w-5 h-5" bind:checked />
-								</div>
-							</div></Tabs.Content
-						>
 						<!-- Nutrition -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="nutrition">
+						<Tabs.Content class="h-full mb-8  w-full " value="nutrition">
 							<div class="flex flex-col gap-8">
-								<div class="form-group">
-									<label for="storage_requirements" class="form-label">Storage requirements</label>
-									<LocaleInput
-										inputName="storage_requirements"
-										enPlaceholder="Enter storage requirements"
-										frPlaceholder="Entrez les allergènes"
-										duPlaceholder="Voer allergenen in"
-										textarea={true}
-									/>
-								</div>
-								<div class="form-group">
-									<label for="allergens" class="mb-4 text-sm font-medium font-satoshi"
-										>Allergens</label
-									>
-									<LocaleInput
-										inputName="allergens"
-										enPlaceholder="Enter allergens"
-										frPlaceholder="Entrez les allergènes"
-										duPlaceholder="Voer allergenen in"
-										textarea={true}
-									/>
-								</div>
 								<div class="form-group">
 									<label for="ingredients" class="mb-4 text-sm font-medium font-satoshi"
 										>Ingredients</label
@@ -671,120 +450,68 @@
 								</div>
 
 								<div class="form-group">
-									<label for="nutritional_information" class="form-label"
-										>Nutritional information</label
+									<label for="allergens" class="mb-4 text-sm font-medium font-satoshi"
+										>Allergens</label
 									>
-									<Textarea
-										required
-										name="nutritional_information"
-										placeholder="Enter nutritional information"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="pairing_suggestion" class="form-label">Pairing suggestions</label>
-									<Textarea
-										placeholder="Enter pairing suggesting"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="cooking_instructions" class="form-label">Cooking instructions</label>
-									<Textarea
-										required
-										name="cooking_instructions"
-										placeholder="Enter cooking instructions"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="cooking_methods" class="form-label">Cooking methods</label>
-									<Textarea
-										required
-										name="cooking_methods"
-										placeholder="Enter cooking methods"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="diet" class="form-label">Diet</label>
-									<Textarea
-										required
-										name="diet"
-										placeholder="Enter diet"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="dry-aging_duration" class="form-label">Dry aging duration</label>
-									<Selector
-										required={true}
-										placeholder="Select dry ageing duration"
-										options={ageing_duration}
-										inputName="dry_aging_duration"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="flavour" class="form-label">Flavour</label>
-									<input
-										name="flavour"
-										required
-										placeholder="Describe flavour"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="fat_content" class="form-label">Fat content</label>
-									<input
-										name="fat_content"
-										required
-										placeholder="Enter fat content"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="moisture_content" class="form-label">Moisture content</label>
-									<input
-										name="moisture_content"
-										required
-										placeholder="Enter moisture content"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="bone_content" class="form-label">Bone content</label>
-									<input
-										name="bone_content"
-										required
-										placeholder="Enter bone content"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									<LocaleInput
+										inputName="allergens"
+										enPlaceholder="Enter allergens"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
 									/>
 								</div>
 
 								<div class="form-group">
-									<label for="primal_quarter" class="form-label">Primal quarter</label>
-									<Selector
-										placeholder="Select primal quarter"
-										options={primal_quarters}
-										inputName="primal_quarter"
+									<label for="storage_requirement" class="form-label">Storage requirements</label>
+									<LocaleInput
+										inputName="storage_requirement"
+										enPlaceholder="Enter storage requirements"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="nutritional_information" class="form-label"
+										>Nutritional information</label
+									>
+									<LocaleInput
+										inputName="nutritional_information"
+										enPlaceholder="Enter nutritional information"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
+									/>
+								</div>
+								<div class="form-group">
+									<label for="nutritional_claims" class="form-label">Nutritional claims</label>
+									<LocaleInput
+										inputName="nutritional_claims"
+										enPlaceholder="Enter nutritional claims"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="health_claims" class="form-label">Health claims</label>
+									<LocaleInput
+										inputName="health_claims"
+										enPlaceholder="Enter health claims"
+										frPlaceholder="Entrez les allergènes"
+										duPlaceholder="Voer allergenen in"
+										textarea={true}
 									/>
 								</div>
 							</div>
 						</Tabs.Content>
 
 						<!-- Traceability -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="traceability">
+						<Tabs.Content class="h-full mb-8  w-full " value="traceability">
 							<div class="flex flex-col gap-8">
-								<div class="form-group">
-									<label for="plu" class="form-label">PLU</label>
-									<input
-										name="plu"
-										type="text"
-										required
-										placeholder="Enter PLU"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
 								<div class="form-group">
 									<label for="sku" class="form-label">SKU</label>
 									<input
@@ -795,120 +522,70 @@
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 								</div>
-								<div class="form-group">
-									<label for="preffered_vendor" class="form-label">Preffered vendor</label>
-									<Selector
-										inputName="preffered_vendor"
-										options={vendors}
-										placeholder="Select preffered vendor"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="tags" class="form-label">Tag</label>
-									<Selector
-										on:addoption={(e) => toggleEditModal(e.detail.name)}
-										on:editOption={(e) => toggleEditModal(e.detail.name, e.detail.slug)}
-										on:deleteOption={(e) => toggleDeleteModal(e.detail.itemId)}
-										addUnavailable={true}
-										options={tags}
-										selectMultiple={true}
-										placeholder="Select tags"
-										inputName="tags"
-									/>
-								</div>
 							</div>
 						</Tabs.Content>
-						<!-- Traceability -->
 
-						<!-- FInance -->
-						<Tabs.Content class="px-4 h-full mb-8  w-full " value="finance">
+						<Tabs.Content class="h-full mb-8  w-full " value="finance">
 							<div class="flex flex-col gap-8">
 								<div class="form-group">
-									<label for="q_factor" class="form-label">Q factor</label>
+									<label for="selling_tax_percentage" class="form-label mb-4">Selling tax (%)</label
+									>
 									<input
-										name="q_factor"
+										name="selling_tax_percentage"
 										required
 										type="text"
-										placeholder="Enter q factor"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="selling_tax" class="form-label mb-4">Selling tax(%)</label>
-									<Selector
-										required
-										inputName="selling_tax"
-										options={sellingTax}
-										placeholder="Select selling tax"
-									/>
-								</div>
-
-								<div class="form-group">
-									<label for="shop_selling_price" class="form-label">Shop selling price</label>
-									<input
-										name="shop_sell_price"
-										required
-										type="text"
-										placeholder="Enter shop selling price eg - ($100)"
+										placeholder="€0.00"
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 								</div>
 
 								<div class="form-group">
-									<label for="ecommerce_sell_price_b2b" class="form-label"
-										>E-commerce selling price B2B</label
+									<label for="shop_selling_price_vat_incl_b2b" class="form-label"
+										>Shop selling price vat incl (B2B)</label
 									>
 									<input
-										name="ecommerce_sell_price_b2b"
+										name="shop_selling_price_vat_incl_b2b"
+										required
+										type="text"
+										placeholder="€0.00"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="shop_selling_price_vat_incl_b2c" class="form-label"
+										>Shop selling price vat incl (B2C)</label
+									>
+									<input
+										name="shop_selling_price_vat_incl_b2c"
+										required
+										type="text"
+										placeholder="€0.00"
+										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label for="ecommerce_selling_price_vat_excl_b2b" class="form-label"
+										>E-commerce selling price vat excl (B2B)</label
+									>
+									<input
+										name="ecommerce_selling_price_vat_excl_b2b"
 										type="text"
 										required
-										placeholder="Enter e-commerce selling price B2B"
+										placeholder="€0.00"
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 								</div>
 								<div class="form-group">
-									<label for="ecommerce_sell_price_b2c" class="form-label"
-										>E-commerce selling price B2C</label
+									<label for="ecommerce_selling_price_vat_excl_b2c" class="form-label"
+										>E-commerce selling price vat excl (B2C)</label
 									>
 									<input
-										name="ecommerce_sell_price_b2c"
+										name="ecommerce_selling_price_vat_excl_b2c"
 										type="text"
 										required
-										placeholder="Enter e-commerce selling price B2C"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="selling_unit" class="form-label">Selling unit</label>
-									<input
-										name="selling_unit"
-										type="text"
-										required
-										placeholder="Enter selling unit"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="discount_percentage_b2b" class="form-label"
-										>Discount percentage B2B</label
-									>
-									<input
-										name="discount_percentage_b2b"
-										type="text"
-										required
-										placeholder="Enter discount percentage B2B"
-										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-									/>
-								</div>
-								<div class="form-group">
-									<label for="discount_percentage_b2c" class="form-label"
-										>Discount percentage B2C</label
-									>
-									<input
-										name="discount_percentage_b2c"
-										type="text"
-										required
-										placeholder="Enter discount percentage B2C"
+										placeholder="€0.00"
 										class="input w-full focus:border-1 placeholder:text-base placeholder:text-grey-200 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 									/>
 								</div>
@@ -916,26 +593,6 @@
 						</Tabs.Content>
 
 						<div class="w-full self flex items-center justify-between mt-4 px-4">
-							<!-- {#if allTabs.indexOf(currentTab) > 0}
-								<Button
-									on:click={() => switchTabs('previous')}
-									variant="secondary"
-									class=" flex gap-1 items-center hover:bg-primary-50 hover:text-white "
-									><iconify-icon rotate="180deg" icon="grommet-icons:form-next"></iconify-icon>
-									<span class="hidden md:block">Previous </span>
-								</Button>
-							{/if}
-							{#if allTabs.indexOf(currentTab) + 1 < allTabs.length}
-								<Button
-									on:click={() => switchTabs('next')}
-									variant="secondary"
-									class=" flex gap-1  items-center hover:bg-primary-50 hover:text-white "
-								>
-									<span class="hidden md:block">Next </span>
-									<iconify-icon icon="grommet-icons:form-next"></iconify-icon></Button
-								>
-							{/if} -->
-
 							{#if allTabs.indexOf(currentTab) === allTabs.length - 1}
 								<section class="w-full my-5 flex items-center justify-end">
 									<button
@@ -946,7 +603,6 @@
 										{#if loading}
 											<iconify-icon icon="line-md:loading-twotone-loop" width="20"></iconify-icon>
 										{:else}
-											<!-- <img src="/icons/plus.svg" alt="Plus icon to represent adding" /> -->
 											<span> {carcassToEdit ? 'Edit' : 'Add'} product</span>
 										{/if}
 									</button>

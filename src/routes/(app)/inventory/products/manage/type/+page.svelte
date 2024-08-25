@@ -30,6 +30,8 @@
 		return async ({ result, update }) => {
 			try {
 				if (result.status === 200) {
+					console.log(result);
+
 					showInfo = true;
 					batchAttributes = {
 						1: {

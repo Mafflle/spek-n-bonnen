@@ -22,9 +22,14 @@
 	export let inputName: string = 'images';
 	export let allowMultiple: boolean = false;
 	export let isFileInput: boolean = false;
+
 	const setPreview = (image) => {
 		if (isFileInput) {
-			previewImage = URL.createObjectURL(image);
+			const fileReader = new FileReader();
+			fileReader.readAsDataURL(image);
+			fileReader.addEventListener('load', function () {
+				previewImage = this.result;
+			});
 		} else {
 			previewImage = image.image;
 		}
@@ -41,6 +46,8 @@
 			// Check if the number of images is greater than the maximum allowed
 
 			if (images) {
+				console.log(images[0]);
+
 				setPreview(images[0]);
 			}
 
@@ -55,9 +62,9 @@
 			if (images) {
 				for (let i = 0; i < images.length; i++) {
 					if (images[i].size > 5 * 1024 * 1024) {
+						showToast('Images must be less than 5MB', 'error');
 						images = undefined;
 						previewImage = undefined;
-						showToast('Images must be less than 5MB', 'error');
 						break;
 					}
 				}
@@ -77,8 +84,6 @@
 		}
 	}
 
-	// $: console.log(defaultValue);
-
 	let showMediaManager: boolean = false;
 
 	const dispatch = createEventDispatcher();
@@ -94,7 +99,7 @@
 		class=" relative w-full h-full {small &&
 			'rounded-full justify-center '}  flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
 			? 'border-primary-softPink-50 border-2'
-			: 'border-grey-300 border-2  rounded'} hover:border-primary-red border-dashed"
+			: 'border-grey-300 border-2  '} hover:border-primary-red border-dashed"
 	>
 		<input
 			bind:files={images}
@@ -112,8 +117,6 @@
 					e.preventDefault();
 					showMediaManager = true;
 					dispatch('click');
-				} else {
-					images = e.dataTransfer?.files;
 				}
 			}}
 			name={fileInputName}
@@ -146,7 +149,7 @@
 								src={previewImage}
 								alt=""
 								style="aspect-ratio: 1/1"
-								class="w-full h-full object-fit pointer-events-none rounded-full"
+								class="w-full h-full object-cover pointer-events-none {small && 'rounded-full'}"
 							/>
 							{#if allowMultiple && files.length > 1}
 								<section

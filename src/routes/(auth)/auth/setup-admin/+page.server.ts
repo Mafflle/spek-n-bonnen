@@ -8,13 +8,10 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const adminExists = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists/`);
 
 	if (adminExists.ok) {
-		// console.log('test');
 		const admin = await adminExists.json();
 		if (admin.admin_exists) {
 			throw redirect(302, 'login');
 		}
-	} else if (adminExists.status === 401) {
-		throw redirect(302, '/');
 	} else {
 		console.log(adminExists.status);
 	}

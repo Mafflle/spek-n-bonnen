@@ -1,5 +1,5 @@
 import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import { Actions, fail } from '@sveltejs/kit';
+import { type Actions, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 
 const batchAttrSchema = z.object({
@@ -54,6 +54,9 @@ export const actions: Actions = {
 			} else {
 				console.log(createProductType.status);
 				const body = await createProductType.json();
+				if (body) {
+					console.log(body);
+				}
 				return fail(400, body);
 			}
 		} catch (error) {

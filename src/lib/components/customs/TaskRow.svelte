@@ -48,7 +48,7 @@
 				<Avatar.Root class="w-7 h-7">
 					<Avatar.Image
 						class="w-full h-full object-cover"
-						src={assignee?.staff_profile?.profile_picture.image}
+						src={assignee?.staff_profile?.profile_picture?.image}
 					/>
 					<Avatar.Fallback class="text-xs"
 						>{assignee?.email.substring(0, 2).toLocaleUpperCase()}</Avatar.Fallback

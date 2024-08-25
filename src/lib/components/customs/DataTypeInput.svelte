@@ -72,7 +72,6 @@
 
 	function handleAddChoice(event: CustomEvent<string>) {
 		if (data.data_type !== 'select' && data.data_type !== 'multi-select') return;
-		console.log(event.detail);
 
 		let newChoice = event.detail;
 		if (newChoice.trim().length > 1) {
@@ -120,7 +119,7 @@
 
 <div class=" h-full flex flex-col w-[523px] gap-2">
 	<div
-		class="flex flex-col gap-4 shadow px-5 pt-5 w-full min-h-[166px] border-l-4 border-l-yellow-300 rounded"
+		class="flex flex-col gap-4 shadow px-5 pt-5 w-full h-full min-h-[166px] border-l-4 border-l-yellow-300 rounded"
 	>
 		<section class="grid gap-2 grid-cols-8 w-full">
 			<div class="form-group w-full col-span-5">
@@ -166,8 +165,11 @@
 		<section class="w-full" id="multichoice">
 			{#if selectedType && selectedType.value === 'multi-select'}
 				{#each data.choice_list as choice, index (index)}
-					<div class="flex items-center gap-1">
-						<span class="handle">::</span>
+					<div class="flex items-start gap-1">
+						<button
+							disabled={index === data.choice_list.length - 1}
+							class="handle text-xl cursor-move">::</button
+						>
 
 						<MultiChoice
 							{index}

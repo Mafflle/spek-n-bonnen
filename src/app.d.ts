@@ -10,6 +10,7 @@ declare global {
 			user: User;
 			accessToken: string | null;
 			refreshToken: string | null;
+			adminExists: boolean | null;
 		}
 		// interface PageData {}
 		// interface Platform {}

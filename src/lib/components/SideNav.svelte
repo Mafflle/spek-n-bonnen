@@ -47,10 +47,10 @@
 				},
 
 				{
-					title: 'Providers',
-					href: '/inventory/providers',
+					title: 'Suppliers',
+					href: '/inventory/suppliers',
 					color: '#FF1C0D',
-					permission: 'view_provider'
+					permission: 'view_supplier'
 				}
 			]
 		},
@@ -120,7 +120,7 @@
 							<Avatar.Image
 								class="w-full h-full object-cover"
 								loading="eager"
-								src={$currentUser?.staff_profile?.profile_picture.image ?? '/icons/human.jpg'}
+								src={$currentUser?.staff_profile?.profile_picture?.image ?? '/icons/human.jpg'}
 								alt="user icon"
 							/>
 							<!-- <Avatar.Fallback class="bg-white">

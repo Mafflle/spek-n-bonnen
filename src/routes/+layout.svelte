@@ -3,6 +3,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import 'iconify-icon';
 	import { navigating } from '$app/stores';
+	import { browser } from '$app/environment';
 	import PageLoader from '$lib/components/PageLoader.svelte';
 </script>
 
@@ -15,7 +16,7 @@
 
 <Toaster richColors closeButton />
 
-{#if $navigating}
+{#if browser && $navigating}
 	<PageLoader />
 {/if}
 

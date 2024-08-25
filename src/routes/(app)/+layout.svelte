@@ -127,11 +127,11 @@
 						<Avatar.Fallback>
 							{#if userToLogin.name}
 								<span class="text-2xl">
-									{`${userToLogin.name.split(' ')[0][0]}${userToLogin.name.split(' ')[1][0]}`}
+									{`${userToLogin.name.substring(0, 2).toLocaleUpperCase()}`}
 								</span>
 							{:else}
 								<span class="text-2xl">
-									{`${userToLogin.email.split('')[0][0].toLocaleUpperCase()}${userToLogin.email.split('')[0][1].toLocaleUpperCase()}`}
+									{`${userToLogin.email.substring(0, 2).toLocaleUpperCase()}`}
 								</span>
 							{/if}
 						</Avatar.Fallback>
@@ -218,11 +218,11 @@
 							<Avatar.Fallback>
 								{#if user.name}
 									<span class="text-2xl">
-										{`${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`}
+										{`${user.name.substring(0, 2).toLocaleUpperCase()}`}
 									</span>
 								{:else}
 									<span class="text-2xl">
-										{`${user.email.split('')[0][0].toLocaleUpperCase()}${user.email.split('')[0][1].toLocaleUpperCase()}`}
+										{`${user.email.substring(0, 2).toLocaleUpperCase()}`}
 									</span>
 								{/if}
 							</Avatar.Fallback>
