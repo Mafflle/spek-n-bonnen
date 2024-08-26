@@ -1,14 +1,25 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import InfoModal from '$lib/components/InfoModal.svelte';
-	import { productsStore, productTypes } from '$lib/stores/product.stores.js';
+	import { productsStore } from '$lib/stores/product.stores.js';
+	import CustomTable from '$lib/components/customs/CustomTable.svelte';
+	import ProductRow from '$lib/components/customs/ProductRow.svelte';
 
 	export let data;
 
 	productsStore.set(data.products.results);
-	productTypes.set(data.productTypes.results);
 
-	console.log(data);
+	$: console.log($productsStore);
+
+	let tableProps = {
+		columns: [
+			{ name: 'Featured image' },
+			{ name: 'Product name' },
+			{ name: 'Product type' },
+			{ name: 'Sku' }
+		],
+		RowComponent: ProductRow
+	};
 </script>
 
 {#if $productsStore.length > 0}
@@ -65,6 +76,9 @@
 					<span class="hidden sm:block">Add product</span>
 				</a>
 			</div>
+		</div>
+		<div class="w-full">
+			<CustomTable createUtilityColumn={true} props={tableProps} rowsData={$productsStore} />
 		</div>
 	</div>
 {:else}

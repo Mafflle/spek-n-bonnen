@@ -43,7 +43,8 @@
 				{
 					title: 'Products',
 					href: '/inventory/products',
-					color: '#FF1C0D'
+					color: '#FF1C0D',
+					childRoutes: [{ title: 'Types', href: '/inventory/products/types/' }]
 				},
 
 				{

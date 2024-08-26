@@ -52,7 +52,7 @@
 	</div>
 
 	<div class="w-full">
-		<CustomTable rowsData={$ProductTypes} props={tableProps} />
+		<CustomTable rowsData={$ProductTypes} props={tableProps} createUtilityColumn={true} />
 	</div>
 </div>
 
