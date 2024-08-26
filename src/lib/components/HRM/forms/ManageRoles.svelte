@@ -11,8 +11,11 @@
 	import { slide } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
 
 	export let data;
+	console.log($page);
+
 	let { roles, permissions } = data;
 	Roles.set(roles.results);
 	console.log('manage roles data', data);

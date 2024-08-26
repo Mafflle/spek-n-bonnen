@@ -81,24 +81,25 @@ export async function handle({ event, resolve }) {
 	const { url, fetch } = event;
 	const currUrl = url.pathname;
 
-	event.locals.adminExists = !!event.cookies.get('adminExists');
 	if (event.locals.adminExists == null) {
 		const checkIfAdminExist = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/admin-exists/`);
 		let currUrl = url.pathname;
 		if (checkIfAdminExist.ok) {
 			const adminExists = await checkIfAdminExist.json();
-			event.cookies.set('adminExists', adminExists.admin_exists, {
-				httpOnly: true,
-				secure: false,
-				sameSite: 'lax',
-				path: '/'
-			});
+			// event.cookies.set('adminExists', adminExists.admin_exists, {
+			// 	httpOnly: true,
+			// 	secure: false,
+			// 	sameSite: 'lax',
+			// 	path: '/'
+			// });
 			event.locals.adminExists = adminExists.admin_exists;
-			// if (adminExists.admin_exists === false && !currUrl.includes('setup-admin')) {
-			// 	throw redirect(302, `/auth/setup-admin`);
-			// }
+			if (adminExists.admin_exists === false && !currUrl.includes('setup-admin')) {
+				throw redirect(302, `/auth/setup-admin`);
+			}
 		}
 	}
+
+	console.log(event.locals);
 
 	if (!event.locals.user && !currUrl.startsWith('/auth')) {
 		try {
