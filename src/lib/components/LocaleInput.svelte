@@ -1,8 +1,9 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import Editor from '@tinymce/tinymce-svelte';
+
 	import Separator from './ui/separator/separator.svelte';
 
+	import TipTap from './TipTap.svelte';
 	export let frPlaceholder: string = "Entrez le nom de l'élément en français";
 	export let enPlaceholder: string = 'Enter item name';
 	export let duPlaceholder: string = 'Voer de naam van het item in het Nederlands in';
@@ -128,16 +129,9 @@
 				<Tabs.Content value={locale.label}>
 					<div class="flex flex-col gap-3">
 						{#if textarea}
-							<!-- <Editor {options} on:text-change={onTextChange} bind:data={locale.value} /> -->
-
-							<Editor
-								modelEvents="input change undo redo"
-								bind:value={locale.value}
-								apiKey="vbxsmpoh53y8sefip8hwna0x2wunt6hw8gxi8z4z1bu7lglp"
-								{conf}
-							/>
 							<textarea
-								class="hidden"
+								class="border-2 rounded-lg p-2"
+								rows="8"
 								bind:value={locale.value}
 								name={`${inputName}_${locale.label}`}
 							></textarea>
@@ -152,45 +146,6 @@
 					</div>
 				</Tabs.Content>
 			{/each}
-			<!-- <Tabs.Content value="english" class="">
-				<div class="flex flex-col gap-3">
-					{#if textarea}
-						<Editor {options} on:text-change={onTextChange} bind:data={content} />
-					{:else}
-						<input
-							bind:value={locales[0].value}
-							placeholder={locales[0].placeholder}
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						/>
-					{/if}
-				</div>
-			</Tabs.Content>
-			<Tabs.Content value="dutch" class="">
-				<div class="flex flex-col gap-3">
-					{#if textarea}
-						<Editor {options} on:text-change={onTextChange} bind:data={content} />
-					{:else}
-						<input
-							bind:value={locales[1].value}
-							placeholder={locales[1].placeholder}
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						/>
-					{/if}
-				</div>
-			</Tabs.Content>
-			<Tabs.Content value="french" class="">
-				<div>
-					{#if textarea}
-						<Editor {options} on:text-change={onTextChange} bind:data={content} />
-					{:else}
-						<input
-							bind:value={locales[2].value}
-							placeholder={locales[2].placeholder}
-							class="input w-full focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
-						/>
-					{/if}
-				</div>
-			</Tabs.Content> -->
 		</div>
 	</Tabs.Root>
 </div>

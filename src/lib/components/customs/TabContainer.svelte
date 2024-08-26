@@ -16,7 +16,7 @@
 
 	export let tabs: Tab[];
 
-	let selectedTab = tabs[1].id;
+	let selectedTab = tabs[0].id;
 
 	function handleTabClick(index: number) {
 		selectedTab = tabs[index].id;

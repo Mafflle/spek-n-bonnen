@@ -23,14 +23,6 @@
 
 	TimeEntries.set(myTimeEntries.results);
 
-	let showProfileModal: boolean = false;
-
-	let staff_profile = $page.url.searchParams.get('staff_profile');
-
-	if (staff_profile || $currentUser?.staff_profile === null) {
-		showProfileModal = true;
-	}
-
 	let tabs = [
 		{
 			title: 'Profile',
@@ -66,31 +58,9 @@
 		</div>
 	</div>
 	<div class="w-full flex flex-col mb-8">
-		{#if $currentUser?.staff_profile === null}
-			<section
-				class="max-w-[969px] flex flex-col justify-end w-full p-5 h-[110px] relative bg-primary-softPink-100 rounded"
-			>
-				<div class="absolute -top-5 w-fit h-fit left-10">
-					<img src="/icons/Bell icon.svg" class="w-[50px] h-[50px]" alt="Bell icon" />
-				</div>
-				<div class="flex items-center gap-4">
-					<p class="font-satoshi text-sm text-primary-red">
-						Your profile information is essential for compliance and unlocks a tailored experience.
-						Update your details to ensure access to all company resources and personalized benefits
-					</p>
-					<Button
-						on:click={() => (showProfileModal = true)}
-						class="bg-primary-red max-h-[35px] rounded-[6px] text-white text-sm font-satoshi font-medium"
-						>Complete Profile</Button
-					>
-				</div>
-			</section>
-		{/if}
 		<section class="w-full h-full">
 			<CustomTabs
 				on:updatedProfile={(e) => {
-					console.log($currentUser, e.detail);
-
 					if ($currentUser) {
 						$currentUser.staff_profile = e.detail.profile;
 					}

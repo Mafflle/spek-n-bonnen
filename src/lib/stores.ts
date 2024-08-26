@@ -14,6 +14,23 @@ export type Role = {
 	permissions: Permission[];
 };
 
+export type ProductType = {
+	id: number;
+	name: string;
+	is_enabled: boolean;
+	batch_attributes: BatchAttribute[];
+	created_at: Date;
+	updated_at: Date;
+};
+
+export type BatchAttribute = {
+	id: number;
+	name: string;
+	data_type: string;
+	default_value: string;
+	is_required: boolean;
+};
+
 export type Primal = {
 	id: number;
 	name: string;
@@ -102,6 +119,7 @@ export let Roles = writable<Role[]>([]);
 export let Primals = writable<Primal[]>([]);
 export let LoggedinUsers = writable<{ name?: string; email: string; avatar?: string }[]>([]);
 export let Batches = writable<Batch[]>([]);
+export let ProductTypes = writable<ProductType[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
 export let Tags = writable<any[]>([]);
 export let currentCarcass = writable<CarcassType | null>(null);

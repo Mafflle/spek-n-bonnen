@@ -116,8 +116,14 @@
 									<Collapsible.Root>
 										<Collapsible.Trigger asChild let:builder>
 											<Button
+												href={child.href}
 												builders={[builder]}
-												class="flex items-center justify-between py-2 px-3 text-xs w-full "
+												class="flex items-center justify-between py-2 px-3 text-sm w-full {$page.url.pathname.startsWith(
+													child.href
+												) && 'bg-primary-light text-primary-red shadow-inner'}
+											 px-3 rounded-sm {check(child.permission, $currentUser?.groups)
+													? 'hidden'
+													: 'flex'} gap-3 hover:bg-primary-light hover:text-primary-red "
 											>
 												<span>{child.title}</span>
 												<iconify-icon icon="iconamoon:arrow-up-2-fill" width="15" rotate="90deg"

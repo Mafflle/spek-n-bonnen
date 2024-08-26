@@ -268,7 +268,8 @@ export function check(permission: string, user: User) {
 	}
 }
 export function getLoggedinUser(): { name?: string; email: string; avatar?: string }[] {
-	return JSON.parse(localStorage.getItem('loggedinUsers')) || [];
+	let loggedUsers = JSON.parse(localStorage.getItem('loggedinUsers')) || [];
+	return loggedUsers.filter((user) => user?.name || user?.email);
 }
 
 export const updateLoggedInUsers = (loggedInUser: User) => {

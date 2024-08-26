@@ -44,15 +44,13 @@ export const actions: Actions = {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/',
-					maxAge: 60 * 60 * 24 * 30
+					path: '/'
 				});
 				cookies.set('refresh', tokens.refresh, {
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax',
-					path: '/',
-					maxAge: 60 * 60 * 24 * 30
+					path: '/'
 				});
 
 				const access = cookies.get('access');

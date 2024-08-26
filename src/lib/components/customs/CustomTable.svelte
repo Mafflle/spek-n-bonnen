@@ -4,18 +4,22 @@
 	const dispatch = createEventDispatcher();
 	export let props: {
 		columns: { name: string }[];
-		RowComponent: SvelteComponent;
+		RowComponent: typeof SvelteComponent;
 	};
 	export let rowsData: any[] = [];
+	export let createUtilityColumn: boolean = false;
 </script>
 
 <Table.Root class="w-full">
 	<Table.Caption></Table.Caption>
 	<Table.Header class="sticky top-0 w-full">
-		<Table.Row class="h-[55px] bg-[#F9F9F9] font-satoshi font-medium ">
+		<Table.Row class="h-[55px] bg-[#F9F9F9]  font-satoshi font-medium ">
 			{#each props.columns as column}
-				<Table.Head class=" text-grey-200 ">{column.name}</Table.Head>
+				<Table.Head class=" text-grey-200 text-start">{column.name}</Table.Head>
 			{/each}
+			{#if createUtilityColumn}
+				<Table.Head class=" text-grey-200 "></Table.Head>
+			{/if}
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>

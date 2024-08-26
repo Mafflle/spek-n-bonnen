@@ -7,12 +7,11 @@
 	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
 	import { enhance } from '$app/forms';
-	import { Roles } from '$lib/stores';
+	import { ProductTypes } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
+	import type { Product } from '$lib/stores/product.stores';
 
-	export let data;
-
-	// console.log('role row', data);
+	export let data: Product;
 
 	let showMoreDetails: boolean = false;
 	const dispatch = createEventDispatcher();
@@ -30,15 +29,23 @@
 <Table.Row class="h-[80px]">
 	<Table.Cell class="font-medium text-grey-100">
 		<section class="flex items-center gap-2">
-			<span>{data.name}</span>
+			{#if data.featured_img}
+				<div class="min-w-[141px] min-h-[90px] bg-[#f9f9f9]"></div>
+			{/if}
 		</section>
 	</Table.Cell>
 
 	<Table.Cell class="font-medium text-grey-100 ">
-		<span>{data.permissions[0].name} + {data.permissions.length - 1}</span>
+		<span>{data.name}</span>
+	</Table.Cell>
+	<Table.Cell class="font-medium text-grey-100 ">
+		<span>Type-{data.product_type}</span>
+	</Table.Cell>
+	<Table.Cell class="font-medium text-grey-100 ">
+		<span>{data.sku}</span>
 	</Table.Cell>
 
-	<Table.Cell class="flex justify-end">
+	<Table.Cell class="">
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild let:builder>
 				<Button builders={[builder]} class="p-0 flex justify-center items-center">
@@ -58,19 +65,7 @@
 				</DropdownMenu.Item>
 
 				<DropdownMenu.Item>
-					<form
-						action="?/delete"
-						method="post"
-						use:enhance={() => {
-							return async ({ result, update }) => {
-								console.log('result', result);
-								toast.success('Role deleted successfully');
-								Roles.update((roles) => {
-									return roles.filter((role) => role.id !== data.id);
-								});
-							};
-						}}
-					>
+					<form method="post">
 						<input type="text" bind:value={data.id} class="hidden" name="id" id="id" />
 						<Button
 							class="text-xs font-satoshi -tracking-[0.14px] flex items-center justify-start py-1 h-auto rounded gap-2"
@@ -91,7 +86,9 @@
 		<section
 			class="flex items-center justify-between px-6 pb-6 mb-5 border-b-[0.5px] border-grey-300"
 		>
-			<h6 class="font-medium text-sm text-grey-100 font-satoshi">Role Management / More Details</h6>
+			<h6 class="font-medium text-sm text-grey-100 font-satoshi">
+				Product type Management / More Details
+			</h6>
 			<button
 				on:click={toggleDetails}
 				type="button"

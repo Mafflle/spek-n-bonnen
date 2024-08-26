@@ -50,28 +50,32 @@
 	}
 
 	function selectDate(day) {
-		selectedDate = day;
-		if (!startDate) {
-			isSelectingStart = true;
-		} else {
-			isSelectingStart = false;
-		}
-		if (isSelectingStart || day.isBefore(startDate, 'day')) {
+		selectedDate = day; // Track the currently selected date
+
+		// User is selecting the first date (or re-selecting a single date)
+		if (!startDate || (startDate && !endDate)) {
 			startDate = day;
-			isSelectingStart = false;
-
-			if (endDate || day.isSameOrAfter(endDate, 'day')) {
-				endDate = null;
-				startDate = day;
-			}
+			isSelectingStart = false; // No need to select a range anymore
 		} else {
-			endDate = day;
-			isSelectingStart = true;
+			// User is selecting the end date of a range
+			if (day.isBefore(startDate, 'day')) {
+				// Swap start and end dates if end date is before start date
+				endDate = startDate;
+				startDate = day;
+			} else {
+				endDate = day;
+			}
+
+			// If dates are the same, treat it as a single date selection
+			if (startDate.isSame(endDate, 'day')) {
+				endDate = null;
+			}
+
+			isSelectingStart = true; // Ready to select a new start date
 		}
 
-		if (startDate && endDate) {
-			dispatch('selectedDates', { startDate, endDate });
-		}
+		// Dispatch an event with the selected dates (null if single date)
+		dispatch('selectedDates', { startDate, endDate });
 	}
 
 	const dispatch = createEventDispatcher();

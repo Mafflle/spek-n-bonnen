@@ -29,6 +29,10 @@ h6 {
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
 	}
+
+	.input {
+		@apply w-full px-4 py-2.5 border rounded-md outline-none focus:outline-primary-100 focus:border-primary-100 placeholder:text-sm placeholder:font-satoshi;
+	}
 	.active {
 		@apply bg-primary-light text-primary-red;
 	}
