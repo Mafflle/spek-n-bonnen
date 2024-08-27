@@ -3,9 +3,12 @@
 	import { showToast } from '$lib/utils';
 	import { createEventDispatcher } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import Modal from './Modal.svelte';
+
 	import MediaManager from './MediaManager.svelte';
 	import * as Avatar from './ui/avatar';
+	import { mediaState } from '../stores';
+
+	page;
 
 	let images: FileList | undefined = undefined;
 	export let files: any[] = [];
@@ -92,42 +95,44 @@
 </script>
 
 <div
-	class=" {small ? 'h-[90px] w-[90px] ' : ' min-h-[200px] h-full  min-w-full '} {previewImage &&
+	class=" {small ? 'h-[90px] w-[90px] ' : 'min-h-[200px] h-full w-full '} {previewImage &&
 		'w-[90px]'}"
 >
 	<div
-		class=" relative w-full h-full {small &&
-			'rounded-full justify-center '}  flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
-			? 'border-primary-softPink-50 border-2'
+		class=" relative w-full h-full flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
+			? 'border-primary-softPink-50 border-2 rounded-full justify-center '
 			: 'border-grey-300 border-2  '} hover:border-primary-red border-dashed"
 	>
-		<input
-			bind:files={images}
-			on:drop={(e) => {
-				if (!isFileInput) {
-					e.preventDefault();
-					showMediaManager = true;
-				} else {
-					e.preventDefault();
-					images = e.dataTransfer?.files;
-				}
-			}}
-			on:click={(e) => {
-				if (!isFileInput) {
-					e.preventDefault();
-					showMediaManager = true;
-					dispatch('click');
-				}
-			}}
-			name={fileInputName}
-			type="file"
-			id={inputName}
-			multiple={maximumImages > 1}
-			accept="image/*"
-			class="w-full cursor-pointer h-full absolute top-0 left-0 opacity-0 z-10"
-		/>
+		{#if isFileInput}
+			<input
+				bind:files={images}
+				on:drop={(e) => {
+					if (!isFileInput) {
+						e.preventDefault();
+						showMediaManager = true;
+					} else {
+						e.preventDefault();
+						images = e.dataTransfer?.files;
+					}
+				}}
+				on:click={(e) => {
+					if (!isFileInput) {
+						e.preventDefault();
+						showMediaManager = true;
+						dispatch('click');
+					}
+				}}
+				name={fileInputName}
+				type="file"
+				id={inputName}
+				multiple={maximumImages > 1}
+				accept="image/*"
+				class="w-full cursor-pointer h-full absolute top-0 left-0 opacity-0 z-10"
+			/>
+		{/if}
 		<div
-			class="upload-box-info h-full w-full flex {small
+			on:click={() => mediaState.update((e) => (e = { state: true, type: 'default' }))}
+			class="upload-box-info h-[200px] w-full flex {small
 				? 'flex-row items-center justify-center '
 				: 'flex-col justify-center'} {previewImage ? 'px-0' : 'px-3'}  items-center gap-2"
 		>
@@ -199,17 +204,4 @@
 		<input type="text" class="hidden" bind:value={file.id} name={inputName} />
 	{/each}
 </div>
-
-<!-- media manager -->
-<Modal showModal={showMediaManager} on:close={() => (showMediaManager = false)}>
-	<MediaManager
-		multiple={allowMultiple}
-		slot="modal-content"
-		images={$page.data.images.results}
-		on:selected={(e) => {
-			files = e.detail;
-			showMediaManager = false;
-			dispatch('close');
-		}}
-	/>
-</Modal>
+<MediaManager images={$page.data.images.results} on:selected={(e) => (files = e.detail)} />

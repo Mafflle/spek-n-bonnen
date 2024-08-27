@@ -51,6 +51,7 @@
 					}
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
+					console.log(validationErrors);
 				} else {
 					showToast('Ooops something went wrong', 'error');
 				}

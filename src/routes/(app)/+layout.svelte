@@ -1,19 +1,18 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { LoggedinUsers } from '$lib/stores.js';
+	import { LoggedinUsers, mediaState } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
 	import { showToast, updateLoggedInUsers, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
+	import MediaManager from '../../lib/components/MediaManager.svelte';
 	export let data;
-	const { permissions, user } = data;
+	const { images, user } = data;
 
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
@@ -254,10 +253,4 @@
 	</div>
 </Modal>
 
-<!-- <Modal
-	mode="sheet"
-	showModal={showProfileModal}
-	lock={$currentUser?.staff_profile === null}
-	on:close={() => (showProfileModal = false)}
->
-</Modal> -->
+<!-- <MediaManager images={images.results} /> -->

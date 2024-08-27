@@ -68,8 +68,8 @@ export const actions: Actions = {
 			throw redirect(302, 'auth/login');
 		}
 	},
-	upload: async ({ fetch, request, url }) => {
-		// console.log(cookies.get('access'));
+	'upload-media': async ({ fetch, request, url }) => {
+		console.log('test');
 
 		const formData = await request.formData();
 
@@ -81,8 +81,6 @@ export const actions: Actions = {
 			...(logo && { logo })
 		};
 
-		console.log(dataToValidate);
-
 		try {
 			uploadSchema.parse(dataToValidate);
 
@@ -91,6 +89,7 @@ export const actions: Actions = {
 				dataToSend.append('title', name);
 				dataToSend.append('image', logo);
 			}
+			console.log('creating media');
 			if (dataToSend) {
 				const createMedia = await fetch(`${PUBLIC_API_ENDPOINT}api/images/`, {
 					method: 'POST',

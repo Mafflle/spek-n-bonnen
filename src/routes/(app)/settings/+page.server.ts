@@ -117,7 +117,6 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ fetch, locals }) => {
-	console.log('is_staff', locals.user?.is_staff);
 	const getMySchedule = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/work-schedule/me/`);
 	const getMyTimeEntries = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/time-entry/me/`);
 
