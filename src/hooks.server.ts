@@ -20,9 +20,6 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 		let response = await fetch(request.clone()); // Clone to allow retrying
 
-		// Retry if 401 Unauthorized
-		console.log(response.url, response.status);
-
 		if (response.ok) {
 			console.log('sucess', response.url, response.status);
 			return response;
@@ -74,7 +71,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	} else {
 		console.log('no');
 	}
-	return await fetch(request);
+	const response = await fetch(request);
+	return response;
 };
 
 export async function handle({ event, resolve }) {
@@ -99,8 +97,6 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	console.log(event.locals);
-
 	if (!event.locals.user && !currUrl.startsWith('/auth')) {
 		try {
 			const profileResponse = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/`, {
@@ -122,17 +118,16 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	if (event.locals.user?.staff_profile === null && !currUrl.includes('/settings')) {
+	if (event.locals.user?.staff_profile === null && currUrl !== '/settings') {
 		redirect(302, '/settings?staff_profile=null/');
 	}
-
-	console.log(currUrl);
 
 	if (!event.locals.user && !currUrl.startsWith('/auth')) {
 		event.cookies.delete('access', { path: '/' });
 		event.cookies.delete('refresh', { path: '/' });
 		redirect(302, `/auth/login?from=${currUrl}`);
 	}
+
 	const response = await resolve(event);
 
 	return response;
