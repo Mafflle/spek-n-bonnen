@@ -1,102 +1,82 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { showToast } from '$lib/utils';
-	import { createEventDispatcher } from 'svelte';
-	import { slide } from 'svelte/transition';
-
-	import MediaManager from './MediaManager.svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { uploadState, mediaState } from '../stores';
+	import { showToast } from '../utils';
 	import * as Avatar from './ui/avatar';
-	import { mediaState } from '../stores';
+	import { set } from 'zod';
 
-	page;
-
-	let images: FileList | undefined = undefined;
-	export let files: any[] = [];
-	let previewImage: any | undefined = undefined;
-
-	export let error: string | undefined = '';
-	export let small: boolean = false;
-	export let defaultValue:
-		| { id: number; title: string; image: string; updated_at: Date; created_at: Date }
-		| null
-		| number = null;
-	export let smallText: string = '';
-	export let maximumImages: number = 10;
-	export let inputName: string = 'images';
-	export let allowMultiple: boolean = false;
-	export let isFileInput: boolean = false;
-
-	const setPreview = (image) => {
-		if (isFileInput) {
-			const fileReader = new FileReader();
-			fileReader.readAsDataURL(image);
-			fileReader.addEventListener('load', function () {
-				previewImage = this.result;
-			});
-		} else {
-			previewImage = image.image;
-		}
-	};
-
-	if (defaultValue) {
-		previewImage = defaultValue.image;
-	}
-	$: {
-		if (files.length > 0) {
-			previewImage = files[0].image;
-		}
-		if (isFileInput) {
-			// Check if the number of images is greater than the maximum allowed
-
-			if (images) {
-				console.log(images[0]);
-
-				setPreview(images[0]);
-			}
-
-			// Check if the number of images is greater than the maximum allowed
-			if (images && images.length > maximumImages) {
-				images = undefined;
-				previewImage = undefined;
-				showToast(`You can only upload up to ${maximumImages} images`, 'error');
-			}
-
-			// Check if the images are too large
-			if (images) {
-				for (let i = 0; i < images.length; i++) {
-					if (images[i].size > 5 * 1024 * 1024) {
-						showToast('Images must be less than 5MB', 'error');
-						images = undefined;
-						previewImage = undefined;
-						break;
-					}
-				}
-			}
-
-			// Check if the images are not of the correct type
-			if (images) {
-				for (let i = 0; i < images.length; i++) {
-					if (!images[i].type.startsWith('image')) {
-						images = undefined;
-						previewImage = undefined;
-						showToast('Only images are allowed', 'error');
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	let showMediaManager: boolean = false;
+	export let isFileInput = false;
+	export let small = false;
+	export let multiple = false;
+	export let maximumImages = 5;
+	export let inputName = 'image';
+	export let files: File[] = [];
+	export let fileInputName = 'image';
+	export let defaultValue = {};
 
 	const dispatch = createEventDispatcher();
 
-	let fileInputName = isFileInput ? inputName : 'preview-image';
+	const setPreview = (image: string | ArrayBuffer) => {
+		uploadState.update((state) => {
+			state.previewImage = image as string;
+			return state;
+		});
+	};
+	if (defaultValue) {
+		setPreview(defaultValue.image);
+	}
+	function validateFiles(files: FileList) {
+		if (files.length > maximumImages) {
+			showToast(`You can only upload up to ${maximumImages} images`, 'error');
+			return false;
+		}
+		for (let file of files) {
+			if (file.size > 5 * 1024 * 1024) {
+				showToast('Images must be less than 5MB', 'error');
+				return false;
+			}
+			if (!file.type.startsWith('image')) {
+				showToast('Only images are allowed', 'error');
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function handleFileChange(event: Event) {
+		const input = event.target as HTMLInputElement;
+		const selectedFiles = input.files;
+
+		console.log(input, selectedFiles);
+
+		if (selectedFiles && validateFiles(selectedFiles)) {
+			const newFiles = Array.from(selectedFiles);
+			if (!multiple) {
+				newFiles.length = 1;
+			}
+			files = newFiles;
+			dispatch('filesUpdated', newFiles);
+			setPreview(URL.createObjectURL(newFiles[0]));
+		} else {
+			files = [];
+			setPreview('');
+		}
+	}
+
+	const unsubscribeMedia = mediaState.subscribe((state) => (state = state));
+	const unsubscribeUpload = uploadState.subscribe((state) => (state = state));
+
+	onDestroy(() => {
+		unsubscribeMedia();
+		unsubscribeUpload();
+	});
+	$: console.log($uploadState);
 </script>
 
 <div
-	class=" {small ? 'h-[90px] w-[90px] ' : 'min-h-[200px] h-full w-full '} {previewImage &&
-		'w-[90px]'}"
+	class=" {small
+		? 'h-[90px] w-[90px] '
+		: 'min-h-[200px] h-full w-full'} {$uploadState.previewImage && 'w-[90px]'}"
 >
 	<div
 		class=" relative w-full h-full flex p-auto md:px-auto flex-col items-start gap-3 self-stretch hover:bg-primary-softPink-100 {small
@@ -105,38 +85,25 @@
 	>
 		{#if isFileInput}
 			<input
-				bind:files={images}
-				on:drop={(e) => {
-					if (!isFileInput) {
-						e.preventDefault();
-						showMediaManager = true;
-					} else {
-						e.preventDefault();
-						images = e.dataTransfer?.files;
-					}
-				}}
-				on:click={(e) => {
-					if (!isFileInput) {
-						e.preventDefault();
-						showMediaManager = true;
-						dispatch('click');
-					}
-				}}
+				bind:files={$uploadState.images}
+				on:change={handleFileChange}
 				name={fileInputName}
 				type="file"
 				id={inputName}
-				multiple={maximumImages > 1}
+				{multiple}
 				accept="image/*"
 				class="w-full cursor-pointer h-full absolute top-0 left-0 opacity-0 z-10"
 			/>
 		{/if}
 		<div
-			on:click={() => mediaState.update((e) => (e = { state: true, type: 'default' }))}
+			on:click={() => mediaState.update((state) => ({ ...state, isOpen: true }))}
 			class="upload-box-info h-[200px] w-full flex {small
 				? 'flex-row items-center justify-center '
-				: 'flex-col justify-center'} {previewImage ? 'px-0' : 'px-3'}  items-center gap-2"
+				: 'flex-col justify-center'} {$uploadState.previewImage
+				? 'px-0'
+				: 'px-3'}  items-center gap-2"
 		>
-			{#if previewImage}
+			{#if $uploadState.previewImage}
 				<section
 					class="w-full h-full absolute {small
 						? 'flex items-center justify-center top-0 left-0'
@@ -144,19 +111,20 @@
 				>
 					{#if small}
 						<Avatar.Root class="w-14 h-14">
-							<Avatar.Image src={previewImage} class="w-full h-full object-cover"></Avatar.Image>
+							<Avatar.Image src={$uploadState.previewImage} class="w-full h-full object-cover"
+							></Avatar.Image>
 
 							<Avatar.Fallback>IM</Avatar.Fallback>
 						</Avatar.Root>
 					{:else}
 						<div class=" h-full w-full relative top-0">
 							<img
-								src={previewImage}
+								src={$uploadState.previewImage}
 								alt=""
 								style="aspect-ratio: 1/1"
 								class="w-full h-full object-cover pointer-events-none {small && 'rounded-full'}"
 							/>
-							{#if allowMultiple && files.length > 1}
+							<!-- {#if multiple && files.length > 1}
 								<section
 									class="w-full z-30 bg-[#818080a6] absolute bottom-0 py-1 px-3 flex gap-2 items-center"
 								>
@@ -166,12 +134,12 @@
 										</button>
 									{/each}
 								</section>
-							{/if}
+							{/if} -->
 						</div>
 					{/if}
 				</section>
 			{/if}
-			{#if !previewImage}
+			{#if !$uploadState.previewImage}
 				<div class="{small ? 'w-14 h-14' : ' w-7 h-7'} flex justify-center items-center">
 					<img
 						class="w-full h-full"
@@ -183,7 +151,7 @@
 			{#if !small}
 				<span
 					class="w-fit
-					max-w-[70%] text-grey-100 text-xs {previewImage
+					max-w-[70%] text-grey-100 text-xs {$uploadState.previewImage
 						? 'hidden'
 						: 'block'} font-satoshi text-center text-clip"
 				>
@@ -193,15 +161,14 @@
 		</div>
 	</div>
 
-	{#if error}
+	<!-- {#if error}
 		<sub
 			transition:slide={{ delay: 250, duration: 300 }}
 			class="text-rose-500 text-xs tracking-[-0.0075rem]">{error}</sub
 		>
-	{/if}
+	{/if} -->
 
-	{#each files as file}
+	{#each $uploadState.files as file}
 		<input type="text" class="hidden" bind:value={file.id} name={inputName} />
 	{/each}
 </div>
-<MediaManager images={$page.data.images.results} on:selected={(e) => (files = e.detail)} />

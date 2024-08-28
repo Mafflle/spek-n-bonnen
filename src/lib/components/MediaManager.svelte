@@ -1,84 +1,49 @@
 <script lang="ts">
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { enhance } from '$app/forms';
-	import { showToast } from '$lib/utils';
-	import { slide } from 'svelte/transition';
+	import { onDestroy } from 'svelte';
+	import { mediaState, uploadState } from '../stores';
+	import { showToast } from '../utils';
 	import Modal from './Modal.svelte';
 	import UploadBox from './UploadBox.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import { Button } from './ui/button';
+	import { slide } from 'svelte/transition';
 
-	import { mediaState } from '../stores';
-
-	export let images: any[];
-	export let multiple: boolean = false;
-	dayjs.extend(relativeTime);
-
-	let showUpload: boolean = false;
-	let showDelete: boolean = false;
-	let loading: boolean = false;
-	let validationErrors: { title?: [string]; image?: [string] };
+	let validationErrors: { name?: [string]; logo?: [string] };
 	let imageValidationError: string;
-	let selectedItems = [];
-	let imageCount: number;
-	const dispatch = createEventDispatcher();
+	let unsubscribe = mediaState.subscribe((state) => (state = state));
 
 	const toggleUpload = () => {
-		showUpload = !showUpload;
-	};
-	const toggleDeleteModal = (currImage) => {
-		selectedItems = currImage;
-		showDelete = !showDelete;
+		mediaState.update((state) => ({
+			...state,
+			showUpload: !state.showUpload,
+			showDelete: false
+		}));
 	};
 
 	const selectMedia = (image) => {
-		if (multiple) {
-			if (selectedItems.find((item) => item.id === image.id)) {
-				selectedItems = selectedItems.filter((item) => item.id !== image.id);
-			} else {
-				selectedItems = [image, ...selectedItems];
-			}
-		} else {
-			selectedItems = [image];
-			dispatchSelectedImages();
-			mediaState.update((e) => (e = { ...e, state: false }));
-		}
+		uploadState.update((state) => ({ ...state, previewImage: image.image, files: [image] }));
+		mediaState.update((state) => ({ ...state, isOpen: false }));
 	};
+	$: imageCount = $mediaState.images.length;
 
-	const dispatchSelectedImages = () => {
-		dispatch('selected', selectedItems);
-		if (multiple) {
-			showToast('Images selected successfully', 'info');
-		} else {
-			showToast('Image selected successfully', 'info');
-		}
-	};
-
-	$: {
-		imageCount = images.length;
-	}
+	onDestroy(unsubscribe);
 </script>
 
 <Modal
-	showModal={$mediaState.state}
-	on:close={(e) => mediaState.update((e) => (e = { ...e, state: false }))}
+	showModal={$mediaState.isOpen}
+	on:close={() => mediaState.update((state) => ({ ...state, isOpen: false }))}
 >
 	<div slot="modal-content" class="w-full flex h-full">
-		{#if !showUpload && !showDelete}
+		{#if !$mediaState.showUpload && !$mediaState.showDelete}
 			<div class="max-w-4xl w-full min-w-[500px] bg-white rounded flex flex-col h-auto items-start">
 				<section class="flex justify-between gap-2 px-3 py-4 items-center w-full shadow">
 					<h5 class="text-lg font-satoshi font-bold">Media manager</h5>
-					{#if multiple}
-						<!-- <button disabled={selectedItems.length > 0} class="border-2 border-grey-200 px-4 py-1 rounded"
-					>Done</button
-				> -->
+					<!-- {#if multiple}
 						<Button
 							on:click={dispatchSelectedImages}
 							disabled={selectedItems.length < 1}
 							variant="secondary">Done</Button
 						>
-					{/if}
+					{/if} -->
 				</section>
 
 				<div class="flex-1 flex flex-col gap-2 p-4 md:py-10 md:px-8 w-full">
@@ -120,32 +85,27 @@
 							</div>
 							<div class="flex items-center gap-3">
 								<button
-									on:click={toggleUpload}
+									on:click={() => toggleUpload()}
+									type="button"
 									class="bg-primary-100 py-1.5 px-4 flex items-center gap-1 text-sm rounded-3xl text-white"
 								>
-									<iconify-icon icon="mingcute:upload-3-fill" width="22	"></iconify-icon>
-									<!-- <span>
-								<img src="/icons/plus.svg" alt="plus" />
-							<!-- </span>  -->
+									<iconify-icon icon="mingcute:upload-3-fill" width="22"></iconify-icon>
+
 									<span class="hidden sm:block">Upload</span>
 								</button>
 							</div>
 						</section>
 					</div>
-					<!-- <div class="flex justify-end w-full">
-				<Button class="text-blue-400 flex items-center gap-1"
-					><span>Select mulitple</span> <input class="p-0" type="radio" /></Button
-				>
-			</div> -->
-					{#if images.length > 0}
+
+					{#if $mediaState.images.length > 0}
 						<div
 							class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10 overflow-scroll no-scrollbar max-h-96"
 						>
-							{#each images as image}
+							{#each $mediaState.images as image}
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<!-- svelte-ignore a11y-no-static-element-interactions -->
 								<div
-									on:click|preventDefault={() => selectMedia(image)}
+									on:click={() => selectMedia(image)}
 									class="w-full brand-image-card flex flex-col gap-1 items-start rounded-t-xl border-grey-300"
 								>
 									<div
@@ -158,22 +118,7 @@
 											alt={image.title}
 										/>
 
-										<!-- <div
-								in:fly={{ y: -100 }}
-								out:fly={{ y: 100 }}
-								class="absolute hidden h-full w-full text-primary-50 bg-grey-100/40 z-10 top-0 translate-y-[-100%] transition-all duration-500 items-center gap-2 justify-center"
-							>
-								<button class="bg-white text-black-100 flex items-center py-0.5 px-3 rounded-md"
-									><iconify-icon width="20" icon="mdi:eye"></iconify-icon></button
-								>
-								<button
-									on:click={() => toggleDeleteModal(image)}
-									class="bg-white hover:bg-white/60 hover:text-red-500 transition-all delay-200 text-black-100 flex items-center py-0.5 px-3 rounded-md"
-									><iconify-icon width="20" icon="mdi:trash"></iconify-icon></button
-								>
-							</div> -->
-
-										{#if multiple && selectedItems.find((item) => item.id === image.id)}
+										<!-- {#if multiple && selectedItems.find((item) => item.id === image.id)}
 											<div
 												class="w-full h-full absolute bg-[#908c8c36] top-0 flex items-end justify-end"
 											>
@@ -186,7 +131,7 @@
 													></iconify-icon></span
 												>
 											</div>
-										{/if}
+										{/if} -->
 									</div>
 									<div class="media-info flex w-full flex-col items-start gap-2 flex-[1 0 0]">
 										<div class="media-name text-base font-medium">{image.title}</div>
@@ -194,9 +139,9 @@
 											<div class="date-icon">
 												<img src="/icons/clock.svg" alt="clock icon" />
 											</div>
-											<div class="date text-xs text-grey-100 flex-[1 0 0]">
+											<!-- <div class="date text-xs text-grey-100 flex-[1 0 0]">
 												Added {dayjs(image.updated_at).fromNow()}
-											</div>
+											</div> -->
 										</div>
 									</div>
 								</div>
@@ -213,23 +158,22 @@
 					{/if}
 				</div>
 			</div>
-		{:else if showUpload}
+		{/if}
+
+		{#if $mediaState.showUpload}
 			<form
 				action="/?/upload-media"
 				method="post"
-				enctype="multipart/form-data"
-				use:enhance={({ formData }) => {
-					loading = true;
-					let image = formData.get('image');
-
-					if (image) {
-						formData.append('image', JSON.stringify(image));
-					}
+				use:enhance={() => {
+					$mediaState.loading = true;
 
 					return async ({ update, result }) => {
 						try {
 							if (result.status === 200) {
-								images = [result.data.newMedia, ...images];
+								mediaState.update((state) => ({
+									...state,
+									images: [...state.images, result.data.newMedia]
+								}));
 								showToast('New media uploaded successfully', 'success');
 
 								toggleUpload();
@@ -239,19 +183,18 @@
 									imageValidationError = validationErrors.image[0];
 								}
 							} else {
-								console.log(result);
-
 								showToast('Ooops something went wrong!!', 'error');
 							}
 						} finally {
+							$mediaState.loading = false;
 							update();
-							loading = false;
 						}
 					};
 				}}
+				enctype="multipart/form-data"
 				class="max-w-md h-full w-full px-6 py-8 flex flex-col gap-5 rounded-md bg-white"
 			>
-				<UploadBox error={imageValidationError} isFileInput={true} inputName="image" />
+				<UploadBox isFileInput={true} inputName="image" />
 				<div class="modal-input">
 					<input
 						type="text"
@@ -260,10 +203,10 @@
 						placeholder="Media name"
 						class="input w-full md:w-[25rem] focus:border-1 focus:border-[#DA4E45] focus:shadow-custom border-[#D9D9D9] rounded-[0.5rem]"
 					/>
-					{#if validationErrors?.title}
+					{#if validationErrors?.name}
 						<sub
 							transition:slide={{ delay: 250, duration: 300 }}
-							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.title}</sub
+							class="text-rose-500 text-xs tracking-[-0.0075rem]">{validationErrors.name}</sub
 						>
 					{/if}
 				</div>
@@ -275,7 +218,7 @@
 						"
 						type="submit"
 					>
-						{#if loading}
+						{#if $mediaState.loading}
 							<iconify-icon width="35" icon="eos-icons:three-dots-loading"></iconify-icon>
 						{:else}
 							<span class="button-text">Upload media</span>
@@ -283,29 +226,11 @@
 					</button>
 				</div>
 			</form>
-		{:else if showDelete}
-			<form
+		{/if}
+		{#if $mediaState.showDelete}
+			<!-- <form
+				
 				action="/?/delete-media"
-				use:enhance={async () => {
-					loading = true;
-					return async ({ result, update }) => {
-						try {
-							if (result.status == 200) {
-								showToast('Image deleted successfully', 'success');
-								console.log(images);
-
-								images = images.filter((image) => image.id !== selectedItems.id);
-								console.log(images);
-								showDelete = false;
-							} else {
-								showToast('Ooops something went wrong', 'error');
-							}
-						} finally {
-							loading = false;
-							update();
-						}
-					};
-				}}
 				method="post"
 				class="w-[350px] bg-white rounded-md py-5 px-8 flex flex-col items-center justify-center"
 			>
@@ -316,20 +241,20 @@
 						type="submit"
 						class="bg-green-300 text-white flex items-center py-0.5 px-4 rounded-md"
 					>
-						{#if loading}
-							<iconify-icon width="20" icon="eos-icons:three-dots-loading"></iconify-icon>
+						{#if $mediaState.loading}
+							<iconify-icon width="20" icon="eos-icons:three-dots-$mediaState.loading"></iconify-icon>
 						{:else}
 							<span class="button-text">Yes </span>
 						{/if}
 					</button>
 					<button
 						type="button"
-						on:click={() => (showDelete = false)}
+						on:click={() => mediaState.update((state) => ({ ...state, showDelete: false }))}
 						class="bg-rose-500 text-white transition-all delay-200 flex items-center py-0.5 px-4 rounded-md"
 						>No</button
 					>
 				</div>
-			</form>
+			</form> -->
 		{/if}
 	</div>
 </Modal>

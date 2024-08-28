@@ -42,8 +42,8 @@ const taskSchema = z.object({
 		description: 'Task priority is required',
 		required_error: 'Please select task priority'
 	}),
-	start_time: dateSchema,
-	end_time: dateSchema,
+	start_time: dateSchema.optional(),
+	end_time: dateSchema.optional(),
 	assignees_ids: z
 		.array(z.number({ required_error: 'Please assign this task to someone ' }))
 		.nonempty({ message: 'Please assign this task to someone' })
@@ -80,12 +80,9 @@ export const actions: Actions = {
 			...(assignees_ids && { assignees_ids })
 		};
 
-		console.log(dataToValidate);
-
 		try {
 			const validatedData = taskSchema.parse(dataToValidate);
 
-			console.log('starting');
 			if (existingTask && existingTask > 0) {
 				const editTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${existingTask}/`, {
 					method: 'put',
@@ -93,16 +90,13 @@ export const actions: Actions = {
 				});
 
 				if (editTask.ok) {
-					console.log('almost');
 					const editedTask = await editTask.json();
-					console.log('completed', editedTask);
 
 					return {
 						edited: true,
 						editedTask
 					};
 				} else {
-					console.log(editTask.status);
 				}
 			} else {
 				const createTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`, {
@@ -139,6 +133,22 @@ export const actions: Actions = {
 
 			console.log('error', error);
 			return fail(500, toSend);
+		}
+	},
+	delete: async ({ fetch, request }) => {
+		const formData = await request.formData();
+
+		const id = formData.get('id') as string;
+
+		console.log(id);
+
+		const deleteProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${id}/`, {
+			method: 'delete'
+		});
+		if (deleteProvider.ok) {
+			return { success: true };
+		} else {
+			console.log(deleteProvider);
 		}
 	}
 };

@@ -123,7 +123,22 @@ export let ProductTypes = writable<ProductType[]>([]);
 export let MainGroups = writable<MainGroup[]>([]);
 export let Tags = writable<any[]>([]);
 export let currentCarcass = writable<CarcassType | null>(null);
-export let mediaState = writable({ state: false, type: 'default' });
+export let mediaState = writable({
+	isOpen: false,
+	type: 'default',
+	showUpload: false,
+	showDelete: false,
+	loading: false,
+	validationErrors: {},
+	selectedItems: [],
+	images: []
+});
+export const uploadState = writable({
+	images: undefined,
+	files: [],
+	previewImage: '',
+	error: ''
+});
 
 export const updateSelectedOptions = (option: Permission | Role) => {
 	container.update((items) => {
