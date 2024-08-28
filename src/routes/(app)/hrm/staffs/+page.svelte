@@ -2,15 +2,11 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { container } from '$lib/stores.js';
-	import { Users, type User } from '$lib/user.js';
+	import { currentUser, Users, type User } from '$lib/user.js';
 	import { onDestroy } from 'svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 
 	import InviteStaff from '$lib/components/HRM/forms/InviteStaff.svelte';
-	import ManageTask from '$lib/components/HRM/forms/ManageTask.svelte';
-	import { currentTask } from '$lib/hrm.js';
-	import dayjs from 'dayjs';
-	import Button from '$lib/components/ui/button/button.svelte';
 
 	import StaffsTab from '$lib/components/HRM/tabs/StaffsTab.svelte';
 
@@ -21,21 +17,13 @@
 	let showModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
-	$: currentTab = 'staffs';
-
 	const staffManagers = data.staffManagers.results as User[];
 
-	$: {
-		Users.set(users.results);
-	}
+	Users.set(users.results);
 
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
-
-	function toggleTaskDetails() {
-		showTaskDetails = !showTaskDetails;
-	}
 
 	onDestroy(() => {
 		container.set([]);
@@ -101,7 +89,6 @@
 		</div>
 	</div>
 
-	<!-- <Separator data-separator-root class="hidden md:block" /> -->
 	<div class="flex flex-col gap-2">
 		<StaffsTab />
 		<div
@@ -116,6 +103,6 @@
 
 <Modal mode="sheet" on:close={toggleModal} {showModal}>
 	<div slot="modal-content" class="w-full h-fit max-h-full overflow-x-scroll no-scrollbar">
-		<InviteStaff {groups} {access} {staffManagers} />
+		<InviteStaff on:close={toggleModal} {groups} {access} {staffManagers} />
 	</div>
 </Modal>

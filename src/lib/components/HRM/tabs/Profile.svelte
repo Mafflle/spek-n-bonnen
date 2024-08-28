@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Modal from '$lib/components/Modal.svelte';
-	import type { User } from '$lib/user';
+	import { currentUser, type User } from '$lib/user';
 	import dayjs from 'dayjs';
 	import { createEventDispatcher } from 'svelte';
 	import ManageProfile from '../forms/ManageProfile.svelte';
@@ -26,12 +26,10 @@
 	$: email = currentProfile?.email;
 
 	function updatedProfile(user) {
-		if (currentProfile?.staff_profile) {
-			currentProfile.staff_profile = user;
-		}
-		console.log(currentProfile);
+		currentProfile.staff_profile = user;
+		currentUser.update((state) => ({ ...state, staff_profile: user }));
+
 		showEditModal = false;
-		dispatch('updatedProfile', { profile: user });
 	}
 </script>
 

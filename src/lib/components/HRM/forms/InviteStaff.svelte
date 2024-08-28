@@ -11,16 +11,20 @@
 	import { ManagersAssigned, Users, type User } from '$lib/user.js';
 	import { container } from '$lib/stores.js';
 
-	import { KeyIcon, LogIn } from 'lucide-svelte';
+	import { KeyIcon, LogIn, User } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	import { generatePassword, showToast } from '$lib/utils.js';
-	import Select from './HRMSelector.svelte';
+	import HRMSelector from './HRMSelector.svelte';
+	import { page } from '$app/stores';
+	import { createEventDispatcher } from 'svelte';
 
 	export let groups;
 	export let access;
 	export let staffManagers;
+
+	console.log(staffManagers);
 
 	let currInputType = 'password';
 	let currStaff;
@@ -54,8 +58,9 @@
 		currInputType = 'text';
 	};
 
+	const dispatch = createEventDispatcher();
 	const toggleModal = () => {
-		showModal = !showModal;
+		dispatch('close');
 	};
 
 	let loading: boolean = false;
@@ -67,6 +72,7 @@
 		password2?: [string];
 		groups?: [string];
 	} = {};
+
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
 
@@ -80,7 +86,12 @@
 
 				if (result.status === 200) {
 					container.set([]);
-					$Users = [result.data.invitedStaff, ...$Users];
+
+					if (result.data && result.data.invitedStaff) {
+						console.log(result.data.invitedStaff);
+						let staff = result.data.invitedStaff;
+						Users.update((state) => [...state, staff]);
+					}
 					showToast('Staff invited successfully', 'success');
 					toggleModal();
 				} else if (result.status === 400) {
@@ -124,6 +135,7 @@
 						>
 					</Sheet.Title>
 					<button
+						on:click={toggleModal}
 						type="button"
 						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
 					>
@@ -266,7 +278,7 @@
 				</div>
 				<div class="flex flex-col gap-1 w-full mt-4">
 					<label for="managers" class="text-sm mb-1 font-medium font-satoshi">Assign manager</label>
-					<Select {staffManagers} />
+					<HRMSelector users={staffManagers} access={$page.data.access} endpoint="/staffs" />
 					<div class="flex flex-wrap items-center w-full mt-4 gap-2">
 						{#each $ManagersAssigned as assigned}
 							<Pill selected={true} mute={true} option={assigned} />

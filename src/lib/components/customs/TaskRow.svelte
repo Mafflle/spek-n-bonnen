@@ -1,16 +1,21 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table/index.js';
-	import type { Task, TaskStatus } from '$lib/hrm';
+	import { Tasks, type Task, type TaskStatus } from '$lib/hrm';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import dayjs from 'dayjs';
 	import Modal from '$lib/components/Modal.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { showToast } from '../../utils';
+	import PageLoader from '../PageLoader.svelte';
 
 	export let data: Task;
 
 	let showMoredDetails: boolean = false;
+	let isDeleting = false;
 	const dispatch = createEventDispatcher();
 
 	function toggleDetails() {
@@ -18,7 +23,6 @@
 	}
 
 	function toggleEdit(data: Task) {
-		console.log('Dispatching toggleEdit event', data);
 		dispatch('toggleEdit', data);
 	}
 
@@ -65,10 +69,14 @@
 	</Table.Cell>
 	<Table.Cell class="font-medium  text-primary-red">
 		<section class="flex items-center gap-2">
-			<iconify-icon icon="majesticons:clock-line" width="20"></iconify-icon>
-			<span>
-				{dayjs(data.end_time).format('hh:mm A')}
-			</span>
+			{#if data.end_time}
+				<iconify-icon icon="majesticons:clock-line" width="20"></iconify-icon>
+				<span>
+					{dayjs(data.end_time).format('hh:mm A')}
+				</span>
+			{:else}
+				<span>No time assigned</span>
+			{/if}
 		</section>
 	</Table.Cell>
 	<Table.Cell class="flex justify-end">
@@ -103,23 +111,45 @@
 						<span class="text-grey-100">View</span>
 					</Button>
 				</DropdownMenu.Item>
-				<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
 				<DropdownMenu.Item>
-					<form action="?/delete" method="post" class="">
+					<form
+						action="?/delete"
+						use:enhance={async () => {
+							isDeleting = true;
+							return async ({ result, update }) => {
+								try {
+									if (result.status === 200) {
+										Tasks.update((state) => {
+											return state.filter((e) => e.id !== data.id);
+										});
+										showToast('Task deleted successfully', 'success');
+									} else {
+										showToast('Ooops something went wrong', 'error');
+									}
+								} finally {
+									update();
+									isDeleting = false;
+								}
+							};
+						}}
+						method="post"
+						class=""
+					>
+						<input type="text" class="hidden" bind:value={data.id} name="id" />
 						<Button
 							class="text-xs font-satoshi -tracking-[0.14px]  flex items-center justify-start py-1 h-auto rounded gap-2"
 							type="submit"
 						>
-							<!-- {#if loading}
+							{#if isDeleting}
 								<iconify-icon
 									class="text-primary-red"
 									width="20"
 									icon="eos-icons:three-dots-loading"
 								></iconify-icon>
-							{:else} -->
-							<img src="/icons/trash.svg" alt="trash icon" />
-							<span class="button-text text-primary-red">Delete </span>
-							<!-- {/if} -->
+							{:else}
+								<img src="/icons/trash.svg" alt="trash icon" />
+								<span class="button-text text-primary-red">Delete </span>
+							{/if}
 						</Button>
 					</form>
 				</DropdownMenu.Item>
@@ -241,3 +271,7 @@
 		</section>
 	</div>
 </Modal>
+
+{#if isDeleting}
+	<PageLoader />
+{/if}

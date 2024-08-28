@@ -4,7 +4,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { LoggedinUsers, mediaState } from '$lib/stores.js';
+	import { LoggedinUsers, mediaState, uploadState } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
 	import { showToast, updateLoggedInUsers, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -12,7 +12,7 @@
 	import { fade, fly, slide } from 'svelte/transition';
 	import MediaManager from '../../lib/components/MediaManager.svelte';
 	export let data;
-	const { images, user } = data;
+	const { user } = data;
 
 	let message = $page.url.searchParams.get('message') as string;
 	let messageType = $page.url.searchParams.get('type') as ToastType;
@@ -76,6 +76,8 @@
 		unsubscribe();
 		unsubscribeLoggedInUsers();
 	});
+
+	mediaState.update((state) => ({ ...state, images: data.images.results }));
 </script>
 
 <div class="flex max-h-screen h-full overflow-hidden max-w-[100vw] w-full bg-[#F9F9F9]">
@@ -253,4 +255,4 @@
 	</div>
 </Modal>
 
-<!-- <MediaManager images={images.results} /> -->
+<MediaManager />

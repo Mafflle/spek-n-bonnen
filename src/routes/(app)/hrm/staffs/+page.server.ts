@@ -15,8 +15,8 @@ const inviteSchema = z
 	.object({
 		email: z
 			.string({ required_error: 'Email is required' })
-			.trim()
-			.email({ message: 'Invalid email' }),
+			.email({ message: 'Invalid email' })
+			.trim(),
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(8, { message: 'Password must be at least 8 characters' })
@@ -38,7 +38,10 @@ const inviteSchema = z
 			.array(z.number({ required_error: 'You need to assign this employee a manager ' }))
 			.nonempty({ message: 'You need to assign this employee a manager' })
 			.optional(),
-		is_manager: z.any().optional()
+		is_manager: z
+			.string()
+			.transform((val) => val === 'true')
+			.optional()
 	})
 	.superRefine(({ password, password2 }, ctx) => {
 		if (password2 !== password) {
@@ -84,7 +87,6 @@ export const actions: Actions = {
 		const password2 = formData.get('confirm-password');
 		const is_manager = formData.get('is_manager');
 		const assigned_managers = formData.getAll('assigned_manager');
-		// console.log(roles);
 
 		const groups = roles.map((role) => parseInt(role));
 
@@ -98,6 +100,8 @@ export const actions: Actions = {
 			...(managers && { managers })
 		};
 
+		console.log(JSON.stringify(dataToValidate));
+
 		try {
 			const validatedData = inviteSchema.parse(dataToValidate);
 
@@ -105,9 +109,6 @@ export const actions: Actions = {
 				method: 'POST',
 				body: JSON.stringify(validatedData)
 			});
-
-			console.log(res);
-			console.log('inviting', res.status, res.statusText);
 
 			if (res.ok) {
 				const invitedStaff = await res.json();

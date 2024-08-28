@@ -9,6 +9,7 @@
 	export let users: User[];
 	export let access;
 	export let endpoint: string;
+	export let view = 'manager';
 
 	let loading: boolean = false;
 	let searching: string = '';
@@ -87,7 +88,7 @@
 			/>
 		</div>
 		<div
-			class="flex flex-col items-start justify-center gap-3 max-h-[300px] overflow-y-scroll no-scrollbar snap-center w-full mb-6"
+			class="flex flex-col items-start justify-center gap-3 max-h-[190px] h-fit overflow-y-scroll no-scrollbar snap-center w-full mb-6"
 		>
 			{#if searching}
 				<div class="flex item-center justify-center min-w-full text-primary-100 py-5">
@@ -134,8 +135,9 @@
 				on:click={() => assignManagers(assignedManagers)}
 				disabled={assignedManagers.length < 1}
 				class="bg-primary-red text-white transition duration-200 disabled:bg-pGrey py-3 px-6 disabled:text-grey-200 disabled:cursor-not-allowed text-sm rounded-md font-medium"
-				>Assign manager</Button
 			>
+				{view === 'manager' ? 'Assign manager' : 'Assign employee'}
+			</Button>
 		</div>
 	</Popover.Content>
 </Popover.Root>

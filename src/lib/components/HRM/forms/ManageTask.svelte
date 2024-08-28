@@ -38,11 +38,6 @@
 		if ((start_time && end_time) || task) {
 			formData.append('start_time', `${start_time || task?.start_time}`);
 			formData.append('end_time', `${end_time || task?.end_time}`);
-		} else {
-			showToast('Please select the timeline for this task', 'error');
-			loading = false;
-			cancel();
-			return;
 		}
 
 		if ($ManagersAssigned && $ManagersAssigned.length > 0) {
@@ -89,6 +84,7 @@
 					dispatch('close', { tasks: $Tasks });
 				} else if (result.status === 400) {
 					validationErrors = result.data.errors;
+
 					showToast('Validation error', 'error');
 				} else {
 					showToast('Oops something went wrong', 'error');
@@ -227,7 +223,7 @@
 					<label for="description" class="text-sm mb-1 font-medium font-satoshi"
 						>Assign employees</label
 					>
-					<HrmSelector {endpoint} {users} {access} />
+					<HrmSelector view="staff" {endpoint} {users} {access} />
 					{#if $ManagersAssigned && $ManagersAssigned.length > 0}
 						<div class="flex items-center flex-wrap gap-2 mt-2.5">
 							{#each $ManagersAssigned as manager}
