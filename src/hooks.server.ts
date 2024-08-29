@@ -3,10 +3,10 @@ import type { HandleFetch } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
-	if (request.url.startsWith('https://stage-api.spek-n-boonen.be/api/')) {
+	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
 		let access = event.cookies.get('access');
 
-		let requestUrl = request.url.replace('https://stage-api.spek-n-boonen.be/api/', '');
+		let requestUrl = request.url.replace(`${PUBLIC_API_ENDPOINT}`, '');
 		request.headers.set('Origin', event.url.origin);
 		if (!request.url.includes('/images/')) {
 			request.headers.set('Content-Type', 'application/json');
