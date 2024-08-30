@@ -70,7 +70,6 @@
 		unsubscribeMedia();
 		unsubscribeUpload();
 	});
-	$: console.log($uploadState);
 </script>
 
 <div
