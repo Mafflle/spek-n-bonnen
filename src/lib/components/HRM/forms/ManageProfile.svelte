@@ -84,6 +84,7 @@
 					</Sheet.Title>
 					<button
 						type="button"
+						on:click={() => dispatch('close')}
 						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
 					>
 						<img src="/icons/close.svg" alt="close icon" />
@@ -106,7 +107,6 @@
 						inputName="profile_picture_id"
 						small={true}
 						defaultValue={currentStaff?.staff_profile?.profile_picture}
-						smallText="Upload profile picture"
 					/>
 				</div>
 				<div class="form-item w-full flex flex-col">

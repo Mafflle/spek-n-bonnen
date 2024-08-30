@@ -9,9 +9,11 @@
 	export let currentProfile: User;
 	export let view: 'employee' | 'manager' = 'employee';
 
-	const dispatch = createEventDispatcher();
-
 	let showEditModal: boolean = false;
+
+	let state = showEditModal;
+
+	$: console.log(state);
 
 	let staff_profile = $page.url.searchParams.get('staff_profile');
 
@@ -145,6 +147,7 @@
 	on:close={() => (showEditModal = false)}
 >
 	<ManageProfile
+		on:close={() => (showEditModal = false)}
 		on:updated={(e) => {
 			updatedProfile(e.detail.user);
 		}}

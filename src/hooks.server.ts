@@ -18,7 +18,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 		// Make the initial request
 
-		let response = await fetch(request.clone()); // Clone to allow retrying
+		let clonedRequest = request.clone();
+		let response = await fetch(clonedRequest); // Clone to allow retrying
 
 		if (response.ok) {
 			console.log('sucess', response.url, response.status);

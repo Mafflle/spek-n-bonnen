@@ -4,13 +4,13 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import SideNav from '$lib/components/SideNav.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { LoggedinUsers, mediaState, uploadState } from '$lib/stores.js';
+	import { LoggedinUsers, mediaState } from '$lib/stores.js';
 	import { currentUser } from '$lib/user.js';
 	import { showToast, updateLoggedInUsers, type loggedInUser, type ToastType } from '$lib/utils.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 	import { fade, fly, slide } from 'svelte/transition';
-	import MediaManager from '../../lib/components/MediaManager.svelte';
+	import MediaManager from '$lib/components/MediaManager.svelte';
 	export let data;
 	const { user } = data;
 
@@ -72,14 +72,25 @@
 
 	updateLoggedInUsers($currentUser);
 
+	mediaState.update((state) => ({ ...state, images: data.images.results }));
+
+	let unsubscribeMedia = mediaState.subscribe((val) => val);
+
 	onDestroy(() => {
 		unsubscribe();
+		unsubscribeMedia();
 		unsubscribeLoggedInUsers();
 	});
-
-	mediaState.update((state) => ({ ...state, images: data.images.results }));
 </script>
 
+<Modal
+	showModal={$mediaState.isOpen}
+	on:close={() => mediaState.update((state) => ({ ...state, isOpen: false }))}
+>
+	<div slot="modal-content">
+		<MediaManager />
+	</div>
+</Modal>
 <div class="flex max-h-screen h-full overflow-hidden max-w-[100vw] w-full bg-[#F9F9F9]">
 	<SideNav on:showSwitch={toggleModal} />
 	<div
@@ -254,5 +265,3 @@
 		{/if}
 	</div>
 </Modal>
-
-<MediaManager />
