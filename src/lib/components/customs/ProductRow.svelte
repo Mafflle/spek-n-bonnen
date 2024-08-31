@@ -56,6 +56,16 @@
 			<DropdownMenu.Content class="py-3 px-1 flex flex-col justify-start">
 				<DropdownMenu.Item>
 					<Button
+						href="/inventory/products/{data.id}"
+						class="text-xs font-satoshi -tracking-[0.14px] flex items-center justify-start py-1 h-auto rounded gap-2"
+					>
+						<img src="/icons/edit.svg" alt="edit icon" />
+						<span class="text-grey-100">Details</span>
+					</Button>
+				</DropdownMenu.Item>
+
+				<DropdownMenu.Item>
+					<Button
 						on:click={() => toggleEdit(data)}
 						class="text-xs font-satoshi -tracking-[0.14px] flex items-center justify-start py-1 h-auto rounded gap-2"
 					>
