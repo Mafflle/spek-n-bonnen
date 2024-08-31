@@ -11,6 +11,10 @@ import * as Tabs from "$lib/components/ui/tabs";
     console.log(data);
 </script>
 
+<svelte:head>
+    <title>{`${product.name} details || Spek-n-Bonnen ERP`}</title>
+</svelte:head>
+
 <main class="relative bg-sGray">
     <div class="background-shot relative flex flex-col items-start justify-center gap-3 isolate min-w-full h-56 rounded-t-3xl bg-cover bg-center"
     style={`

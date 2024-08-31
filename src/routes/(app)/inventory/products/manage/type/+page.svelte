@@ -99,6 +99,10 @@
 	}
 </script>
 
+<svelte:head>
+    <title>Create products type || Spek-n-Bonnen ERP </title>
+</svelte:head>
+
 <div class="w-full grid gap-6">
 	<div class="headers flex flex-col items-start gap-[0.25rem] mb-10">
 		<h2 class="text-[2em] tracking-[2] font-satoshi font-bold">Create products type</h2>
