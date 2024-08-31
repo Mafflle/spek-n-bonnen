@@ -94,7 +94,8 @@ const config = {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			boxShadow: {
-				custom: '0px 0px 0px 3px #ECA6A2'
+				custom: '0px 0px 0px 3px #ECA6A2',
+				productCard: '1px 2px 30px 2px #0000001A',
 			},
 			fontFamily: {
 				satoshi: ['Satoshi', 'sans-serif'],
