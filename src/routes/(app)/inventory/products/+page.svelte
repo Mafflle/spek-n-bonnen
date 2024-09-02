@@ -21,7 +21,9 @@
 		RowComponent: ProductRow
 	};
 </script>
-
+<svelte:head>
+    <title>	Products|| Spek-n-Bonnen ERP</title>
+</svelte:head>
 {#if $productsStore.length > 0}
 	<div class="">
 		<div class="manage flex flex-col items-start gap-[2.5rem] mb-10">

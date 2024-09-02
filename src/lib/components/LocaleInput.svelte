@@ -1,12 +1,12 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-
 	import Separator from './ui/separator/separator.svelte';
-
 	import TipTap from './TipTap.svelte';
+
 	export let frPlaceholder: string = "Entrez le nom de l'élément en français";
 	export let enPlaceholder: string = 'Enter item name';
 	export let duPlaceholder: string = 'Voer de naam van het item in het Nederlands in';
+
 	export let locales = [
 		{
 			name: 'Eng',
@@ -30,7 +30,10 @@
 			value: ''
 		}
 	];
+
 	export let inputName: string = '';
+	export let textarea = false;
+	export let placeholder = 'Enter translation';
 
 	let activeLocale = locales[0];
 
@@ -42,14 +45,10 @@
 	}) => {
 		activeLocale = locale;
 		options.placeholder = locale.placeholder;
-		options.content = locale.value;
-		activeLocale.value = ''; // Clear the value when changing tabs
+		options.content = locale.value; // Set the content to the locale value
 	};
 
 	$: currentPlaceholder = activeLocale.placeholder;
-
-	export let textarea = false;
-	export let placeholder = 'Enter translation';
 
 	const options = {
 		theme: 'snow',
@@ -69,8 +68,6 @@
 	};
 
 	function onTextChange(event) {
-		// console.log(event.detail);
-		// console.log(locales);
 		const index = locales.findIndex((locale) => locale.name === activeLocale.name);
 		if (index !== -1) {
 			locales[index].value = event.detail.html;
@@ -79,21 +76,14 @@
 
 	let content = '';
 
-	const setContent = (locale) => {
-		console.log(locale);
-		content = locale;
-	};
-	let index = 0;
-
 	$: {
 		// check the locales and match the one with the activeLocale and set the content to the locale value
-		index = locales.findIndex((locale) => locale.name === activeLocale.name);
+		const index = locales.findIndex((locale) => locale.name === activeLocale.name);
 		if (index !== -1) {
 			content = locales[index].value;
 		}
-
-		content = locales[index].value;
 	}
+
 	let conf = {
 		toolbar: 'undo redo italic bold',
 		menubar: false
@@ -112,10 +102,7 @@
 			{#each locales as locale}
 				<Tabs.Trigger
 					value={locale.label}
-					on:click={() => {
-						setActiveLocale(locale);
-						setContent(locales[index].value);
-					}}
+					on:click={() => setActiveLocale(locale)}
 					class="flex gap-2 items-center data-[state=active]:font-bold data-[state=active]:text-black-100 data-[state=active]:border-2 data-[state=active]:border-b-0 rounded-none shadow-none"
 				>
 					<img src={`/icons/${locale.flag}`} class="h-4 w-4" alt={locale.name} />

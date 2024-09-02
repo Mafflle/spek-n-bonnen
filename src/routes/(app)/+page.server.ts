@@ -56,18 +56,23 @@ export const load: PageServerLoad = async ({ fetch }) => {
 };
 
 export const actions: Actions = {
-	logout: async ({ cookies, url, request }) => {
+	logout: async ({ cookies, request }) => {
+		console.log('start');
+
 		const formData = await request.formData();
 
 		const currUrl = formData.get('currUrl');
+		console.log('test', currUrl);
+
 		cookies.delete('access', { path: '/' });
 		cookies.delete('refresh', { path: '/' });
 		if (currUrl) {
-			throw redirect(302, `auth/login?from=${currUrl}`);
+			redirect(302, `auth/login?from=${currUrl}`);
 		} else {
-			throw redirect(302, 'auth/login');
+			redirect(302, 'auth/login');
 		}
 	},
+
 	'upload-media': async ({ fetch, request, url }) => {
 		console.log('test');
 

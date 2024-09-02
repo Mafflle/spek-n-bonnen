@@ -28,6 +28,10 @@
 	};
 </script>
 
+<svelte:head>
+    <title>	Product types || Spek-n-Bonnen ERP</title>
+</svelte:head>
+
 <div class="roles-page flex-col items-start w-full max-w-full lg:p-0 md:p-4">
 	<div class="manage w-full flex flex-col items-start gap-[2.5rem] mb-10">
 		<div class="headers w-full flex flex-col items-start gap-[0.25rem]">

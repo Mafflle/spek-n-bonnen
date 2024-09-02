@@ -405,7 +405,7 @@ export const actions: Actions = {
 			name_nl: 'Vers Gebakken Baguette',
 			name_fr: 'Baguette Fraîchement Cuite',
 
-			sku: 'BAGT-003',
+			sku: 'HAGT-003',
 
 			short_customer_facing_description: 'Crusty on the outside, soft on the inside.',
 			short_customer_facing_description_en: 'Crusty on the outside, soft on the inside.',
@@ -471,11 +471,11 @@ export const actions: Actions = {
 			ecommerce_selling_price_vat_excl_b2b: 80, // €0.80
 			ecommerce_selling_price_vat_excl_b2c: 92, // €0.92
 
-			featured_img: 1,
+			featured_img: 13,
 			preferred_vendor: 1,
-			product_type: 1,
+			product_type: 5,
 
-			images: [1, 1, 1]
+			images: [13, 13, 13]
 		};
 		try {
 			const validatedData = productSchema.parse(validProduct);

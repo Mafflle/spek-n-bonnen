@@ -9,6 +9,7 @@
 	import { slide } from 'svelte/transition';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { page } from '$app/stores';
 
 	export let currentStaff: User = null;
 	export let view: 'employee' | 'manager' = 'employee';
@@ -21,7 +22,7 @@
 
 	let firstName = currentStaff?.staff_profile?.first_name;
 	let lastName = currentStaff?.staff_profile?.last_name;
-	let emergencyContactName = `${currentStaff?.staff_profile?.emergency_contact_name}`;
+	let emergencyContactName = currentStaff?.staff_profile?.emergency_contact_name;
 	let emergencyContactNumber = currentStaff?.staff_profile?.emergency_contact_number;
 	let emergencyContactRelationship = currentStaff?.staff_profile?.emergency_contact_relationship;
 	let address = currentStaff?.staff_profile?.address;
@@ -84,6 +85,7 @@
 					</Sheet.Title>
 					<button
 						type="button"
+						disabled={$page.data.user.staff_profile === null}
 						on:click={() => dispatch('close')}
 						class="bg-[#F2F2F2] border border-[#E0E0E0] flex items-center rounded-full p-0.5"
 					>

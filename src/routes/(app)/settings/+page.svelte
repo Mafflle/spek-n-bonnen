@@ -4,7 +4,7 @@
 	import { currentUser } from '$lib/user';
 
 	import dayjs from 'dayjs';
-	import Button from '$lib/components/ui/button/button.svelte';
+
 	import CustomTabs from '$lib/components/customs/TabContainer.svelte';
 	import { page } from '$app/stores';
 	import Profile from '$lib/components/HRM/tabs/Profile.svelte';
@@ -13,6 +13,7 @@
 
 	import TimeEntriesLog from '$lib/components/HRM/tabs/TimeEntriesLog.svelte';
 	import { TimeEntries } from '$lib/hrm.js';
+	import { showToast } from '$lib/utils.js';
 
 	export let data;
 
@@ -44,6 +45,10 @@
 			props: { timeEntries: $TimeEntries }
 		}
 	];
+
+	if ($page.data.user.staff_profile === null) {
+		showToast('Create a profile to continue', 'error');
+	}
 </script>
 
 <svelte:head>
