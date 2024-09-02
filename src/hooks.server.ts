@@ -119,7 +119,7 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	if (event.locals.user?.staff_profile === null && currUrl.includes('/settings')) {
+	if (event.locals.user?.staff_profile === null && !currUrl.startsWith('/settings')) {
 		redirect(302, '/settings?staff_profile=null/');
 	}
 

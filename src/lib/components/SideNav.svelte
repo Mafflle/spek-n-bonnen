@@ -8,6 +8,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import * as Avatar from './ui/avatar';
 	import { shortenText } from '$lib/utils';
+	import { enhance } from '$app/forms';
 
 	const routes = [
 		{
@@ -159,21 +160,26 @@
 								<iconify-icon icon="fluent-mdl2:switch-user" width="20"></iconify-icon>
 								<span class="">Switch accounts</span>
 							</DropdownMenu.Item>
-							<!-- <input type="text" class="hidden" bind:value={id} name="id" /> -->
-							<form action="/?/logout" class="" method="post">
-								<DropdownMenu.Item
-									type="submit"
-									class="text-grey-100 w-full cursor-pointer font-satoshi  -tracking-[0.14px]  flex items-center justify-start  rounded gap-2"
+
+							<DropdownMenu.Item
+								class="text-grey-100 w-full cursor-pointer font-satoshi  -tracking-[0.14px]  flex items-center justify-start  rounded gap-2"
+							>
+								<form
+									action="/?/logout"
+									use:enhance={() => {
+										console.log('test');
+									}}
+									class="w-full"
+									method="post"
 								>
 									<input type="text" class="hidden" bind:value={currUrl} name="currUrl" />
-									<button class=" w-full flex py-2 items-center gap-2">
+									<button type="submit" class=" w-full flex py-2 items-center gap-2">
 										<iconify-icon icon="material-symbols:logout" width="20"></iconify-icon>
 
 										<span class="">Logout </span>
 									</button>
-									<!-- {/if} -->
-								</DropdownMenu.Item>
-							</form>
+								</form>
+							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
 				</div>

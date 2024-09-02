@@ -16,7 +16,7 @@
 			// bind Tiptap to `.element`
 			element: element,
 			// register extensions
-			extensions: [Document, Text, Strike, Paragraph],
+			extensions: [StarterKit],
 			// set the initial content
 			content: '<p>Example Text</p>',
 			// place the cursor in the editor after initialization
@@ -53,24 +53,27 @@
 		{#if editor}
 			<div class="flex gap-2 items-center button-group">
 				<button
+					type="button"
 					on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
 					class:active={editor.isActive('heading', { level: 1 })}
 				>
 					H1
 				</button>
 				<button
-					on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+					type="button"
+					on:click={() => editor.chain().focus()?.toggleHeading({ level: 2 }).run()}
 					class:active={editor.isActive('heading', { level: 2 })}
 				>
 					H2
 				</button>
 				<button
+					type="button"
 					on:click={() => editor.chain().focus().setParagraph().run()}
 					class:active={editor.isActive('paragraph')}
 				>
 					P
 				</button>
-				<button on:click={editor.chain().focus().toggleBold().run()}>Bold</button>
+				<button type="button" on:click={editor.chain().focus().toggleBold().run()}>Bold</button>
 			</div>
 		{/if}
 	</div>

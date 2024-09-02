@@ -72,7 +72,9 @@
 
 	updateLoggedInUsers($currentUser);
 
-	mediaState.update((state) => ({ ...state, images: data.images.results }));
+	console.log(data.images);
+
+	mediaState.update((state) => ({ ...state, images: data.images?.results }));
 
 	let unsubscribeMedia = mediaState.subscribe((val) => val);
 

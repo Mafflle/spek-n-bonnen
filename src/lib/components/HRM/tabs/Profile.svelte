@@ -11,18 +11,14 @@
 
 	let showEditModal: boolean = false;
 
-	let state = showEditModal;
-
-	$: console.log(state);
-
 	let staff_profile = $page.url.searchParams.get('staff_profile');
 
-	if (staff_profile || currentProfile?.staff_profile === null) {
+	if (currentProfile?.staff_profile === null && staff_profile) {
 		showEditModal = true;
 	}
 
-	$: name = `${currentProfile?.staff_profile?.first_name} ${currentProfile?.staff_profile?.last_name}`;
-	$: emergencyContactName = `${currentProfile?.staff_profile?.emergency_contact_name}`;
+	$: name = `${currentProfile?.staff_profile?.first_name ?? '-----'} ${currentProfile?.staff_profile?.last_name ?? '-----'}`;
+	$: emergencyContactName = currentProfile?.staff_profile?.emergency_contact_name;
 	$: preferred_name = currentProfile?.staff_profile?.preferred_name;
 	$: preferred_weekly_working_hours = currentProfile?.staff_profile?.preferred_weekly_working_hours;
 	$: email = currentProfile?.email;
@@ -40,19 +36,19 @@
 		<div class="flex flex-col">
 			<label for="name" class="mb-2 text-xs font-satoshi">Name</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-md">
-				<p id="name" aria-label={name}>{name}</p>
+				<p id="name" aria-label={name}>{name ?? '-----'}</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
 			<label for="email" class="mb-2 text-xs font-satoshi">Email Address</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="email" aria-label={email}>{email}</p>
+				<p id="email" aria-label={email}>{email ?? '-----'}</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
 			<label for="preferred_name" class="mb-2 text-xs font-satoshi">Preferred Name</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="preferred_name" aria-label={preferred_name}>{preferred_name}</p>
+				<p id="preferred_name" aria-label={preferred_name}>{preferred_name ?? '-----'}</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
@@ -68,8 +64,11 @@
 		<div class="flex flex-col">
 			<label for="phone_number" class="mb-2 text-xs font-satoshi">Phone Number</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="phone_number" aria-label={currentProfile?.staff_profile?.phone_number}>
-					{currentProfile?.staff_profile?.phone_number}
+				<p
+					id="phone_number"
+					aria-label={currentProfile?.staff_profile?.phone_number ?? 'phone-number'}
+				>
+					{currentProfile?.staff_profile?.phone_number ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -77,7 +76,7 @@
 			<label for="address" class="mb-2 text-xs font-satoshi">Home Address</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
 				<p id="address" aria-label={currentProfile?.staff_profile?.address}>
-					{currentProfile?.staff_profile?.address}
+					{currentProfile?.staff_profile?.address ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -100,7 +99,7 @@
 			<label for="emergency_contact_name" class="mb-2 text-xs font-satoshi">Name</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-md">
 				<p id="emergency_contact_name" aria-label={emergencyContactName}>
-					{emergencyContactName}
+					{emergencyContactName ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -112,7 +111,7 @@
 					id="emergency_contact_number"
 					aria-label={currentProfile?.staff_profile?.emergency_contact_number}
 				>
-					{currentProfile?.staff_profile?.emergency_contact_number}
+					{currentProfile?.staff_profile?.emergency_contact_number ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -125,7 +124,7 @@
 					id="emergency_contact_relationship"
 					aria-label={currentProfile?.staff_profile?.emergency_contact_relationship}
 				>
-					{currentProfile?.staff_profile?.emergency_contact_relationship}
+					{currentProfile?.staff_profile?.emergency_contact_relationship ?? '-----'}
 				</p>
 			</div>
 		</div>
