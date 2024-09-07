@@ -6,7 +6,7 @@
 	export let data;
 
 	let { tasks } = data;
-	console.log(tasks.results);
+	console.log(tasks);
 </script>
 
 <div class=" lg:p-0 md:p-4 w-full grid">

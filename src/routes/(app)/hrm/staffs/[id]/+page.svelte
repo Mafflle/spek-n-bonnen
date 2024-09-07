@@ -22,6 +22,11 @@
 	let showScheduleModal: boolean = false;
 	let showTaskDetails: boolean = false;
 
+	console.log('userAccount', userAccount);
+	console.log('userTasks', userTasks);
+	console.log('userSchedule', userSchedule);
+	
+
 	$: currentTab = 'profile';
 
 	$: workSchedules.set(userSchedule.results);

@@ -21,6 +21,7 @@ export const load: PageServerLoad = async ({ fetch, url, params }) => {
 		if (getUserById.ok && getTasksById.ok && getSchedulesById.ok) {
 			const userAccount = await getUserById.json();
 			const userTasks = await getTasksById.json();
+			console.log('utasks',userTasks);
 			const userSchedule = await getSchedulesById.json();
 			return {
 				userAccount,
