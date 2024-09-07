@@ -8,6 +8,7 @@
 	import TaskRow from '$lib/components/customs/TaskRow.svelte';
 
 	export let Tasks: Task[] = [];
+	console.log('tasks from task tab', Tasks);
 	const dispatch = createEventDispatcher();
 	function toggleCurrTask(task: Task) {
 		currentTask.set(task);
@@ -26,3 +27,5 @@
 		RowsData: Tasks
 	};
 </script>
+
+<CustomTable rowsData={Tasks} props={tableProps} />
