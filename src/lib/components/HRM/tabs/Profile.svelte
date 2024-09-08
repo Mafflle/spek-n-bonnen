@@ -153,6 +153,6 @@
 		{view}
 		formaction="?/manage-staff-profile"
 		slot="modal-content"
-		currentStaff={currentProfile}
+		bind:currentStaff={currentProfile}
 	/>
 </Modal>

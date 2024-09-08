@@ -4,7 +4,7 @@
 	import Pill from './Pill.svelte';
 	import { container, updateSelectedOptions, type Permission, type Role } from '$lib/stores';
 	export let options: (Permission | Role)[];
-	export let disableOptions: boolean = false;
+
 	let selectedArray: (Permission | Role)[] = [];
 
 	const dispatch = createEventDispatcher();

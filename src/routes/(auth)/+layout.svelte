@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { currentUser } from '$lib/user';
 	import { getToastType, showToast } from '$lib/utils';
-	// console.log($page);
 
 	let message: string | null = $page.url.searchParams.get('message');
 	let type: string | null = $page.url.searchParams.get('type');
@@ -10,6 +10,8 @@
 
 		showToast(message, errorType);
 	}
+
+	$currentUser = null;
 </script>
 
 <slot />

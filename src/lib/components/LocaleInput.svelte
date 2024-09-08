@@ -33,7 +33,6 @@
 
 	export let inputName: string = '';
 	export let textarea = false;
-	export let placeholder = 'Enter translation';
 
 	let activeLocale = locales[0];
 
@@ -136,9 +135,3 @@
 		</div>
 	</Tabs.Root>
 </div>
-
-<style>
-	.ql-toolbar {
-		position: sticky;
-	}
-</style>

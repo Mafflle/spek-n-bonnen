@@ -81,7 +81,7 @@
 				{/each}
 			</div>
 		{/each}
-	{:else if currentView === 'hour'}{/if}
+	{/if}
 </div>
 <!-- </div> -->
 <!-- </section> -->

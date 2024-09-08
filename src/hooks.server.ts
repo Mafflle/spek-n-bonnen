@@ -22,9 +22,8 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		let response = await fetch(clonedRequest); // Clone to allow retrying
 
 		if (response.ok) {
-			console.log('sucess', response.url, response.status);
 			return response;
-		} else if (response.status === 401) {
+		} else if (response.status === 401 && !requestUrl.includes('auth/login/')) {
 			const responseTokens = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/refresh/`, {
 				method: 'POST',
 				body: JSON.stringify({ refresh: event.cookies.get('refresh') }),
@@ -65,6 +64,12 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 
 				console.log('refresh error', responseTokens.status);
 			}
+		} else if (!response.ok) {
+			console.log(response);
+
+			throw new Error('Failed to fetch');
+		} else if (response.status === 504) {
+			console.log('Gateway Timeout');
 		} else {
 			console.log('failed here', response.url, response.status);
 		}
@@ -117,10 +122,6 @@ export async function handle({ event, resolve }) {
 		} catch (error) {
 			console.error('Error in hooks.server.js:', error);
 		}
-	}
-
-	if (event.locals.user?.staff_profile === null && !currUrl.startsWith('/settings')) {
-		redirect(302, '/settings?staff_profile=null/');
 	}
 
 	if (!event.locals.user && !currUrl.startsWith('/auth')) {

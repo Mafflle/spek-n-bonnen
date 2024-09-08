@@ -6,6 +6,9 @@ import { PUBLIC_API_ENDPOINT } from '$env/static/public';
 export const load: LayoutServerLoad = async ({ cookies, fetch, url, locals }) => {
 	let currUrl = url.pathname;
 
+	if (locals.user?.staff_profile === null && !currUrl.includes('settings')) {
+		redirect(302, '/settings?staff_profile=null/');
+	}
 	try {
 		if (locals.user) {
 			const allPermission = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/me/permissions/`, {

@@ -10,6 +10,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	export let currentStaff: User = null;
 	export let view: 'employee' | 'manager' = 'employee';
@@ -45,6 +46,7 @@
 						const editedProfile = result.data.updatedStaffProfile as User;
 						dispatch('updated', { user: editedProfile });
 						showToast('Profile updated successfully', 'success');
+						await goto('/settings');
 					} else {
 						const newProfile = result.data.newStaffProfile as User;
 						dispatch('updated', { user: newProfile });

@@ -17,7 +17,6 @@
 	export let placeholder: string;
 	export let options: Option[];
 	export let prop: any | undefined = undefined;
-	export let makeAbsolute: boolean = true;
 	export let searchEndpoint: string = '';
 	export let endpoint: string = '';
 	export let token: string = '';
@@ -195,7 +194,6 @@
 			{:else if options.length > 0}
 				{#each options as option}
 					<Select.Item
-					
 						on:click={() => onSelected(option)}
 						value={option.value}
 						label={option.label}

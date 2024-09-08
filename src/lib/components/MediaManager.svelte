@@ -164,6 +164,8 @@
 				$mediaState.loading = true;
 
 				return async ({ update, result }) => {
+					console.log(result);
+
 					try {
 						if (result.status === 200) {
 							mediaState.update((state) => ({

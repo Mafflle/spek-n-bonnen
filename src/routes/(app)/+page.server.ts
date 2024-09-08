@@ -57,25 +57,19 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 export const actions: Actions = {
 	logout: async ({ cookies, request }) => {
-		console.log('start');
-
 		const formData = await request.formData();
-
 		const currUrl = formData.get('currUrl');
-		console.log('test', currUrl);
 
 		cookies.delete('access', { path: '/' });
 		cookies.delete('refresh', { path: '/' });
 		if (currUrl) {
-			redirect(302, `auth/login?from=${currUrl}`);
+			throw redirect(303, `auth/login?from=${currUrl}`);
 		} else {
-			redirect(302, 'auth/login');
+			throw redirect(303, 'auth/login');
 		}
 	},
 
 	'upload-media': async ({ fetch, request, url }) => {
-		console.log('test');
-
 		const formData = await request.formData();
 
 		const name = formData.get('image-title');
@@ -94,7 +88,7 @@ export const actions: Actions = {
 				dataToSend.append('title', name);
 				dataToSend.append('image', logo);
 			}
-			console.log('creating media');
+
 			if (dataToSend) {
 				const createMedia = await fetch(`${PUBLIC_API_ENDPOINT}api/images/`, {
 					method: 'POST',

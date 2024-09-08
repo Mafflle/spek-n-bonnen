@@ -282,7 +282,9 @@ export const updateLoggedInUsers = (loggedInUser: User) => {
 				let currUser = {
 					name: `${loggedInUser?.staff_profile.first_name} ${loggedInUser?.staff_profile.last_name}`,
 					email: `${loggedInUser?.email}`,
-					avatar: loggedInUser.staff_profile.profile_picture.image
+					...(loggedInUser?.staff_profile.profile_picture && {
+						avatar: loggedInUser.staff_profile.profile_picture?.image
+					})
 				};
 				users.push(currUser);
 				LoggedinUsers.set(users);
