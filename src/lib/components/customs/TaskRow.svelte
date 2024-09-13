@@ -119,9 +119,6 @@
 							return async ({ result, update }) => {
 								try {
 									if (result.status === 200) {
-										Tasks.update((state) => {
-											return state.filter((e) => e.id !== data.id);
-										});
 										showToast('Task deleted successfully', 'success');
 									} else {
 										showToast('Ooops something went wrong', 'error');

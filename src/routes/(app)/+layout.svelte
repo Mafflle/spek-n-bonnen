@@ -54,7 +54,7 @@
 			try {
 				if (result.status === 200) {
 					let currUser = result.data.currUser;
-					currentUser.set(currUser);
+					currentUser.update((state) => (state = currUser));
 					showToast('Login successful', 'success');
 					toggleModal();
 					userToLogin = null;

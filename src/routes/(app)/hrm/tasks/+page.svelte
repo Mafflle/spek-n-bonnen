@@ -1,25 +1,16 @@
 <script lang="ts">
 	import CustomTable from '$lib/components/customs/CustomTable.svelte';
 	import ManageTask from '$lib/components/HRM/forms/ManageTask.svelte';
-	import TaskTab from '$lib/components/HRM/tabs/TaskTab.svelte';
+
 	import Modal from '$lib/components/Modal.svelte';
-	import { type Task, Tasks } from '$lib/hrm';
-	import { shortenText } from '$lib/utils.js';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import dayjs from 'dayjs';
+	import { Tasks } from '$lib/hrm';
 	import TaskRow from '$lib/components/customs/TaskRow.svelte';
-	import { createEventDispatcher } from 'svelte';
+
 	import { writable } from 'svelte/store';
 	const currentTask = writable(null);
-	const dispatch = createEventDispatcher();
-	// function toggleCurrTask(task: Task) {
-	// 	currentTask.set(task);
-	// 	dispatch('open');
-	// }
 
 	export let data;
 	function handleToggleEdit(event: CustomEvent) {
-		console.log('handleToggleEdit called', event.detail);
 		const taskData = event.detail;
 		currentTask.set(taskData);
 		showCreate = true;

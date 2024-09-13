@@ -1,31 +1,28 @@
 <script lang="ts">
 	import Modal from '$lib/components/Modal.svelte';
-	import { currentUser, type User } from '$lib/user';
+	import { currentUser } from '$lib/user';
 	import dayjs from 'dayjs';
-	import { createEventDispatcher } from 'svelte';
-	import ManageProfile from '../forms/ManageProfile.svelte';
-	import { page } from '$app/stores';
 
-	export let currentProfile: User;
+	import ManageProfile from '../forms/ManageProfile.svelte';
+
 	export let view: 'employee' | 'manager' = 'employee';
 
 	let showEditModal: boolean = false;
 
-	let staff_profile = $page.url.searchParams.get('staff_profile');
-
-	if (currentProfile?.staff_profile === null && staff_profile) {
+	if (!$currentUser?.staff_profile) {
 		showEditModal = true;
 	}
 
-	$: name = `${currentProfile?.staff_profile?.first_name ?? '-----'} ${currentProfile?.staff_profile?.last_name ?? '-----'}`;
-	$: emergencyContactName = currentProfile?.staff_profile?.emergency_contact_name;
-	$: preferred_name = currentProfile?.staff_profile?.preferred_name;
-	$: preferred_weekly_working_hours = currentProfile?.staff_profile?.preferred_weekly_working_hours;
-	$: email = currentProfile?.email;
+	$: name = `${$currentUser?.staff_profile?.first_name ?? '-----'} ${$currentUser?.staff_profile?.last_name ?? '-----'}`;
+	$: emergencyContactName = $currentUser?.staff_profile?.emergency_contact_name;
+	$: preferred_name = $currentUser?.staff_profile?.preferred_name;
+	$: preferred_weekly_working_hours = $currentUser?.staff_profile?.preferred_weekly_working_hours;
+	$: email = $currentUser?.email;
 
 	function updatedProfile(user) {
-		currentProfile.staff_profile = user;
+		$currentUser;
 		currentUser.update((state) => ({ ...state, staff_profile: user }));
+		console.log($currentUser);
 
 		showEditModal = false;
 	}
@@ -66,25 +63,25 @@
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
 				<p
 					id="phone_number"
-					aria-label={currentProfile?.staff_profile?.phone_number ?? 'phone-number'}
+					aria-label={$currentUser?.staff_profile?.phone_number ?? 'phone-number'}
 				>
-					{currentProfile?.staff_profile?.phone_number ?? '-----'}
+					{$currentUser?.staff_profile?.phone_number ?? '-----'}
 				</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
 			<label for="address" class="mb-2 text-xs font-satoshi">Home Address</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="address" aria-label={currentProfile?.staff_profile?.address}>
-					{currentProfile?.staff_profile?.address ?? '-----'}
+				<p id="address" aria-label={$currentUser?.staff_profile?.address}>
+					{$currentUser?.staff_profile?.address ?? '-----'}
 				</p>
 			</div>
 		</div>
 		<div class="flex flex-col">
 			<label for="date_of_birth" class="mb-2 text-xs font-satoshi">Date Of Birth</label>
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
-				<p id="date_of_birth" aria-label={currentProfile?.staff_profile?.address}>
-					{dayjs(currentProfile?.staff_profile?.date_of_birth).format('DD/MM/YYYY')}
+				<p id="date_of_birth" aria-label={$currentUser?.staff_profile?.address}>
+					{dayjs($currentUser?.staff_profile?.date_of_birth).format('DD/MM/YYYY')}
 				</p>
 			</div>
 		</div>
@@ -109,9 +106,9 @@
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
 				<p
 					id="emergency_contact_number"
-					aria-label={currentProfile?.staff_profile?.emergency_contact_number}
+					aria-label={$currentUser?.staff_profile?.emergency_contact_number}
 				>
-					{currentProfile?.staff_profile?.emergency_contact_number ?? '-----'}
+					{$currentUser?.staff_profile?.emergency_contact_number ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -122,9 +119,9 @@
 			<div class="w-full min-h-[48px] border-none flex items-center px-2 bg-[#FCFCFC] rounded-lg">
 				<p
 					id="emergency_contact_relationship"
-					aria-label={currentProfile?.staff_profile?.emergency_contact_relationship}
+					aria-label={$currentUser?.staff_profile?.emergency_contact_relationship}
 				>
-					{currentProfile?.staff_profile?.emergency_contact_relationship ?? '-----'}
+					{$currentUser?.staff_profile?.emergency_contact_relationship ?? '-----'}
 				</p>
 			</div>
 		</div>
@@ -142,17 +139,19 @@
 <Modal
 	mode="sheet"
 	showModal={showEditModal}
-	lock={!!staff_profile}
+	lock={!$currentUser?.staff_profile}
 	on:close={() => (showEditModal = false)}
 >
 	<ManageProfile
 		on:close={() => (showEditModal = false)}
 		on:updated={(e) => {
+			console.log(e.detail);
+
 			updatedProfile(e.detail.user);
 		}}
 		{view}
 		formaction="?/manage-staff-profile"
 		slot="modal-content"
-		bind:currentStaff={currentProfile}
+		bind:currentStaff={$currentUser}
 	/>
 </Modal>

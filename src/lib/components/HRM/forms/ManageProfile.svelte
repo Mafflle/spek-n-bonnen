@@ -34,14 +34,15 @@
 
 	const submit: SubmitFunction = async ({ formData }) => {
 		loading = true;
-		let hasExistingProfile =
-			currentStaff?.staff_profile !== undefined && currentStaff?.staff_profile !== null;
-
+		let hasExistingProfile = currentStaff?.staff_profile ?? false;
 		formData.append('hasExistingProfile', hasExistingProfile.toString());
+		console.log(hasExistingProfile);
 
 		return async ({ update, result }) => {
 			try {
 				if (result.status === 200) {
+					console.log(result);
+
 					if (result.data.edit) {
 						const editedProfile = result.data.updatedStaffProfile as User;
 						dispatch('updated', { user: editedProfile });
@@ -83,7 +84,7 @@
 						class="flex items-center gap-2 text-primary-50 font-poppins font-semibold text-lg mr-auto"
 					>
 						<img src="/icons/UserWithEclipse.svg" alt="user icon " />
-						<span>{currentStaff ? 'Edit' : 'Complete'} profile</span>
+						<span>{currentStaff?.staff_profile ? 'Edit' : 'Complete'} profile</span>
 					</Sheet.Title>
 					<button
 						type="button"

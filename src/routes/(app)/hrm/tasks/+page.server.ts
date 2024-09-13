@@ -67,7 +67,6 @@ export const actions: Actions = {
 		const end_time = formData.get('end_time');
 		const assignedManagers = formData.getAll('assignees_ids');
 		const existingTask = parseInt(formData.get('existingTaskId') as string);
-		console.log(existingTask);
 
 		let assignees_ids = assignedManagers.map((m) => parseInt(m as string));
 
@@ -96,14 +95,13 @@ export const actions: Actions = {
 						edited: true,
 						editedTask
 					};
-				} else {
 				}
 			} else {
 				const createTask = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/`, {
 					method: 'post',
 					body: JSON.stringify(validatedData)
 				});
-				console.log('in progress', createTask.status);
+
 				if (createTask.ok) {
 					const newTask = await createTask.json();
 					console.log(newTask);
@@ -140,15 +138,14 @@ export const actions: Actions = {
 
 		const id = formData.get('id') as string;
 
-		console.log(id);
-
-		const deleteProvider = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${id}/`, {
+		const deleteTasks = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/tasks/${id}/`, {
 			method: 'delete'
 		});
-		if (deleteProvider.ok) {
+		console.log(deleteTasks);
+		if (deleteTasks.ok) {
 			return { success: true };
 		} else {
-			console.log(deleteProvider);
+			console.log(deleteTasks);
 		}
 	}
 };

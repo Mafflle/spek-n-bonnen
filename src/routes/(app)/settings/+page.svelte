@@ -28,8 +28,7 @@
 		{
 			title: 'Profile',
 			id: 'staff_profile',
-			component: Profile,
-			props: { currentProfile: $currentUser }
+			component: Profile
 		},
 		{
 			title: 'Work Schedule',
@@ -46,7 +45,7 @@
 		}
 	];
 
-	if ($page.data.user.staff_profile === null) {
+	if ($page.data.user?.staff_profile === null) {
 		showToast('Create a profile to continue', 'error');
 	}
 </script>

@@ -20,7 +20,6 @@ export const actions: Actions = {
 		const emergency_contact_number = formData.get('emergency_contact_number');
 		const emergency_contact_relationship = formData.get('emergency_contact_relationship');
 		const profile_picture_id = parseInt(formData.get('profile_picture_id') as string);
-		const hasExistingProfile = formData.get('hasExistingProfile') === 'true';
 
 		const dataToValidate = {
 			...(first_name && { first_name }),
@@ -37,7 +36,7 @@ export const actions: Actions = {
 		try {
 			const validatedData = staffprofileSchema.parse(dataToValidate);
 
-			if (hasExistingProfile) {
+			if (locals.user?.staff_profile) {
 				const editStaffProfile = await fetch(`${PUBLIC_API_ENDPOINT}api/auth/staff_profile/me/`, {
 					method: 'put',
 					body: JSON.stringify(validatedData)
@@ -50,7 +49,7 @@ export const actions: Actions = {
 					console.log('updating', editStaffProfile.status);
 					console.log(editStaffProfile.statusText);
 					const error = await editStaffProfile.json();
-					// console.log(error);
+					console.log(error);
 				}
 			} else {
 				const createStaffProfile = await fetch(
@@ -62,7 +61,7 @@ export const actions: Actions = {
 				);
 				if (createStaffProfile.ok) {
 					const newStaffProfile = await createStaffProfile.json();
-					return { edit: true, newStaffProfile };
+					return { newStaffProfile };
 				} else {
 					console.log('creating', createStaffProfile.status);
 					const error = await createStaffProfile.json();
@@ -117,20 +116,27 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ fetch, locals }) => {
-	const getMySchedule = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/work-schedule/me/`);
-	const getMyTimeEntries = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/time-entry/me/`);
+	if (locals.user) {
+		const getMySchedule = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/work-schedule/me/`);
+		const getMyTimeEntries = await fetch(`${PUBLIC_API_ENDPOINT}api/hrm/time-entry/me/`);
 
-	if (getMySchedule.ok && getMyTimeEntries.ok) {
-		const mySchedule = await getMySchedule.json();
-		const myTimeEntries = await getMyTimeEntries.json();
+		if (getMySchedule.ok && getMyTimeEntries.ok) {
+			const mySchedule = await getMySchedule.json();
+			const myTimeEntries = await getMyTimeEntries.json();
 
-		return {
-			mySchedule,
-			myTimeEntries
-		};
+			return {
+				mySchedule,
+				myTimeEntries
+			};
+		} else {
+			console.log('Error fetching schedule with status: ', getMySchedule.status);
+			console.log('Error fetching schedule: ', getMySchedule.url);
+			console.log('Error fetching schedule with error message: ', getMySchedule.statusText);
+		}
 	} else {
-		console.log('Error fetching schedule with status: ', getMySchedule.status);
-		console.log('Error fetching schedule: ', getMySchedule.url);
-		console.log('Error fetching schedule with error message: ', getMySchedule.statusText);
+		return {
+			mySchedule: [],
+			myTimeEntries: []
+		};
 	}
 };

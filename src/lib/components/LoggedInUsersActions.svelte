@@ -144,7 +144,9 @@
 					<div class="forgot-password">
 						<div class="flex gap-[0.38rem] text-[0.8125rem] justify-center">
 							<div class="text-[#9C9C9C]">Forgotten password?</div>
-							<a href="auth/forgot-password" class="hover:underline">Click here to reset</a>
+							<a on:click={close} href="/auth/forgot-password" class="hover:underline"
+								>Click here to reset</a
+							>
 						</div>
 					</div>
 				</div>

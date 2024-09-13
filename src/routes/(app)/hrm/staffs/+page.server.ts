@@ -36,7 +36,6 @@ const inviteSchema = z
 			.nonempty({ message: 'Roles are required' }),
 		managers: z
 			.array(z.number({ required_error: 'You need to assign this employee a manager ' }))
-			.nonempty({ message: 'You need to assign this employee a manager' })
 			.optional(),
 		is_manager: z
 			.string()
@@ -100,8 +99,6 @@ export const actions: Actions = {
 			...(managers && { managers })
 		};
 
-		console.log(JSON.stringify(dataToValidate));
-
 		try {
 			const validatedData = inviteSchema.parse(dataToValidate);
 
@@ -118,7 +115,7 @@ export const actions: Actions = {
 				};
 			} else if (!res.ok) {
 				const details = await res.json();
-				// console.log('error', details);
+				console.log('error', details);
 				return fail(400, { errors: details });
 			}
 		} catch (error) {

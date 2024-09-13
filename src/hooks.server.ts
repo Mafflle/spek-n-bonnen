@@ -5,6 +5,7 @@ import { redirect } from '@sveltejs/kit';
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
 		let access = event.cookies.get('access');
+		console.log(event.url.origin);
 
 		let requestUrl = request.url.replace(`${PUBLIC_API_ENDPOINT}`, '');
 		request.headers.set('Origin', event.url.origin);
@@ -49,33 +50,33 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 						path: '/'
 					});
 
-					request.headers.delete('Authorization');
 					request.headers.set('Authorization', `Bearer ${tokens.access}`);
 
-					console.log('request to retry', request.url);
+					try {
+						let newClonedRequest = request.clone();
+						let newRequest = await fetch(newClonedRequest);
+						return newRequest;
+					} catch (error) {
+						console.log(request);
 
-					let newRequest = await fetch(request.clone());
-
-					return newRequest;
+						console.error('Error in fetch request:', error);
+						throw new Error('Failed to fetch');
+					}
 				}
 			} else {
 				const error = await responseTokens.json();
-				console.log(error);
+				// console.log(error);
 
 				console.log('refresh error', responseTokens.status);
 			}
 		} else if (!response.ok) {
 			console.log(response);
-
-			throw new Error('Failed to fetch');
 		} else if (response.status === 504) {
 			console.log('Gateway Timeout');
 		} else {
 			console.log('failed here', response.url, response.status);
 		}
 		return response;
-	} else {
-		console.log('no');
 	}
 	const response = await fetch(request);
 	return response;
