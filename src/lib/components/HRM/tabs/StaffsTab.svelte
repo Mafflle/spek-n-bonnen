@@ -19,7 +19,7 @@
 		</Table.Header>
 		<Table.Body>
 			{#each $Users as user}
-				{#if user && user.staff_profile}
+				{#if user}
 					<UserRowCard {user} />
 				{/if}
 			{/each}

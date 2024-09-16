@@ -14,8 +14,8 @@
 	<Table.Cell>
 		<div class="   justify-start items-center gap-3 inline-flex">
 			<span class="grow shrink basis-0 text-[#6B6B6B] text-sm font-medium line-clamp-1">
-				{user?.staff_profile.first_name}
-				{user?.staff_profile.last_name}
+				{user?.staff_profile?.first_name ?? '-------'}
+				{user?.staff_profile?.last_name ?? '-------'}
 			</span>
 		</div>
 	</Table.Cell>

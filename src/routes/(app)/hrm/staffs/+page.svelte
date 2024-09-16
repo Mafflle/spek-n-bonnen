@@ -2,9 +2,8 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { container } from '$lib/stores.js';
-	import { currentUser, Users, type User } from '$lib/user.js';
+	import { Users, type User } from '$lib/user.js';
 	import { onDestroy } from 'svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
 
 	import InviteStaff from '$lib/components/HRM/forms/InviteStaff.svelte';
 
@@ -15,18 +14,19 @@
 	let { groups, access, users } = data;
 
 	let showModal: boolean = false;
-	let showTaskDetails: boolean = false;
 
 	const staffManagers = data.staffManagers.results as User[];
 
 	Users.set(users.results);
+
+	const unsubscribe = container.subscribe((state) => (state = state));
 
 	const toggleModal = () => {
 		showModal = !showModal;
 	};
 
 	onDestroy(() => {
-		container.set([]);
+		unsubscribe();
 	});
 </script>
 

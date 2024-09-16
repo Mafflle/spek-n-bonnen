@@ -5,7 +5,6 @@ import { redirect } from '@sveltejs/kit';
 export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 	if (request.url.startsWith(PUBLIC_API_ENDPOINT)) {
 		let access = event.cookies.get('access');
-		console.log(event.url.origin);
 
 		let requestUrl = request.url.replace(`${PUBLIC_API_ENDPOINT}`, '');
 		request.headers.set('Origin', event.url.origin);
@@ -18,8 +17,11 @@ export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
 		}
 
 		// Make the initial request
+		console.log(request);
 
 		let clonedRequest = request.clone();
+		console.log(clonedRequest);
+
 		let response = await fetch(clonedRequest); // Clone to allow retrying
 
 		if (response.ok) {
