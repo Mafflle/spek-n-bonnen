@@ -39,6 +39,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"axios": "^1.7.7"
+		"@sveltejs/adapter-node": "^5.2.4",
+		"axios": "^1.7.7",
+		"iconify-icon": "^2.1.0",
+		"svelte-sonner": "^0.3.28",
+		"zod": "^3.23.8"
 	}
 }
