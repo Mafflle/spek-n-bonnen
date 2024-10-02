@@ -1,13 +1,38 @@
-import { client } from '.';
-import type { SetupAdminPayload, User } from '$lib/types/user.types';
+import { checkIfAdminExists, getCurrentUser, type Account } from '$lib/generated';
+import { AxiosError } from 'axios';
 
-export const setUpAdmin = async (data: SetupAdminPayload) => {
-	try {
-		const { confirmPassword: password2, ...rest } = data;
-		const response = await client.post<User>('/auth/setup-admin/', { ...rest, password2 });
-		return response.data;
-	} catch (error) {
-		console.error(error);
-		throw error;
-	}
+const init = () => {
+	const fetchCurrentUser = async () => {
+		try {
+			const { data } = await getCurrentUser();
+			return data as Account;
+		} catch (error) {
+			if (error instanceof AxiosError && error.response?.status === 401) {
+				return;
+			}
+
+			console.log(error);
+		}
+	};
+
+	const checkAdminExists = async () => {
+		try {
+			const { data } = await checkIfAdminExists();
+			return data?.admin_exists ?? false;
+		} catch (error) {
+			if (error instanceof AxiosError && error.response?.status === 401) {
+				return;
+			}
+
+			console.log(error);
+		}
+	};
+
+	return {
+		fetchCurrentUser,
+		checkAdminExists
+	};
 };
+const user = init();
+
+export default user;

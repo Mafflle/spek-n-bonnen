@@ -3,10 +3,13 @@
 	import { goto } from '$app/navigation';
 	import { adminExists, userLoading } from '$lib/stores/user';
 	import { z } from 'zod';
-	import { setupAdminSchema } from './schema';
 	import type { SetupAdminPayload } from '$lib/types/user.types';
-	import { setUpAdmin } from '$lib/client/user';
+
 	import { toast } from 'svelte-sonner';
+	import Input from '$components/Input.svelte';
+	import { setupAdminSchema } from '$lib/client/schema';
+	import auth from '$lib/client/auth';
+	import AuthContext from '$components/AuthContext.svelte';
 
 	$: {
 		if ($adminExists && !$userLoading && browser) {
@@ -34,8 +37,8 @@
 			};
 
 			const validatedData = setupAdminSchema.parse(dataToValidate) as SetupAdminPayload;
-			console.log('validatedData', validatedData);
-			await setUpAdmin(validatedData);
+
+			await auth.setUpAdmin(validatedData);
 			toast.success('Admin account created successfully, you can now sign in');
 			goto('/auth/sign-in');
 		} catch (err) {
@@ -56,72 +59,46 @@
 	<title>Setup Admin Account - Spek & Boonen</title>
 </svelte:head>
 
-<div class="flex items-center justify-center">
-	<img src="/icons/user.svg" alt="User Icon" />
-</div>
+<AuthContext>
+	<svelte:fragment slot="context-image">
+		<img src="/icons/user.svg" alt="User Icon" />
+	</svelte:fragment>
+	<svelte:fragment slot="context-title">Setup admin account</svelte:fragment>
+	<svelte:fragment slot="context-description"
+		>Fill in the form to create the first admin account</svelte:fragment
+	>
 
-<div class="space-y-1 pt-[24px] text-center">
-	<h2 class="font-inter text-2xl font-medium">Setup admin account</h2>
-	<p class="text-sm text-[#727272]">Fill in the form to create the first admin account</p>
-</div>
-
-<form class="mt-10 space-y-4" on:submit|preventDefault={handleSubmit}>
-	<div class="form-control">
-		<label for="email" class="form-label">Email</label>
-		<input
-			type="text"
-			id="email"
-			class="form-input"
+	<form class="mt-10 space-y-4" on:submit|preventDefault={handleSubmit} slot="context-content">
+		<Input
+			label="Email"
+			name="email"
+			type="email"
 			bind:value={formData.email}
-			class:form-input-error={formErrors.email}
+			bind:inputErrors={formErrors.email}
 		/>
 
-		{#if formErrors.email}
-			{#each formErrors.email as message}
-				<p class="form-error">{message}</p>
-			{/each}
-		{/if}
-	</div>
-
-	<div class="form-control">
-		<label for="password" class="form-label">Password</label>
-		<input
+		<Input
+			label="Password"
+			name="password"
 			type="password"
-			id="password"
-			class="form-input"
 			bind:value={formData.password}
-			class:form-input-error={formErrors.password}
+			bind:inputErrors={formErrors.password}
 		/>
 
-		{#if formErrors.password}
-			{#each formErrors.password as message}
-				<p class="form-error">{message}</p>
-			{/each}
-		{/if}
-	</div>
-
-	<div class="form-control">
-		<label for="confirm-password" class="form-label">Confirm password</label>
-		<input
+		<Input
+			label="Confirm password"
+			name="confirm-password"
 			type="password"
-			id="confirm-password"
-			class="form-input"
 			bind:value={formData.confirmPassword}
-			class:form-input-error={formErrors.confirmPassword}
+			bind:inputErrors={formErrors.confirmPassword}
 		/>
 
-		{#if formErrors.confirmPassword}
-			{#each formErrors.confirmPassword as message}
-				<p class="form-error">{message}</p>
-			{/each}
-		{/if}
-	</div>
-
-	<button type="submit" class="btn">
-		{#if loading}
-			<iconify-icon width="22" icon="line-md:loading-loop"></iconify-icon>
-		{:else}
-			Setup Admin
-		{/if}
-	</button>
-</form>
+		<button type="submit" class="btn">
+			{#if loading}
+				<iconify-icon width="22" icon="line-md:loading-loop"></iconify-icon>
+			{:else}
+				Setup Admin
+			{/if}
+		</button>
+	</form>
+</AuthContext>

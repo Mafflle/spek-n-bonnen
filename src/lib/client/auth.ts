@@ -1,39 +1,98 @@
 import { browser } from '$app/environment';
-import { client } from '.';
+import { goto } from '$app/navigation';
+
+import type { SetupAdminPayload, User } from '$lib/types/user.types';
 import { currentUser } from '../stores/user';
-import type { AuthenticationCodes, LoginPayload } from '../types/auth.types';
+import {
+	refreshAuthTokens,
+	getAuthTokens,
+	setupUser,
+	requestPasswordResetToken
+} from '$lib/generated/services.gen';
+import {
+	type RefreshAuthTokensResponse,
+	type TokenObtainPairResponse
+} from '$lib/generated/types.gen';
 
-export const login = async (payload: LoginPayload): Promise<AuthenticationCodes> => {
-	const response = await client.post<AuthenticationCodes>('/auth/login/', payload);
+import type { forgotPasswordPayload, LoginPayload } from '../types/auth.types';
 
-	if (browser) {
-		localStorage.setItem('access_token', response.data.access);
-		localStorage.setItem('refresh_token', response.data.refresh);
-	}
+const createAuth = () => {
+	const login = async (payload: LoginPayload): Promise<TokenObtainPairResponse> => {
+		const response = await getAuthTokens({
+			body: {
+				email: payload.email,
+				password: payload.password
+			}
+		});
 
-	return response.data;
+		if (browser) {
+			localStorage.setItem('access_token', response.data?.access as string);
+			localStorage.setItem('refresh_token', response.data?.refresh as string);
+		}
+
+		return response.data as TokenObtainPairResponse;
+	};
+
+	const refreshToken = async (): Promise<RefreshAuthTokensResponse> => {
+		if (!browser) {
+			throw new Error('Cannot refresh token on server');
+		}
+
+		const response = await refreshAuthTokens({
+			body: {
+				access: '',
+				refresh: localStorage.getItem('refresh_token') as string
+			}
+		});
+
+		localStorage.setItem('access_token', response.data?.access as string);
+		localStorage.setItem('refresh_token', response.data?.refresh as string);
+
+		return response.data as RefreshAuthTokensResponse;
+	};
+
+	const logout = (): void => {
+		if (browser) {
+			localStorage.removeItem('access_token');
+			localStorage.removeItem('refresh_token');
+			currentUser.set(null);
+			goto('/auth/sign-in');
+			return;
+		}
+	};
+
+	const setUpAdmin = async (data: SetupAdminPayload) => {
+		try {
+			const { confirmPassword: password2, ...rest } = data;
+			const response = await setupUser({ body: { ...rest, password2 } });
+			return response.data;
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
+	const getResetPasswordMail = async (data: forgotPasswordPayload) => {
+		try {
+			const response = await requestPasswordResetToken({ body: data });
+			console.log(response);
+
+			return response.data;
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
+	return {
+		login,
+		refreshToken,
+		logout,
+		setUpAdmin,
+		getResetPasswordMail
+	};
 };
 
-export const refreshToken = async (): Promise<AuthenticationCodes> => {
-	if (!browser) {
-		throw new Error('Cannot refresh token on server');
-	}
+const auth = createAuth();
 
-	const response = await client.post<AuthenticationCodes>('/auth/refresh/', {
-		refresh: localStorage.getItem('refresh_token')
-	});
-
-	localStorage.setItem('access_token', response.data.access);
-	localStorage.setItem('refresh_token', response.data.refresh);
-
-	return response.data;
-};
-
-export const logout = (): void => {
-	if (browser) {
-		localStorage.removeItem('access_token');
-		localStorage.removeItem('refresh_token');
-	}
-
-	currentUser.set(null);
-};
+export default auth;

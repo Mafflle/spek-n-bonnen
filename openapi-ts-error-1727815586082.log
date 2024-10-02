@@ -1,0 +1,8 @@
+🚫 client needs to be set to generate services - which HTTP client do you want to use?
+Error: 🚫 client needs to be set to generate services - which HTTP client do you want to use?
+    at La (/home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:51451)
+    at Vo (/home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:51742)
+    at Zo (/home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:62091)
+    at async /home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/dist/index.cjs:1325:10343
+    at async vp (/home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/dist/index.cjs:1325:10556)
+    at async start (/home/hael/code/spek-n-boonen/node_modules/@hey-api/openapi-ts/bin/index.cjs:78:5)

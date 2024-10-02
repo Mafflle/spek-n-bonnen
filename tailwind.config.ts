@@ -8,7 +8,9 @@ export default {
 			colors: {
 				black: '#2D2D2D',
 				background: '#EBEBEB',
-				primary: '#D7362C'
+				primary: { black: '#2D2D2D', DEFAULT: '#D7362C' },
+				grey: { 100: '#727272', special: '#9C9C9C', bg: '#F5F5F5' },
+				border: '#C9C7C7'
 			},
 			fontFamily: {
 				inter: ['Inter', 'system-ui']

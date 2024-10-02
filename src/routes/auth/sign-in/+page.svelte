@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { z } from 'zod';
-	import type { LoginPayload } from '$lib/types/auth.types';
+	import auth from '$lib/client/auth';
 	import { toast } from 'svelte-sonner';
 	import { AxiosError } from 'axios';
-	import { login } from '$lib/client/auth';
-	import { loginSchema } from './schema';
+	import { z } from 'zod';
+
+	import type { LoginPayload } from '$lib/types/auth.types';
 	import { initializeUserStore } from '$lib/stores/user';
+	import { loginSchema } from '$lib/client/schema';
+
+	import Input from '$components/Input.svelte';
+	import AuthContext from '$components/AuthContext.svelte';
 
 	const formData: LoginPayload = {
 		email: '',
@@ -13,6 +17,7 @@
 	};
 	let formErrors: any = {};
 	let loading = false;
+
 	const handleSubmit = async () => {
 		loading = true;
 		formErrors = {};
@@ -25,10 +30,12 @@
 
 			const validatedData = loginSchema.parse(dataToValidate) as LoginPayload;
 
-			await login(validatedData);
+			await auth.login(validatedData);
 			await initializeUserStore();
 			toast.success('Logged in successfully');
 		} catch (err) {
+			console.log(err);
+
 			if (err instanceof z.ZodError) {
 				formErrors = err.flatten().fieldErrors;
 				return;
@@ -51,60 +58,47 @@
 	<title>Sign In - Spek & Boonen</title>
 </svelte:head>
 
-<div class="flex items-center justify-center">
-	<img src="/icons/user.svg" alt="User Icon" />
-</div>
+<AuthContext>
+	<svelte:fragment slot="context-image">
+		<img src="/icons/user.svg" alt="User Icon" />
+	</svelte:fragment>
+	<svelte:fragment slot="context-title">Welcome back admin</svelte:fragment>
+	<svelte:fragment slot="context-description"
+		>Enter the correct credentials below to access your account</svelte:fragment
+	>
 
-<div class="space-y-1 pt-[24px] text-center">
-	<h2 class="font-inter text-2xl font-medium">Welcome back admin</h2>
-	<p class="text-sm text-[#727272]">Enter the correct credentials below to access your account</p>
-</div>
+	<form
+		slot="context-content"
+		class="mt-10 flex flex-col space-y-5"
+		autocomplete="off"
+		on:submit|preventDefault={handleSubmit}
+	>
+		<div class="form-section">
+			<Input
+				name="email"
+				bind:value={formData.email}
+				label="Email"
+				type="email"
+				inputErrors={formErrors.email}
+			/>
+			<Input
+				name="password"
+				bind:value={formData.password}
+				label="Password"
+				type="password"
+				inputErrors={formErrors.password}
+			/>
 
-<form class="mt-10 space-y-4" on:submit|preventDefault={handleSubmit}>
-	<div class="form-control">
-		<label for="email" class="form-label">Email</label>
-		<input
-			type="text"
-			id="email"
-			class="form-input"
-			bind:value={formData.email}
-			class:form-input-error={formErrors.email}
-		/>
-		{#if formErrors.email}
-			{#each formErrors.email as message}
-				<p class="form-error">{message}</p>
-			{/each}
-		{/if}
-	</div>
-
-	<div class="form-control">
-		<label for="password" class="form-label">Password</label>
-		<input
-			type="password"
-			id="password"
-			class="form-input"
-			bind:value={formData.password}
-			class:form-input-error={formErrors.password}
-		/>
-		{#if formErrors.password}
-			{#each formErrors.password as message}
-				<p class="form-error">{message}</p>
-			{/each}
-		{/if}
-		<div>
-			<a href="/auth/forgot-password" class="text-xs text-[#9C9C9C] hover:underline"
-				>Forgotten password?</a
-			>
+			<a href="forgot-password" class="text-sm text-grey-special">Forgotten password?</a>
 		</div>
-	</div>
-
-	<div class="space-y-4">
-		<button class="btn" type="submit">
-			{#if loading}
-				<iconify-icon width="22" icon="line-md:loading-loop"></iconify-icon>
-			{:else}
-				Sign in
-			{/if}
-		</button>
-	</div>
-</form>
+		<div class="space-y-4">
+			<button class="btn p-3.5" type="submit">
+				{#if loading}
+					<iconify-icon width="22" icon="line-md:loading-loop"></iconify-icon>
+				{:else}
+					<span class="font-medium"> Login </span>
+				{/if}
+			</button>
+		</div>
+	</form>
+</AuthContext>

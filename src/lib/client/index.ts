@@ -1,32 +1,32 @@
 import { browser } from '$app/environment';
-import { PUBLIC_API_ENDPOINT } from '$env/static/public';
-import axios from 'axios';
-import { logout, refreshToken } from './auth';
+
+import auth from './auth';
+
+import { client } from '$lib/generated/services.gen';
 import { goto } from '$app/navigation';
 
-export const client = axios.create({
-	baseURL: PUBLIC_API_ENDPOINT,
-	headers: {
-		'Content-Type': 'application/json'
-	}
-});
-
-client.interceptors.request.use((config) => {
-	config.headers['Content-Type'] = 'application/json';
-	if (browser) {
-		const access_token = localStorage.getItem('access_token');
-		if (access_token) {
-			config.headers['Authorization'] = `Bearer ${access_token}`;
+const addAuthHeader = () => {
+	client.instance.interceptors.request.use((config) => {
+		config.headers['Content-Type'] = 'application/json';
+		if (browser) {
+			const access_token = localStorage.getItem('access_token');
+			if (access_token) {
+				config.headers['Authorization'] = `Bearer ${access_token}`;
+			}
 		}
-	}
-	return config;
-});
+		return config;
+	});
+};
 
 const createAuthRefreshInterceptor = () => {
-	const interceptor = client.interceptors.response.use(
+	const interceptor = client.instance.interceptors.response.use(
 		(response) => response,
-		(error) => {
+		async (error) => {
 			if (error.response.status !== 401) {
+				return Promise.reject(error);
+			}
+
+			if (error.response.config.url === '/auth/login/') {
 				return Promise.reject(error);
 			}
 
@@ -38,21 +38,28 @@ const createAuthRefreshInterceptor = () => {
 			 * Must be re-attached later on or the token refresh will only happen once
 			 */
 
-			axios.interceptors.response.eject(interceptor);
+			client.instance.interceptors.response.eject(interceptor);
 
-			return refreshToken()
-				.then((response) => {
-					error.response.config.headers['Authorization'] = `Bearer ${response.access}`;
-					return client(error.response.config); // retry the request that errored out with 401
-				})
-				.catch((error2) => {
-					logout();
+			try {
+				const response = await auth.refreshToken();
+				error.response.config.headers['Authorization'] = `Bearer ${response.access}`;
+				return client.instance(error.response.config); // retry the request that errored out with 401
+			} catch (error2) {
+				const currentPath = window.location.pathname;
+				if (!currentPath.startsWith('/auth')) {
+					auth.logout();
 					goto('/auth/sign-in');
-					return Promise.reject(error2);
-				})
-				.finally(createAuthRefreshInterceptor);
+				}
+
+				return Promise.reject(error2);
+			} finally {
+				createAuthRefreshInterceptor();
+			}
 		}
 	);
 };
 
-createAuthRefreshInterceptor();
+export const initInterceptors = () => {
+	addAuthHeader();
+	createAuthRefreshInterceptor();
+};

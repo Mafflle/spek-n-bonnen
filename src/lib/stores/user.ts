@@ -1,30 +1,28 @@
 import { writable } from 'svelte/store';
-import { client } from '../client';
 import { AxiosError } from 'axios';
+import { checkIfAdminExists, getCurrentUser } from '$lib/generated/services.gen';
+import type { Account } from '$lib/generated';
+export const userLoading = writable(false);
 
-export const userLoading = writable(true);
-
-export const currentUser = writable(null);
+export const currentUser = writable<Account | null>(null);
 export const adminExists = writable(false);
 
 export const checkAdminExists = async () => {
 	try {
-		const response = await client.get('/auth/admin-exists');
-		adminExists.set(response.data.admin_exists);
+		const { data } = await checkIfAdminExists();
+		adminExists.set(data?.admin_exists ?? false);
 	} catch (error) {
 		adminExists.set(false);
 		if (error instanceof AxiosError && error.response?.status === 401) {
 			return;
 		}
-
-		console.error(error);
 	}
 };
 
 export const fetchCurrentUser = async () => {
 	try {
-		const response = await client.get('/auth/me');
-		currentUser.set(response.data);
+		const { data } = await getCurrentUser();
+		currentUser.set(data as Account);
 	} catch (error) {
 		currentUser.set(null);
 
