@@ -16,7 +16,7 @@ import {
 
 import type { forgotPasswordPayload, LoginPayload } from '../types/auth.types';
 
-const createAuth = () => {
+export const createAuth = () => {
 	const login = async (payload: LoginPayload): Promise<TokenObtainPairResponse> => {
 		const response = await getAuthTokens({
 			body: {
@@ -75,8 +75,6 @@ const createAuth = () => {
 	const getResetPasswordMail = async (data: forgotPasswordPayload) => {
 		try {
 			const response = await requestPasswordResetToken({ body: data });
-			console.log(response);
-
 			return response.data;
 		} catch (error) {
 			console.error(error);
