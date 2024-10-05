@@ -27,19 +27,14 @@
 
 			const validatedData = forgotPasswordSchema.parse(dataToValidate) as forgotPasswordPayload;
 
-			await auth.getResetPasswordMail(validatedData);
-			mailSent = true;
-			toast.success('Password reset link sent successfully, check your mail');
+			const resetMail = await auth.getResetPasswordMail(validatedData);
+
+			mailSent = resetMail;
 		} catch (err) {
 			console.log(err);
 
 			if (err instanceof z.ZodError) {
 				formErrors = err.flatten().fieldErrors;
-				return;
-			}
-
-			if (err instanceof AxiosError && err.response?.status === 401) {
-				toast.error('Invalid email or password');
 				return;
 			}
 

@@ -39,8 +39,6 @@
 			const validatedData = setupAdminSchema.parse(dataToValidate) as SetupAdminPayload;
 
 			await auth.setUpAdmin(validatedData);
-			toast.success('Admin account created successfully, you can now sign in');
-			goto('/auth/sign-in');
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				formErrors = err.flatten().fieldErrors;

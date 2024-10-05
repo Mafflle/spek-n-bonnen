@@ -4,6 +4,7 @@ import auth from './auth';
 
 import { client } from '$lib/generated/services.gen';
 import { goto } from '$app/navigation';
+import { AxiosError } from 'axios';
 
 const addAuthHeader = () => {
 	client.instance.interceptors.request.use((config) => {
@@ -45,13 +46,15 @@ const createAuthRefreshInterceptor = () => {
 				error.response.config.headers['Authorization'] = `Bearer ${response.access}`;
 				return client.instance(error.response.config); // retry the request that errored out with 401
 			} catch (error2) {
+				console.log('two', error2);
+
 				const currentPath = window.location.pathname;
 				if (!currentPath.startsWith('/auth')) {
 					auth.logout();
 					goto('/auth/sign-in');
 				}
 
-				return Promise.reject(error2);
+				return Promise.reject(error);
 			} finally {
 				createAuthRefreshInterceptor();
 			}

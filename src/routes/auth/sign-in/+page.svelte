@@ -31,18 +31,11 @@
 			const validatedData = loginSchema.parse(dataToValidate) as LoginPayload;
 
 			await auth.login(validatedData);
-			await initializeUserStore();
-			toast.success('Logged in successfully');
 		} catch (err) {
 			console.log(err);
 
 			if (err instanceof z.ZodError) {
 				formErrors = err.flatten().fieldErrors;
-				return;
-			}
-
-			if (err instanceof AxiosError && err.response?.status === 401) {
-				toast.error('Invalid email or password');
 				return;
 			}
 

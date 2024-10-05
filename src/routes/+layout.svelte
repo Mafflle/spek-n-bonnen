@@ -2,13 +2,19 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
-	import { currentUser, initializeUserStore, userLoading } from '$lib/stores/user';
+	import { adminExists, currentUser, initializeUserStore, userLoading } from '$lib/stores/user';
 	import { Toaster } from 'svelte-sonner';
 	import '../app.css';
 	import 'iconify-icon';
 	import PageLoader from '$components/PageLoader.svelte';
 	import { navigating, page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
+	$: console.log($adminExists);
+
+	if (browser && !$adminExists) {
+		goto('/auth/setup-admin');
+	}
 	onMount(async () => {
 		if (browser) {
 			await initializeUserStore();

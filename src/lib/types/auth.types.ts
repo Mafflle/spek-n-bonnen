@@ -5,6 +5,10 @@ export interface LoginPayload {
 export interface forgotPasswordPayload {
 	email: string;
 }
+export interface resetPasswordPayload {
+	password: string;
+	confirmPassword: string;
+}
 
 export interface AuthenticationCodes {
 	access: string;
