@@ -1,30 +1,44 @@
 <script lang="ts">
-	export let open = false;
+	import { createEventDispatcher } from 'svelte';
+	import { clickOutsideAction } from 'svelte-legos';
 
-	function toggleDropdown() {
+	export let showIcon = true;
+	export let handleClickOutside = false;
+
+	export let open = false;
+	let mouseOver = false;
+	const dispatch = createEventDispatcher();
+
+	const toggleDropdown = () => {
 		open = !open;
-	}
+		dispatch('toggledDropdown', open);
+	};
+	const toggleMouseOver = () => {
+		mouseOver = !mouseOver;
+		dispatch('toggledMouseOver', mouseOver);
+	};
 
 	let dropdownTriggerClass = '';
 	let importedClass = '';
 	export { dropdownTriggerClass as tiggerStyle, importedClass as class };
 </script>
 
-<div class="dropdown {importedClass}">
-	<li class="dropdown-trigger flex w-full rounded {dropdownTriggerClass}">
-		<button class=" flex w-full items-center gap-2" on:click={toggleDropdown}>
-			<slot name="dropdown-trigger" />
-			<span class="flex h-7 w-7" class:rotate={open}>
-				<img src="/icons/caret-down.svg" class="h-full w-full" alt="Caret down icon" />
-			</span>
-		</button>
-	</li>
+<div
+	use:clickOutsideAction
+	on:clickoutside={() => handleClickOutside && (open = false)}
+	class="dropdown {importedClass}"
+>
+	<button
+		class=" flex w-full items-center gap-2"
+		on:mouseenter={toggleMouseOver}
+		on:mouseleave={toggleMouseOver}
+		on:click={toggleDropdown}
+	>
+		<slot name="dropdown-trigger" />
+	</button>
 
 	<slot name="dropdown-content" />
 </div>
 
 <style>
-	.rotate {
-		transform: rotate(180deg);
-	}
 </style>

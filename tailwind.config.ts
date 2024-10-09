@@ -12,6 +12,7 @@ export default {
 				grey: {
 					100: '#727272',
 					200: '#E4E4E7',
+					300: '#505050',
 					special: '#9C9C9C',
 					bg: '#F5F5F5',
 					text: '#D9D9D9'

@@ -29,7 +29,7 @@
 
 			const resetMail = await auth.getResetPasswordMail(validatedData);
 
-			mailSent = resetMail;
+			mailSent = resetMail ?? false;
 		} catch (err) {
 			console.log(err);
 

@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 
 import type { SetupAdminPayload } from '$lib/types/user.types';
-import { currentUser, initializeUserStore } from '../stores/user';
+import user from '../stores/user';
 import {
 	refreshAuthTokens,
 	getAuthTokens,
@@ -29,10 +29,10 @@ export const createAuth = () => {
 			if (browser) {
 				localStorage.setItem('access_token', response.data?.access as string);
 				localStorage.setItem('refresh_token', response.data?.refresh as string);
-				await initializeUserStore();
+				await user.refresh();
 			}
 		} else if (response.status === 401 && response.error) {
-			toast.error(response.error.message);
+			toast.error('Invalid email or password');
 		} else if (response.error) {
 			toast.error(response.error.message ?? 'error has no message');
 		}
@@ -58,13 +58,12 @@ export const createAuth = () => {
 		}
 	};
 
-	const logout = (): void => {
+	const logout = async (): void => {
 		if (browser) {
 			localStorage.removeItem('access_token');
 			localStorage.removeItem('refresh_token');
-			currentUser.set(null);
-			goto('/auth/sign-in');
-			return;
+			user.set(null);
+			await goto('/auth/sign-in');
 		}
 	};
 
@@ -111,20 +110,24 @@ export const createAuth = () => {
 			const resetRespone = await confirmPasswordReset({ body: { password, token } });
 			if (resetRespone.status === 200) {
 				toast.success('Password reset successful');
-				goto('/auth/sign-in');
+				return true;
 			} else if (resetRespone.status === 404) {
 				toast.error('Token expired');
 				toast.error('Please request another reset password link');
+				return false;
 			} else {
 				toast.error('Ooops something went wrong');
+				return false;
 				console.log(resetRespone);
 			}
 		} else if (validateToken.status === 404) {
 			toast.error('Token expired');
 			toast.error('Please request another reset password link');
+			return false;
 		} else {
-			toast.error(validateToken.error.message ?? 'Ooops something went wrong');
+			toast.error('Ooops something went wrong');
 			console.log(validateToken);
+			return false;
 		}
 	};
 

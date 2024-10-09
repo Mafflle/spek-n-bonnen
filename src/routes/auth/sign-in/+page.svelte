@@ -1,11 +1,9 @@
 <script lang="ts">
 	import auth from '$lib/client/auth';
 	import { toast } from 'svelte-sonner';
-	import { AxiosError } from 'axios';
 	import { z } from 'zod';
 
 	import type { LoginPayload } from '$lib/types/auth.types';
-	import { initializeUserStore } from '$lib/stores/user';
 	import { loginSchema } from '$lib/client/schema';
 
 	import Input from '$components/Input.svelte';

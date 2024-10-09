@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { currentUser } from '$lib/stores/user';
+	import user from '$lib/stores/user';
 
 	$: {
-		if ($currentUser && browser) {
+		if ($user && browser) {
 			goto('/');
 		}
 	}

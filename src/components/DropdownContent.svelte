@@ -1,10 +1,7 @@
 <script>
-	export let isOpen = false;
-
 	let importedClass = '';
+	export let isOpen = false;
 	export { importedClass as class };
-
-	console.log(importedClass);
 </script>
 
 {#if isOpen}

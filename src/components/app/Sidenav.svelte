@@ -5,20 +5,23 @@
 		{
 			name: 'Homepage',
 			icon: '/icons/home-2.svg',
+			activeIcon: '/icons/active/home-active.svg',
 			link: '/'
 		},
 		{
 			name: 'Inventory',
 			icon: '/icons/box.svg',
+			activeIcon: '/icons/active/box-active.svg',
 			link: '/inventory',
+
 			children: [
 				{
 					name: 'Products',
 					link: '/products'
 				},
 				{
-					name: 'Categories',
-					link: '/categories'
+					name: 'Product type',
+					link: '/inventory/product-type'
 				},
 				{
 					name: 'Batches',
@@ -29,11 +32,13 @@
 		{
 			name: 'Orders',
 			icon: '/icons/shopping-cart.svg',
+			activeIcon: '/icons/active/shopping-cart-active.svg',
 			link: '/orders'
 		},
 		{
 			name: 'Suppliers',
 			icon: '/icons/group.svg',
+			activeIcon: '/icons/active/group-active.svg',
 			link: '/suppliers'
 		}
 	];
@@ -42,11 +47,13 @@
 		{
 			name: 'Tasks',
 			icon: '/icons/layer.svg',
+			activeIcon: '/icons/active/layer-active.svg',
 			link: '/tasks'
 		},
 		{
 			name: 'Staffs',
-			icon: '/icons/people.svg'
+			icon: '/icons/people.svg',
+			activeIcon: '/icons/active/people-active.svg'
 		}
 	];
 
@@ -54,6 +61,7 @@
 		{
 			name: 'Media gallery',
 			icon: '/icons/gallery.svg',
+			activeIcon: '/icons/active/gallery-active.svg',
 			link: '/media'
 		},
 		{
@@ -64,6 +72,7 @@
 		{
 			name: 'Webshop',
 			icon: '/icons/global.svg',
+			activeIcon: '/icons/active/global-active.svg',
 			link: '/webshop'
 		}
 	];
